@@ -1,19 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createBrowserClient } from "@supabase/auth-helpers-nextjs";
 import Link from "next/link";
-
-const createSafeBrowserClient = () => {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) {
-    throw new Error(
-      "Missing Supabase env vars. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local and restart."
-    );
-  }
-  return createBrowserClient(url, key);
-};
+import { getSupabaseClient } from "@/lib/supabase/client";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -23,7 +12,7 @@ export default function AdminLoginPage() {
 
   useEffect(() => {
     try {
-      const supabase = createSafeBrowserClient();
+      const supabase = getSupabaseClient();
       supabase.auth.getSession().then(({ data }) => {
         setSessionEmail(data.session?.user.email ?? null);
       });
@@ -34,7 +23,7 @@ export default function AdminLoginPage() {
 
   const handleLogin = async () => {
     try {
-      const supabase = createSafeBrowserClient();
+      const supabase = getSupabaseClient();
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         setMessage(error.message);
@@ -49,7 +38,7 @@ export default function AdminLoginPage() {
 
   const handleLogout = async () => {
     try {
-      const supabase = createSafeBrowserClient();
+      const supabase = getSupabaseClient();
       await supabase.auth.signOut();
       setSessionEmail(null);
     } catch (error) {

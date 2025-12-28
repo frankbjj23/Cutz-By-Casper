@@ -1,5 +1,5 @@
 import { getTwilioClient } from "../twilio";
-import { supabaseAdmin } from "../supabase/admin";
+import { getSupabaseAdmin } from "../supabase/admin";
 import { DEMO_MODE, HAS_TWILIO } from "../env";
 
 export const sendSms = async ({
@@ -22,7 +22,7 @@ export const sendSms = async ({
   body: string;
   allowDuplicate?: boolean;
 }) => {
-  const supabase = supabaseAdmin;
+  const supabase = getSupabaseAdmin() as any;
   if (!allowDuplicate) {
     const existing = await supabase
       .from("sms_logs")

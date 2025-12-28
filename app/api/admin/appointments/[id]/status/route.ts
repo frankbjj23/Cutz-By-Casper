@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/server/auth";
 import { statusSchema } from "@/lib/validators";
 import { sendSms } from "@/lib/server/sms";
+import type { Database } from "@/lib/types";
 
 export async function PATCH(
   request: Request,
@@ -18,9 +19,13 @@ export async function PATCH(
 
   const { status } = parsed.data;
 
-  const { data: appointment, error: apptError } = await auth.supabase
+  const updateData: Database["public"]["Tables"]["appointments"]["Update"] = {
+    status,
+  };
+
+  const { data: appointment, error: apptError } = await (auth.supabase as any)
     .from("appointments")
-    .update({ status })
+    .update(updateData)
     .eq("id", params.id)
     .select("id, customers(phone_e164, sms_opt_in)")
     .single();
@@ -30,7 +35,7 @@ export async function PATCH(
   }
 
   if (status === "no_show") {
-    await auth.supabase
+    await (auth.supabase as any)
       .from("payments")
       .update({ status: "forfeited" })
       .eq("appointment_id", params.id);
@@ -38,7 +43,6 @@ export async function PATCH(
     if (appointment.customers?.sms_opt_in) {
       await sendSms({
         appointmentId: params.id,
-        customerId: null,
         to: appointment.customers.phone_e164,
         type: "no_show_notice",
         body:

@@ -166,9 +166,15 @@ const handleTool = async (name: string, args: any) => {
       if (error) {
         return { error: error.message };
       }
+      const services = (data ?? []) as any[];
       return {
-        services: (data ?? []).map((service) => ({
-          ...service,
+        services: services.map((service) => ({
+          id: service.id,
+          name: service.name,
+          duration_minutes: service.duration_minutes,
+          price_display: service.price_display,
+          note: service.note ?? null,
+          price_from: service.price_from ?? false,
           bookable_online: !service.price_from,
         })),
       };
@@ -187,7 +193,11 @@ const handleTool = async (name: string, args: any) => {
       if (service.error) {
         return { error: service.error.message };
       }
-      if (service.data.price_from) {
+      const serviceData = service.data as { duration_minutes: number; price_from?: boolean } | null;
+      if (!serviceData) {
+        return { error: "Service not found" };
+      }
+      if (serviceData.price_from) {
         return { slots: [] };
       }
 
@@ -212,18 +222,32 @@ const handleTool = async (name: string, args: any) => {
         .gt("end_time_utc", dayStartUtc);
 
       const nowUtc = DateTime.utc().toISO();
-      const filtered = (appointments ?? []).filter((appt) => {
+      const appointmentList = (appointments ?? []) as Array<{
+        status: string;
+        hold_expires_at_utc?: string | null;
+        start_time_utc?: string;
+        end_time_utc?: string;
+      }>;
+      const filtered = appointmentList.filter((appt) => {
         if (appt.status !== "pending_payment") return true;
         return appt.hold_expires_at_utc && appt.hold_expires_at_utc > nowUtc;
       });
+      const busyAppointments = [...filtered, ...(blocks ?? [])].filter(
+        (appt) => appt.start_time_utc && appt.end_time_utc
+      ) as Array<{
+        start_time_utc: string;
+        end_time_utc: string;
+        status?: string;
+        hold_expires_at_utc?: string | null;
+      }>;
 
       const slots = generateSlots({
         date: dateISO,
         timeZone: settings.time_zone,
         workingHours: settings.working_hours_json as any,
-        serviceDurationMinutes: service.data.duration_minutes,
+        serviceDurationMinutes: serviceData.duration_minutes,
         bufferMinutes: settings.buffer_minutes,
-        appointments: [...filtered, ...(blocks ?? [])],
+        appointments: busyAppointments,
       });
       return { slots };
     }
@@ -286,11 +310,12 @@ export const generateAssistantReply = async (messages: AssistantMessage[]) => {
     for (const call of toolCalls) {
       const args = safeParseArgs(call.function?.arguments);
       const toolResult = await handleTool(call.function.name, args);
-      if (call.function.name === "create_checkout" && toolResult.checkoutUrl) {
+      const checkoutUrl = (toolResult as { checkoutUrl?: string }).checkoutUrl;
+      if (call.function.name === "create_checkout" && checkoutUrl) {
         actions.push({
           type: "checkout",
           label: "Open Stripe Checkout",
-          url: toolResult.checkoutUrl,
+          url: checkoutUrl,
         });
       }
       conversation.push({

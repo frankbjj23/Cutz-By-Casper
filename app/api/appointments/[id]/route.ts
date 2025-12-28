@@ -11,7 +11,7 @@ export async function GET(
   const supabase = getSupabaseClient();
   const settings = await fetchSettings();
 
-  const { data: appointment, error } = await supabase
+  const { data: appointment, error } = await (supabase as any)
     .from("appointments")
     .select(
       "id, service_id, start_time_utc, reschedule_deadline_utc, services(name)"

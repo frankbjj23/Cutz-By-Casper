@@ -141,7 +141,10 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
       audioRef.current = null;
     }
     setSpeaking(false);
-    const nextMessages = [...messages, { role: "user", content: text.trim() }];
+    const nextMessages: Message[] = [
+      ...messages,
+      { role: "user", content: text.trim() },
+    ];
     setMessages(nextMessages);
     setInput("");
     setLoading(true);

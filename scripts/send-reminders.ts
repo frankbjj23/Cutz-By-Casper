@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { supabaseAdmin } from "../lib/supabase/admin";
+import { getSupabaseAdmin } from "../lib/supabase/admin";
 import { fetchSettings } from "../lib/server/appointments";
 import { formatLocal } from "../lib/time";
 import { sendSms } from "../lib/server/sms";
@@ -12,7 +12,7 @@ const getWindow = (hoursFromNow: number, minutesBuffer = 5) => {
 };
 
 const main = async () => {
-  const supabase = supabaseAdmin;
+  const supabase = getSupabaseAdmin() as any;
   const settings = await fetchSettings();
 
   if (DEMO_MODE || !HAS_TWILIO) {
@@ -38,7 +38,6 @@ const main = async () => {
       const localLabel = formatLocal(appt.start_time_utc, settings.time_zone);
       await sendSms({
         appointmentId: appt.id,
-        customerId: null,
         to: appt.customers.phone_e164,
         type: window.type,
         body: `Cutz By Casper: Reminder for your appointment on ${localLabel}. Reply STOP to opt out.`,
@@ -59,7 +58,6 @@ const main = async () => {
     if (!appt.customers?.sms_opt_in) continue;
     await sendSms({
       appointmentId: appt.id,
-      customerId: null,
       to: appt.customers.phone_e164,
       type: "late_warning",
       body: "Cutz By Casper: You are 10 minutes into your appointment window. Please arrive soon. Reply STOP to opt out.",

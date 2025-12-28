@@ -1,9 +1,9 @@
 import { DateTime } from "luxon";
-import { supabaseAdmin } from "../lib/supabase/admin";
+import { getSupabaseAdmin } from "../lib/supabase/admin";
 import { DEMO_MODE, HAS_STRIPE } from "../lib/env";
 
 const main = async () => {
-  const supabase = supabaseAdmin;
+  const supabase = getSupabaseAdmin() as any;
   const now = DateTime.utc().toISO();
 
   if (DEMO_MODE || !HAS_STRIPE) {

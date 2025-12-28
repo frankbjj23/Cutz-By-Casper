@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { DEMO_MODE, HAS_STRIPE } from "@/lib/env";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { fetchSettings } from "@/lib/server/appointments";
 import { formatLocal } from "@/lib/time";
 import { sendSms } from "@/lib/server/sms";
@@ -38,16 +38,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Missing appointment" }, { status: 400 });
   }
 
-  const supabase = supabaseAdmin;
+  const supabase = getSupabaseAdmin();
   const settings = await fetchSettings();
 
-  const existingPayment = await supabase
+  const existingPayment = await (supabase as any)
     .from("payments")
     .select("id")
     .eq("stripe_checkout_session_id", session.id)
     .maybeSingle();
 
-  const appointmentStatus = await supabase
+  const appointmentStatus = await (supabase as any)
     .from("appointments")
     .select("status")
     .eq("id", appointmentId)
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
   }
 
   if (!existingPayment.data) {
-    await supabase.from("payments").insert({
+    await (supabase as any).from("payments").insert({
       appointment_id: appointmentId,
       stripe_checkout_session_id: session.id,
       amount_cents: session.amount_total ?? 2000,
@@ -72,12 +72,12 @@ export async function POST(request: Request) {
     });
   }
 
-  await supabase
+  await (supabase as any)
     .from("appointments")
     .update({ status: "booked" })
     .eq("id", appointmentId);
 
-  const { data: appointment } = await supabase
+  const { data: appointment } = await (supabase as any)
     .from("appointments")
     .select("id, start_time_utc, customers(phone_e164, sms_opt_in)")
     .eq("id", appointmentId)
@@ -87,7 +87,6 @@ export async function POST(request: Request) {
     const localLabel = formatLocal(appointment.start_time_utc, settings.time_zone);
     await sendSms({
       appointmentId: appointment.id,
-      customerId: null,
       to: appointment.customers.phone_e164,
       type: "confirmation",
       body: `Cutz By Casper: Your booking is confirmed for ${localLabel}. Reply STOP to opt out.`,

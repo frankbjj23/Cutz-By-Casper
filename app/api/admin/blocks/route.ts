@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid block window" }, { status: 400 });
   }
 
-  const { error } = await auth.supabase.from("time_blocks").insert({
+  const { error } = await (auth.supabase as any).from("time_blocks").insert({
     start_time_utc: startLocal.toUTC().toISO(),
     end_time_utc: endLocal.toUTC().toISO(),
     note: note ?? null,

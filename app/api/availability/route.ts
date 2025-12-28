@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const supabase = getSupabaseClient();
   const settings = await fetchSettings();
 
-  const service = await supabase
+  const service = await (supabase as any)
     .from("services")
     .select("duration_minutes, price_from")
     .eq("id", serviceId)
@@ -51,7 +51,7 @@ export async function GET(request: Request) {
     .gt("end_time_utc", dayStartUtc);
 
   const nowUtc = DateTime.utc().toISO();
-  const filtered = (appointments ?? []).filter((appt) => {
+  const filtered = (appointments ?? []).filter((appt: any) => {
     if (appt.status !== "pending_payment") return true;
     return appt.hold_expires_at_utc && appt.hold_expires_at_utc > nowUtc;
   });

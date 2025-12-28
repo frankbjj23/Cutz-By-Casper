@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
@@ -10,7 +10,7 @@ type Appointment = {
   service_name: string;
 };
 
-export default function SuccessPage() {
+function SuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [appointment, setAppointment] = useState<Appointment | null>(null);
@@ -63,5 +63,22 @@ export default function SuccessPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-2xl px-6 pb-24 pt-16">
+          <div className="lux-card p-8">
+            <h1 className="section-title">Booking confirmed</h1>
+            <p className="mt-4 text-sm text-ink/70">Loading your appointment...</p>
+          </div>
+        </div>
+      }
+    >
+      <SuccessContent />
+    </Suspense>
   );
 }

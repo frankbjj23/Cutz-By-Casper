@@ -6,7 +6,7 @@ export async function GET() {
   const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
-  const { data, error } = await auth.supabase
+  const { data, error } = await (auth.supabase as any)
     .from("services")
     .select("*")
     .order("created_at", { ascending: true });
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid service" }, { status: 400 });
   }
 
-  const { error } = await auth.supabase.from("services").insert(parsed.data);
+  const { error } = await (auth.supabase as any).from("services").insert(parsed.data);
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

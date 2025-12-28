@@ -9,7 +9,7 @@ export async function PATCH(
   if (auth.error) return auth.error;
 
   const body = await request.json();
-  const { error } = await auth.supabase
+  const { error } = await (auth.supabase as any)
     .from("services")
     .update(body)
     .eq("id", params.id);
@@ -28,7 +28,7 @@ export async function DELETE(
   const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
-  const { error } = await auth.supabase
+  const { error } = await (auth.supabase as any)
     .from("services")
     .delete()
     .eq("id", params.id);

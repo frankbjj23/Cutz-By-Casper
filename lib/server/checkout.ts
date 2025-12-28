@@ -20,7 +20,7 @@ const createAppointmentHold = async (input: unknown) => {
     throw new CheckoutError("Invalid request", 400);
   }
 
-  const supabase = getSupabaseClient();
+  const supabase = getSupabaseClient() as any;
   const settings = await fetchSettings();
   const { serviceId, startTimeLocalISO, fullName, phoneE164, smsOptIn } = parsed.data;
 
@@ -33,7 +33,15 @@ const createAppointmentHold = async (input: unknown) => {
   if (serviceResponse.error) {
     throw new CheckoutError(serviceResponse.error.message, 500);
   }
-  if (serviceResponse.data.price_from) {
+  const serviceData = serviceResponse.data as {
+    duration_minutes: number;
+    deposit_amount: number;
+    price_from?: boolean;
+  } | null;
+  if (!serviceData) {
+    throw new CheckoutError("Service not found", 404);
+  }
+  if (serviceData.price_from) {
     throw new CheckoutError(
       "This service requires direct confirmation. Please text Casper.",
       400
@@ -48,7 +56,7 @@ const createAppointmentHold = async (input: unknown) => {
     throw new CheckoutError("Start time is in the past", 400);
   }
   const startUtc = startLocal.toUTC();
-  const endUtc = startUtc.plus({ minutes: serviceResponse.data.duration_minutes });
+  const endUtc = startUtc.plus({ minutes: serviceData.duration_minutes });
 
   const { data: existingCustomer } = await supabase
     .from("customers")
@@ -56,7 +64,8 @@ const createAppointmentHold = async (input: unknown) => {
     .eq("phone_e164", phoneE164)
     .maybeSingle();
 
-  let customerId = existingCustomer?.id;
+  const existingCustomerId = (existingCustomer as { id: string } | null)?.id;
+  let customerId = existingCustomerId;
   if (!customerId) {
     const created = await supabase
       .from("customers")
@@ -70,7 +79,11 @@ const createAppointmentHold = async (input: unknown) => {
     if (created.error) {
       throw new CheckoutError(created.error.message, 500);
     }
-    customerId = created.data.id;
+    const createdCustomer = (created.data as { id: string } | null) ?? null;
+    if (!createdCustomer) {
+      throw new CheckoutError("Customer creation failed", 500);
+    }
+    customerId = createdCustomer.id;
   } else {
     await supabase
       .from("customers")
@@ -102,7 +115,7 @@ const createAppointmentHold = async (input: unknown) => {
 
   return {
     appointmentId,
-    depositAmount: Number(serviceResponse.data.deposit_amount),
+    depositAmount: Number(serviceData.deposit_amount),
   };
 };
 

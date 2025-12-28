@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/server/auth";
 import { settingsSchema } from "@/lib/validators";
@@ -6,7 +8,7 @@ export async function GET() {
   const auth = await requireAdmin();
   if (auth.error) return auth.error;
 
-  const { data, error } = await auth.supabase
+  const { data, error } = await (auth.supabase as any)
     .from("business_settings")
     .select("*")
     .limit(1)
@@ -29,7 +31,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Invalid settings" }, { status: 400 });
   }
 
-  const { data: existing } = await auth.supabase
+  const { data: existing } = await (auth.supabase as any)
     .from("business_settings")
     .select("id")
     .limit(1)
@@ -41,7 +43,7 @@ export async function PATCH(request: Request) {
   }
 
   const { id: parsedId, ...updateData } = parsed.data;
-  const { error } = await auth.supabase
+  const { error } = await (auth.supabase as any)
     .from("business_settings")
     .update(updateData)
     .eq("id", targetId);

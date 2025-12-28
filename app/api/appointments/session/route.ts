@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   const supabase = getSupabaseClient();
   const settings = await fetchSettings();
 
-  const { data: payment } = await supabase
+  const { data: payment } = await (supabase as any)
     .from("payments")
     .select("appointment_id")
     .eq("stripe_checkout_session_id", sessionId)
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ appointment: null });
   }
 
-  const { data: appointment } = await supabase
+  const { data: appointment } = await (supabase as any)
     .from("appointments")
     .select("id, start_time_utc, services(name)")
     .eq("id", payment.appointment_id)

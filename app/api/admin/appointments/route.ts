@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { DateTime } from "luxon";
 import { requireAdmin } from "@/lib/server/auth";
@@ -21,7 +23,7 @@ export async function GET(request: Request) {
   const dayStartUtc = localStart.toUTC().toISO();
   const dayEndUtc = localEnd.toUTC().toISO();
 
-  const { data, error } = await auth.supabase
+  const { data, error } = await (auth.supabase as any)
     .from("appointments")
     .select(
       "id, start_time_utc, end_time_utc, status, late_eligible_at_utc, services(name), customers(full_name)"
@@ -35,7 +37,7 @@ export async function GET(request: Request) {
   }
 
   const nowUtc = DateTime.utc().toISO();
-  const appointments = (data ?? []).map((appt) => ({
+  const appointments = (data ?? []).map((appt: any) => ({
     id: appt.id,
     start_time_local: formatLocal(appt.start_time_utc, settings.time_zone),
     end_time_local: formatLocal(appt.end_time_utc, settings.time_zone),

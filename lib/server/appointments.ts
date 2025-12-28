@@ -3,7 +3,7 @@ import { DEFAULT_TIME_ZONE } from "../time";
 
 export const fetchSettings = async () => {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("business_settings")
     .select("*")
     .limit(1)
@@ -27,7 +27,7 @@ export const fetchSettings = async () => {
 
 export const fetchService = async (serviceId: string) => {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("services")
     .select("*")
     .eq("id", serviceId)
@@ -38,13 +38,13 @@ export const fetchService = async (serviceId: string) => {
 
 export const fetchAppointmentBySession = async (sessionId: string) => {
   const supabase = getSupabaseClient();
-  const payment = await supabase
+  const payment = await (supabase as any)
     .from("payments")
     .select("appointment_id")
     .eq("stripe_checkout_session_id", sessionId)
     .maybeSingle();
   if (!payment.data) return null;
-  const appointment = await supabase
+  const appointment = await (supabase as any)
     .from("appointments")
     .select("id, service_id, start_time_utc")
     .eq("id", payment.data.appointment_id)
