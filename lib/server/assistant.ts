@@ -3,6 +3,7 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { generateSlots } from "@/lib/availability";
 import { fetchSettings } from "@/lib/server/appointments";
 import { createCheckoutSession } from "@/lib/server/checkout";
+import { DEMO_MODE, HAS_STRIPE } from "@/lib/env";
 
 export type AssistantAction = {
   type: "checkout" | "call" | "text" | "open_booking";
@@ -86,6 +87,11 @@ const tools = [
   },
 ];
 
+const paymentNote =
+  DEMO_MODE || !HAS_STRIPE
+    ? "Demo mode: no payment is collected right now. Explain this if asked."
+    : "Payments are collected via Stripe deposit.";
+
 const systemPrompt = `
 You are the AI secretary for “Cutz By Casper.” You are warm, efficient, and professional.
 Use short sentences. Confirm details. Offer clear choices. Speak like a receptionist.
@@ -104,6 +110,7 @@ Hard rules:
 Collect: service, preferred day/time, full name, phone (E.164), SMS opt-in.
 Offer up to 3 available slots.
 Always restate appointment details and policies right before checkout.
+${paymentNote}
 `.trim();
 
 const safeParseArgs = (raw: string | undefined) => {

@@ -3,6 +3,7 @@ import { supabaseAdmin } from "../lib/supabase/admin";
 import { fetchSettings } from "../lib/server/appointments";
 import { formatLocal } from "../lib/time";
 import { sendSms } from "../lib/server/sms";
+import { DEMO_MODE, HAS_TWILIO } from "../lib/env";
 
 const getWindow = (hoursFromNow: number, minutesBuffer = 5) => {
   const start = DateTime.utc().plus({ hours: hoursFromNow, minutes: -minutesBuffer });
@@ -13,6 +14,11 @@ const getWindow = (hoursFromNow: number, minutesBuffer = 5) => {
 const main = async () => {
   const supabase = supabaseAdmin;
   const settings = await fetchSettings();
+
+  if (DEMO_MODE || !HAS_TWILIO) {
+    console.log("Demo mode or missing Twilio env vars. Skipping reminders.");
+    return;
+  }
 
   const windows = [
     { type: "reminder_24h" as const, ...getWindow(24) },

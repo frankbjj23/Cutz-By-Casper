@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
+import { DEMO_MODE, HAS_STRIPE } from "@/lib/env";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { fetchSettings } from "@/lib/server/appointments";
 import { formatLocal } from "@/lib/time";
@@ -10,6 +11,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  if (DEMO_MODE || !HAS_STRIPE) {
+    return NextResponse.json({ received: true, demo: true });
+  }
   const signature = request.headers.get("stripe-signature") ?? "";
   const payload = await request.text();
 

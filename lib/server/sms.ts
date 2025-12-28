@@ -1,5 +1,6 @@
 import { getTwilioClient } from "../twilio";
 import { supabaseAdmin } from "../supabase/admin";
+import { DEMO_MODE, HAS_TWILIO } from "../env";
 
 export const sendSms = async ({
   appointmentId,
@@ -39,7 +40,9 @@ export const sendSms = async ({
   let twilioSid: string | null = null;
   let status = "queued";
 
-  if (client) {
+  if (DEMO_MODE || !HAS_TWILIO) {
+    status = "skipped_demo";
+  } else if (client) {
     const message = await client.messages.create({
       body,
       to,
@@ -60,5 +63,5 @@ export const sendSms = async ({
     status,
   });
 
-  return { skipped: false };
+  return { skipped: status === "skipped_demo" };
 };

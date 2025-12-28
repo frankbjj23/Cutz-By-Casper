@@ -3,6 +3,7 @@ import { checkoutSchema } from "@/lib/validators";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { fetchSettings } from "@/lib/server/appointments";
 import { stripe } from "@/lib/stripe";
+import { DEMO_MODE, HAS_STRIPE } from "@/lib/env";
 
 export class CheckoutError extends Error {
   status: number;
@@ -13,7 +14,7 @@ export class CheckoutError extends Error {
   }
 }
 
-export const createCheckoutSession = async (input: unknown) => {
+const createAppointmentHold = async (input: unknown) => {
   const parsed = checkoutSchema.safeParse(input);
   if (!parsed.success) {
     throw new CheckoutError("Invalid request", 400);
@@ -99,7 +100,20 @@ export const createCheckoutSession = async (input: unknown) => {
     throw new CheckoutError(appointmentError.message, 409);
   }
 
-  const amountCents = Math.round(Number(serviceResponse.data.deposit_amount) * 100);
+  return {
+    appointmentId,
+    depositAmount: Number(serviceResponse.data.deposit_amount),
+  };
+};
+
+export const createCheckoutSession = async (input: unknown) => {
+  const { appointmentId, depositAmount } = await createAppointmentHold(input);
+
+  if (DEMO_MODE || !HAS_STRIPE) {
+    return { demo: true, appointmentId };
+  }
+
+  const amountCents = Math.round(depositAmount * 100);
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],

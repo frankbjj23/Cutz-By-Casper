@@ -33,6 +33,8 @@ export default function BookPage() {
   const [policyAck, setPolicyAck] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [demoBanner, setDemoBanner] = useState(false);
+  const [demoMessage, setDemoMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/services")
@@ -44,6 +46,13 @@ export default function BookPage() {
         }
       })
       .catch(() => setError("Unable to load services."));
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/demo")
+      .then((res) => res.json())
+      .then((data) => setDemoBanner(Boolean(data.demo)))
+      .catch(() => setDemoBanner(false));
   }, []);
 
   const selectedService = useMemo(
@@ -95,6 +104,10 @@ export default function BookPage() {
       if (!res.ok) {
         throw new Error(data.error ?? "Unable to start checkout.");
       }
+      if (data.demo) {
+        setDemoMessage(data.replyText ?? "Demo mode: request recorded.");
+        return;
+      }
       window.location.href = data.checkoutUrl;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Checkout failed.");
@@ -120,6 +133,11 @@ export default function BookPage() {
           <p className="mt-3 text-sm text-ink/70">
             Select a service and a preferred time. Deposit secures the booking.
           </p>
+          {demoBanner && (
+            <p className="mt-4 rounded-2xl border border-fog bg-white px-4 py-3 text-xs uppercase tracking-[0.2em] text-ink/60">
+              Demo mode: payments & SMS reminders are disabled.
+            </p>
+          )}
         </div>
 
         <div className="lux-card p-6">
@@ -271,6 +289,7 @@ export default function BookPage() {
           </label>
         </div>
 
+        {demoMessage && <p className="text-sm text-ink/70">{demoMessage}</p>}
         {error && <p className="text-sm text-red-600">{error}</p>}
 
         <button
@@ -280,7 +299,9 @@ export default function BookPage() {
         >
           {loading
             ? "Starting checkout..."
-            : `Pay $${selectedService?.deposit_amount ?? 20} deposit`}
+            : demoBanner
+              ? "Request Appointment (Demo - no payment)"
+              : `Pay $${selectedService?.deposit_amount ?? 20} deposit`}
         </button>
       </div>
     </div>
