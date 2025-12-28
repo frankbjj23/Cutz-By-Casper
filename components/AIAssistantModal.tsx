@@ -43,6 +43,7 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [lastCheckoutUrl, setLastCheckoutUrl] = useState<string | null>(null);
   const [handsFree, setHandsFree] = useState(false);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
   const transcriptRef = useRef<HTMLDivElement | null>(null);
   const speechRef = useRef<ReturnType<typeof createSpeechRecognizer> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -98,6 +99,10 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
     if (storedHandsFree) {
       setHandsFree(storedHandsFree === "true");
     }
+    const storedAudioUnlocked = window.localStorage.getItem("ai-secretary-audio");
+    if (storedAudioUnlocked) {
+      setAudioUnlocked(storedAudioUnlocked === "true");
+    }
   }, [isOpen, voiceReady]);
 
   useEffect(() => {
@@ -147,6 +152,27 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
       osc.start();
       osc.stop(audio.currentTime + 0.08);
       osc.onended = () => audio.close();
+    } catch {
+      // ignore
+    }
+  };
+
+  const unlockAudio = () => {
+    if (typeof window === "undefined") return;
+    try {
+      const audio = new window.AudioContext();
+      const osc = audio.createOscillator();
+      const gain = audio.createGain();
+      osc.type = "sine";
+      osc.frequency.value = 1;
+      gain.gain.value = 0.0001;
+      osc.connect(gain);
+      gain.connect(audio.destination);
+      osc.start();
+      osc.stop(audio.currentTime + 0.03);
+      osc.onended = () => audio.close();
+      setAudioUnlocked(true);
+      window.localStorage.setItem("ai-secretary-audio", "true");
     } catch {
       // ignore
     }
@@ -523,6 +549,18 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
                 />
                 Hands-free
               </label>
+            )}
+            {!audioUnlocked && (
+              <button
+                type="button"
+                onClick={() => {
+                  markInteraction();
+                  unlockAudio();
+                }}
+                className="rounded-full border border-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:bg-ink hover:text-pearl"
+              >
+                Enable audio
+              </button>
             )}
             <button
               type="button"
