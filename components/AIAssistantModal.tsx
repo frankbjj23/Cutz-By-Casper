@@ -42,11 +42,13 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
   const [selectedVoiceName, setSelectedVoiceName] = useState<string>("");
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [lastCheckoutUrl, setLastCheckoutUrl] = useState<string | null>(null);
+  const [handsFree, setHandsFree] = useState(false);
   const transcriptRef = useRef<HTMLDivElement | null>(null);
   const speechRef = useRef<ReturnType<typeof createSpeechRecognizer> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hasInteractedRef = useRef(false);
   const autoStartRef = useRef(false);
+  const autoListenRef = useRef<number | null>(null);
 
   const speechSupported = useMemo(() => isSpeechRecognitionSupported(), []);
 
@@ -67,6 +69,10 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
       setLiveTranscript("");
       speechRef.current?.stop();
       autoStartRef.current = false;
+      if (autoListenRef.current) {
+        window.clearTimeout(autoListenRef.current);
+        autoListenRef.current = null;
+      }
     }
   }, [isOpen]);
 
@@ -87,6 +93,10 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
     const storedEnabled = window.localStorage.getItem("ai-secretary-voice-enabled");
     if (storedEnabled) {
       setVoiceEnabled(storedEnabled === "true");
+    }
+    const storedHandsFree = window.localStorage.getItem("ai-secretary-hands-free");
+    if (storedHandsFree) {
+      setHandsFree(storedHandsFree === "true");
     }
   }, [isOpen, voiceReady]);
 
@@ -144,6 +154,19 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
 
   const getSelectedVoice = () =>
     voiceOptions.find((voice) => voice.name === selectedVoiceName) ?? null;
+
+  const scheduleAutoListen = () => {
+    if (!handsFree || !speechSupported || !isOpen || listening || loading) return;
+    if (autoListenRef.current) {
+      window.clearTimeout(autoListenRef.current);
+    }
+    autoListenRef.current = window.setTimeout(() => {
+      autoListenRef.current = null;
+      if (!listening) {
+        startListening();
+      }
+    }, 400);
+  };
 
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
@@ -241,26 +264,36 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
             audio.onended = () => {
               setSpeaking(false);
               URL.revokeObjectURL(url);
+              scheduleAutoListen();
             };
             audio.onerror = () => {
               setSpeaking(false);
               URL.revokeObjectURL(url);
+              scheduleAutoListen();
             };
             await audio.play();
           } catch {
             setSpeaking(false);
             speak(data.replyText ?? "", {
               voice: getSelectedVoice(),
-              onEnd: () => setSpeaking(false),
+              onEnd: () => {
+                setSpeaking(false);
+                scheduleAutoListen();
+              },
             });
           }
         } else {
           setSpeaking(true);
           speak(data.replyText ?? "", {
             voice: getSelectedVoice(),
-            onEnd: () => setSpeaking(false),
+            onEnd: () => {
+              setSpeaking(false);
+              scheduleAutoListen();
+            },
           });
         }
+      } else {
+        scheduleAutoListen();
       }
     } catch (error) {
       setMessages((prev) => [
@@ -310,10 +343,10 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
         setListening(false);
         setLiveTranscript("");
         playEarcon(440);
-        if (transcript) {
-          sendMessage(transcript);
-        }
-      },
+      if (transcript) {
+        sendMessage(transcript);
+      }
+    },
       onError: () => setListening(false),
     });
     speechRef.current = recognizer;
@@ -470,6 +503,27 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
               />
               Voice replies
             </label>
+            {speechSupported && (
+              <label className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-ink/60">
+                <input
+                  type="checkbox"
+                  checked={handsFree}
+                  onChange={(event) => {
+                    markInteraction();
+                    const enabled = event.target.checked;
+                    setHandsFree(enabled);
+                    window.localStorage.setItem(
+                      "ai-secretary-hands-free",
+                      enabled ? "true" : "false"
+                    );
+                    if (enabled) {
+                      scheduleAutoListen();
+                    }
+                  }}
+                />
+                Hands-free
+              </label>
+            )}
             <button
               type="button"
               className="text-xs uppercase tracking-[0.2em] text-ink/60 hover:text-ink"
