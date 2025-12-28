@@ -1,0 +1,41 @@
+{
+  "name": "cutz-by-casper",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "expire-holds": "node --loader ts-node/esm scripts/expire-holds.ts",
+    "send-reminders": "node --loader ts-node/esm scripts/send-reminders.ts",
+    "scan-encoding": "node tools/scan-encoding.mjs",
+    "fix-encoding": "node tools/fix-encoding.mjs",
+    "check-env": "node tools/check-env.mjs"
+  },
+  "dependencies": {
+    "@supabase/auth-helpers-nextjs": "^0.8.7",
+    "@supabase/supabase-js": "^2.45.4",
+    "luxon": "^3.4.4",
+    "next": "14.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "stripe": "^14.25.0",
+    "twilio": "^4.23.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "vitest": "^1.6.0"
+  }
+}

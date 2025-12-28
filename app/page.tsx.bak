@@ -1,0 +1,112 @@
+import Link from "next/link";
+
+const servicesPreview = [
+  { name: "Signature Cut", duration: "45 min", price: "$60" },
+  { name: "Executive Beard Sculpt", duration: "30 min", price: "$45" },
+  { name: "The Casper Experience", duration: "75 min", price: "$95" },
+];
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-20 border-b border-fog bg-pearl/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <div className="text-lg font-semibold tracking-[0.35em] uppercase text-ink">
+            Cutz By Casper
+          </div>
+          <Link
+            href="/book"
+            className="rounded-full border border-ink px-5 py-2 text-sm font-semibold uppercase tracking-[0.2em] transition hover:bg-ink hover:text-pearl"
+          >
+            Book Now
+          </Link>
+        </div>
+      </header>
+
+      <main className="mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-24 pt-16">
+        <section className="grid gap-10 md:grid-cols-[1.1fr_0.9fr]">
+          <div className="space-y-6">
+            <p className="text-xs uppercase tracking-[0.4em] text-ink/70">New York City</p>
+            <h1 className="font-display text-4xl leading-tight md:text-5xl">
+              Precision cuts. Calm atmosphere. A ritual designed for you.
+            </h1>
+            <p className="max-w-xl text-base text-ink/70">
+              Casper offers a single-chair experience with curated timing, deliberate detail,
+              and discreet service. Each appointment is focused, unhurried, and tailored.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Link
+                href="/book"
+                className="rounded-full bg-ink px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-pearl transition hover:bg-ink/90"
+              >
+                Reserve Your Slot
+              </Link>
+              <a
+                href="#policies"
+                className="rounded-full border border-ink px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] transition hover:bg-ink hover:text-pearl"
+              >
+                View Policies
+              </a>
+            </div>
+          </div>
+          <div className="lux-card flex flex-col justify-between gap-6 p-8">
+            <div>
+              <p className="text-xs uppercase tracking-[0.4em] text-ink/60">Availability</p>
+              <h2 className="section-title mt-3">Book in under 60 seconds.</h2>
+            </div>
+            <div className="space-y-4 text-sm text-ink/70">
+              <p>Deposit-secured appointments.</p>
+              <p>Clean, quiet studio environment.</p>
+              <p>One client at a time. No overlaps.</p>
+            </div>
+            <Link
+              href="/book"
+              className="rounded-full bg-gold px-6 py-3 text-center text-sm font-semibold uppercase tracking-[0.2em] text-ink transition hover:bg-[#d9b173]"
+            >
+              Book Now
+            </Link>
+          </div>
+        </section>
+
+        <section className="grid gap-6 md:grid-cols-3">
+          {servicesPreview.map((service) => (
+            <div key={service.name} className="lux-card p-6">
+              <h3 className="text-lg font-semibold text-ink">{service.name}</h3>
+              <div className="mt-2 text-sm text-ink/70">
+                <p>{service.duration}</p>
+                <p>{service.price}</p>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <section className="grid gap-8 md:grid-cols-[1fr_1fr]">
+          <div className="lux-card p-8">
+            <h2 className="section-title">Private studio.</h2>
+            <p className="mt-4 text-sm text-ink/70">
+              Casper focuses on tailored cuts and beard work, with an emphasis on consistency.
+              Every appointment is a reset and a refinement.
+            </p>
+          </div>
+          <div className="lux-card p-8">
+            <h2 className="section-title">Client feedback.</h2>
+            <p className="mt-4 text-sm text-ink/70">
+              “Immaculate attention to detail. The quiet, focused experience is unmatched.”
+            </p>
+            <p className="mt-3 text-xs uppercase tracking-[0.3em] text-ink/60">— Marcus L.</p>
+          </div>
+        </section>
+
+        <section id="policies" className="lux-card p-8">
+          <h2 className="section-title">Policies</h2>
+          <ul className="mt-6 space-y-3 text-sm text-ink/70">
+            <li>$20 deposit secures every booking.</li>
+            <li>Reschedule 72+ hours before your appointment.</li>
+            <li>15+ minutes late is a no-show and deposit is forfeited.</li>
+            <li>Deposit is non-refundable.</li>
+          </ul>
+        </section>
+      </main>
+    </div>
+  );
+}

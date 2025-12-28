@@ -1,0 +1,115 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+type Service = {
+  id: string;
+  name: string;
+  duration_minutes: number;
+  price_display: string;
+  deposit_amount: number;
+  active: boolean;
+};
+
+export default function AdminServicesPage() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [name, setName] = useState("");
+  const [duration, setDuration] = useState(45);
+  const [price, setPrice] = useState("$60");
+  const [message, setMessage] = useState<string | null>(null);
+
+  const loadServices = () => {
+    fetch("/api/admin/services")
+      .then((res) => res.json())
+      .then((data) => setServices(data.services ?? []))
+      .catch(() => setMessage("Unable to load services."));
+  };
+
+  useEffect(() => {
+    loadServices();
+  }, []);
+
+  const createService = async () => {
+    const res = await fetch("/api/admin/services", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        duration_minutes: duration,
+        price_display: price,
+        deposit_amount: 20,
+        active: true,
+      }),
+    });
+    if (!res.ok) {
+      const data = await res.json();
+      setMessage(data.error ?? "Unable to create service.");
+      return;
+    }
+    setName("");
+    loadServices();
+  };
+
+  const toggleActive = async (service: Service) => {
+    await fetch(`/api/admin/services/${service.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: !service.active }),
+    });
+    loadServices();
+  };
+
+  return (
+    <div className="mx-auto max-w-3xl px-6 pb-24 pt-16">
+      <h1 className="section-title">Services</h1>
+      <div className="mt-6 lux-card space-y-4 p-6">
+        <input
+          type="text"
+          placeholder="Service name"
+          className="w-full rounded-full border border-fog bg-white px-4 py-3 text-sm"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+        />
+        <input
+          type="number"
+          className="w-full rounded-full border border-fog bg-white px-4 py-3 text-sm"
+          value={duration}
+          onChange={(event) => setDuration(Number(event.target.value))}
+        />
+        <input
+          type="text"
+          className="w-full rounded-full border border-fog bg-white px-4 py-3 text-sm"
+          value={price}
+          onChange={(event) => setPrice(event.target.value)}
+        />
+        <button
+          onClick={createService}
+          className="rounded-full bg-ink px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-pearl"
+        >
+          Add service
+        </button>
+      </div>
+
+      <div className="mt-8 space-y-3">
+        {services.map((service) => (
+          <div key={service.id} className="lux-card flex items-center justify-between p-4">
+            <div>
+              <p className="text-sm font-semibold">{service.name}</p>
+              <p className="text-xs text-ink/60">
+                {service.duration_minutes} min · {service.price_display}
+              </p>
+            </div>
+            <button
+              className="rounded-full border border-ink px-4 py-2 text-xs uppercase tracking-[0.2em]"
+              onClick={() => toggleActive(service)}
+            >
+              {service.active ? "Deactivate" : "Activate"}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {message && <p className="mt-4 text-sm text-ink/70">{message}</p>}
+    </div>
+  );
+}
