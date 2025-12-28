@@ -46,6 +46,7 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
   const speechRef = useRef<ReturnType<typeof createSpeechRecognizer> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const hasInteractedRef = useRef(false);
+  const autoStartRef = useRef(false);
 
   const speechSupported = useMemo(() => isSpeechRecognitionSupported(), []);
 
@@ -64,6 +65,8 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
       setInput("");
       setListening(false);
       setLiveTranscript("");
+      speechRef.current?.stop();
+      autoStartRef.current = false;
     }
   }, [isOpen]);
 
@@ -97,6 +100,16 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!isOpen || !speechSupported) return;
+    if (autoStartRef.current) return;
+    autoStartRef.current = true;
+    const timer = window.setTimeout(() => {
+      startListening();
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [isOpen, speechSupported]);
 
   const markInteraction = () => {
     if (!hasInteractedRef.current) {
@@ -309,6 +322,8 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
 
   const stopListening = () => {
     speechRef.current?.stop();
+    setListening(false);
+    setLiveTranscript("");
   };
 
   if (!isOpen) return null;
@@ -405,19 +420,15 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
             {speechSupported ? (
               <button
                 type="button"
-                onPointerDown={startListening}
-                onPointerUp={stopListening}
-                onPointerCancel={stopListening}
+                onClick={() => (listening ? stopListening() : startListening())}
                 onKeyDown={(event) => {
                   if (event.key === " " || event.key === "Enter") {
                     event.preventDefault();
-                    startListening();
-                  }
-                }}
-                onKeyUp={(event) => {
-                  if (event.key === " " || event.key === "Enter") {
-                    event.preventDefault();
-                    stopListening();
+                    if (listening) {
+                      stopListening();
+                    } else {
+                      startListening();
+                    }
                   }
                 }}
                 className={`rounded-full border px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] transition ${
@@ -426,7 +437,7 @@ export default function AIAssistantModal({ isOpen, onClose }: AssistantModalProp
                     : "border-fog text-ink hover:border-ink"
                 }`}
               >
-                {listening ? "Listening" : "Hold to talk"}
+                {listening ? "Listening" : "Tap to talk"}
               </button>
             ) : (
               <span className="text-xs text-ink/50">
