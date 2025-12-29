@@ -7,8 +7,8 @@ export type GalleryItem = {
 };
 
 export const casperProfile = {
-  src: "/images/casper/casper-profile.jpg",
-  alt: "Casper, barber and owner of Cutz By Casper.",
+  src: "/images/casper/casper-clippers.jpg",
+  alt: "Casper with clippers, barber and owner of Cutz By Casper.",
 };
 
 export const haircutStyles: GalleryItem[] = [

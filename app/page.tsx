@@ -15,14 +15,15 @@ const businessDetails = {
   phoneDisplay: "(201) 889-6440",
   phoneE164: "+12018896440",
   rating: "5.0 (57 reviews)",
+  mapsQuery: "EL Elyon Barbershop, 442 Ridge Rd, Lyndhurst, NJ 07071",
   hours: [
-    { day: "Sunday", hours: "09:00–13:00" },
+    { day: "Sunday", hours: "9:00 AM - 1:00 PM" },
     { day: "Monday", hours: "Closed" },
     { day: "Tuesday", hours: "Closed" },
-    { day: "Wednesday", hours: "11:00–18:00" },
-    { day: "Thursday", hours: "10:00–19:00" },
-    { day: "Friday", hours: "12:00–19:00" },
-    { day: "Saturday", hours: "10:00–17:00" },
+    { day: "Wednesday", hours: "11:00 AM - 6:00 PM" },
+    { day: "Thursday", hours: "10:00 AM - 7:00 PM" },
+    { day: "Friday", hours: "12:00 PM - 7:00 PM" },
+    { day: "Saturday", hours: "10:00 AM - 5:00 PM" },
   ],
 };
 
@@ -46,7 +47,7 @@ export default function HomePage() {
       <main className="mx-auto flex max-w-6xl flex-col gap-16 px-6 pb-24 pt-16">
         <section className="grid gap-10 md:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">
-            <p className="text-xs uppercase tracking-[0.4em] text-ink/70">New York City</p>
+            <p className="text-xs uppercase tracking-[0.4em] text-ink/70">New Jersey</p>
             <h1 className="font-display text-4xl leading-tight md:text-5xl">
               Precision cuts. Calm atmosphere. A ritual designed for you.
             </h1>
@@ -180,17 +181,27 @@ export default function HomePage() {
           <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
             <div className="space-y-4">
               <p className="text-xs uppercase tracking-[0.4em] text-ink/70">Visit</p>
-              <h2 className="section-title">Lyndhurst studio.</h2>
+              <h2 className="section-title">EL Elyon Barbershop.</h2>
               <div className="space-y-2 text-sm text-ink/70">
                 <a
                   className="block underline-offset-4 hover:underline"
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    businessDetails.address
+                    businessDetails.mapsQuery
                   )}`}
                   target="_blank"
                   rel="noreferrer"
                 >
                   {businessDetails.address}
+                </a>
+                <a
+                  className="block text-xs uppercase tracking-[0.2em] text-ink/60 underline-offset-4 hover:underline"
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                    businessDetails.mapsQuery
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open in Google Maps
                 </a>
                 <a
                   className="block underline-offset-4 hover:underline"
