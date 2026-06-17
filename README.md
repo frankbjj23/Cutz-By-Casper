@@ -2,6 +2,12 @@
 
 Premium, mobile-first booking app for a single-barber studio.
 
+## Project Links
+
+- Official portfolio: https://franksmithlll.com/projects#cutz-by-casper
+- Project article: https://medium.com/@franksmithiii23/how-frank-smith-iii-built-cutz-by-casper-a-new-jersey-full-stack-developer-project-b33d04bdd6af
+- Frank Smith III official website: https://franksmithlll.com/
+
 ## Stack
 - Next.js (App Router) + TypeScript
 - TailwindCSS
