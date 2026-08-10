@@ -41,11 +41,11 @@ function requestFingerprint(request: Request) {
 
 export function consumeStylePreviewRateLimit(
   request: Request,
-  kind: "access" | "generation",
+  kind: "access" | "processing" | "generation",
 ) {
   const now = Date.now();
   const windowMs = kind === "access" ? 15 * 60 * 1000 : 60 * 60 * 1000;
-  const maximum = kind === "access" ? 20 : 3;
+  const maximum = kind === "access" ? 20 : kind === "processing" ? 10 : 3;
   const key = `${kind}:${requestFingerprint(request)}`;
   const existing = rateLimits.get(key);
 

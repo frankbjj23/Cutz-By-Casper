@@ -58,7 +58,7 @@ export default function PrivacyPage() {
         <section id="style-preview" className="scroll-mt-28 space-y-5">
           <div>
             <p className="eyebrow">Invitation-only beta</p>
-            <h2 className="mt-4 font-display text-3xl text-pearl">Private style preview</h2>
+            <h2 className="mt-4 font-display text-3xl text-pearl">Private hair &amp; beard preview</h2>
           </div>
           <p className="text-sm leading-7 text-pearl/60">
             Adults who have an invitation may submit one photo of themselves and select a
@@ -108,8 +108,8 @@ export default function PrivacyPage() {
             To slow repeated access attempts and generations, the server temporarily keeps a
             one-way hash of the requesting network address in process memory. The raw address
             is not added to a Redeemed Precision Grooming database. Access-attempt counters expire after 15
-            minutes, and generation counters expire after one hour; hosting security logs may
-            follow Vercel&apos;s separate retention practices.
+            minutes; request-processing and generation counters expire after one hour. Hosting
+            security logs may follow Vercel&apos;s separate retention practices.
           </p>
         </section>
 

@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  addressDisplay,
   BOOKSY_URL,
   BRAND_MARK_PATH,
   business,
-  mapsUrl,
+  locationDisplay,
 } from "@/lib/site";
 
 export default function SiteFooter() {
@@ -27,18 +26,11 @@ export default function SiteFooter() {
                 {business.name}
               </p>
               <p className="mt-1 text-[0.65rem] uppercase tracking-[0.22em] text-gold">
-                {business.descriptor} · Lyndhurst, New Jersey
+                {business.descriptor} · Ridgefield Park, New Jersey
               </p>
             </div>
           </div>
-          <a
-            href={mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block underline-offset-4 hover:text-pearl hover:underline"
-          >
-            {addressDisplay}
-          </a>
+          <p>{locationDisplay} · Exact address being updated on Booksy</p>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs uppercase tracking-[0.16em] sm:justify-end">
           <Link href="/styles" className="hover:text-gold">

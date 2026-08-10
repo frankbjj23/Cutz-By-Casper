@@ -4,10 +4,10 @@ import StylePreviewStudio from "@/components/StylePreviewStudio";
 import { BRAND_OG_PATH, business, SITE_URL } from "@/lib/site";
 
 const description =
-  `Invitation-only virtual hair, beard, and color consultation for ${business.name}.`;
+  `Invitation-only virtual haircut, beard, and color consultation for ${business.name}.`;
 
 export const metadata: Metadata = {
-  title: "Private Style Preview",
+  title: "Private Hair & Beard Preview",
   description,
   alternates: {
     canonical: "/preview",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: `Private Style Preview | ${business.name}`,
+    title: `Private Hair & Beard Preview | ${business.name}`,
     description,
     url: SITE_URL + "/preview",
     siteName: business.name,
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `Private Style Preview | ${business.name}`,
+    title: `Private Hair & Beard Preview | ${business.name}`,
     description,
     images: [BRAND_OG_PATH],
   },

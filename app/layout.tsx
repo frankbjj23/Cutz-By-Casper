@@ -14,7 +14,7 @@ import {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Redeemed Precision Grooming | Premium Barbering in Lyndhurst, NJ",
+    default: "Redeemed Precision Grooming | Premium Barbering in Ridgefield Park, NJ",
     template: "%s | Redeemed Precision Grooming",
   },
   description: business.description,
@@ -25,20 +25,20 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: business.name,
-    title: "Redeemed Precision Grooming | Premium Barbering in Lyndhurst, NJ",
+    title: "Redeemed Precision Grooming | Premium Barbering in Ridgefield Park, NJ",
     description: business.description,
     images: [
       {
         url: BRAND_OG_PATH,
         width: 1200,
         height: 630,
-        alt: "Redeemed Precision Grooming — premium barbering in Lyndhurst, New Jersey",
+        alt: "Redeemed Precision Grooming — premium barbering in Ridgefield Park, New Jersey",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Redeemed Precision Grooming | Premium Barbering in Lyndhurst, NJ",
+    title: "Redeemed Precision Grooming | Premium Barbering in Ridgefield Park, NJ",
     description: business.description,
     images: [BRAND_OG_PATH],
   },
@@ -59,10 +59,8 @@ const structuredData = {
   logo: SITE_URL + BRAND_LOGO_PATH,
   address: {
     "@type": "PostalAddress",
-    streetAddress: business.address.street,
     addressLocality: business.address.city,
     addressRegion: business.address.region,
-    postalCode: business.address.postalCode,
     addressCountry: business.address.country,
   },
   sameAs: [BOOKSY_URL],

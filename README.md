@@ -1,21 +1,24 @@
 # Redeemed Precision Grooming
 
 Redeemed Precision Grooming is Casper's mobile-first premium barbering portfolio
-and booking handoff in Lyndhurst, New Jersey. The brand story is grounded in 30 years
+and booking handoff in Ridgefield Park, New Jersey. The brand story is grounded in 30 years
 in the industry, faith, professionalism, relationships, and client-first service.
 
 Customers can browse Casper's work on the site, then use his existing Booksy profile
 for the current service menu, prices, policies, and live appointment availability.
 Booksy is the sole booking calendar.
 
-An unlisted, invitation-only `/preview` beta lets an adult submit one self-photo and
+An invitation-only, noindex `/preview` beta lets an adult submit one self-photo and
 create one temporary AI hair, beard, or color concept. The site does not persist the
 input or result, and no photo is transferred to Booksy.
+
+Casper's exact Ridgefield Park street address is not hard-coded while Booksy still
+shows the former Lyndhurst location. Confirm the new appointment details before travel.
 
 ## Live links
 
 - Website: https://cutz-by-casper-umri.vercel.app
-- Booking: https://booksy.com/en-us/697614_casper_barber-shop_28371_lyndhurst
+- Booking: https://booksy.com/en-us/dl/show-business/697614
 
 ## Stack
 
@@ -26,6 +29,7 @@ input or result, and no photo is transferred to Booksy.
 - Vercel
 - Booksy for third-party booking
 - OpenAI Image API for the private style-preview beta
+- Sharp for full server-side image decoding, metadata removal, and normalization
 
 The website does not maintain a custom booking database, payment checkout, SMS
 service, admin calendar, or automated chat service.
@@ -68,13 +72,14 @@ canonical Booksy links, retired API routes, SEO discovery files, and mobile over
 - /styles — filterable haircut portfolio
 - /book — branded handoff to Casper's canonical Booksy profile
 - /privacy — site and third-party booking privacy boundary
-- /preview — unlisted, noindex, invitation-only style-preview beta
+- /preview — linked from the homepage, noindex, invitation-only style-preview beta
 - /api/style-preview — same-origin, invite-protected image-edit route
 - /robots.txt and /sitemap.xml — search discovery files
 
-`/preview` is intentionally absent from public navigation and the sitemap. Do not make
-it public until durable rate limiting, a reviewed provider agreement, production cost
-controls, and a larger authorized-photo quality evaluation are complete.
+`/preview` remains absent from the global navigation and sitemap. Do not remove the
+invitation gate, enable indexing, or promote open access until durable rate limiting,
+a reviewed provider agreement, production cost controls, and a larger authorized-photo
+quality evaluation are complete.
 
 ## Booking source of truth
 

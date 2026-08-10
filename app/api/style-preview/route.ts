@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import sharp from "sharp";
 import {
   ACCEPTED_IMAGE_TYPES,
   hasRequestedChange,
@@ -32,12 +33,6 @@ const RESPONSE_HEADERS = {
   "X-Robots-Tag": "noindex, nofollow, noarchive",
 };
 
-type ImageMetadata = {
-  mimeType: (typeof ACCEPTED_IMAGE_TYPES)[number];
-  width: number;
-  height: number;
-};
-
 function jsonError(status: number, code: string, message: string, retryAfter?: number) {
   const headers: Record<string, string> = { ...RESPONSE_HEADERS };
   if (retryAfter) {
@@ -46,112 +41,69 @@ function jsonError(status: number, code: string, message: string, retryAfter?: n
   return NextResponse.json({ error: { code, message } }, { status, headers });
 }
 
-function readJpegDimensions(bytes: Uint8Array) {
-  let offset = 2;
-  while (offset + 9 < bytes.length) {
-    if (bytes[offset] !== 0xff) {
-      offset += 1;
-      continue;
-    }
+const SHARP_FORMAT_BY_MIME = {
+  "image/jpeg": "jpeg",
+  "image/png": "png",
+  "image/webp": "webp",
+} as const;
 
-    const marker = bytes[offset + 1];
-    offset += 2;
-    if (marker === 0xd8 || marker === 0xd9) {
-      continue;
-    }
-    if (offset + 2 > bytes.length) {
-      break;
-    }
-
-    const length = (bytes[offset] << 8) | bytes[offset + 1];
-    const isStartOfFrame =
-      marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker);
-    if (isStartOfFrame && offset + 7 < bytes.length) {
-      return {
-        height: (bytes[offset + 3] << 8) | bytes[offset + 4],
-        width: (bytes[offset + 5] << 8) | bytes[offset + 6],
-      };
-    }
-    if (length < 2) {
-      break;
-    }
-    offset += length;
-  }
-  return null;
-}
-
-function readImageMetadata(bytes: Uint8Array, declaredType: string): ImageMetadata | null {
-  const isJpeg =
-    bytes.length > 10 &&
-    bytes[0] === 0xff &&
-    bytes[1] === 0xd8 &&
-    bytes[2] === 0xff &&
-    bytes[bytes.length - 2] === 0xff &&
-    bytes[bytes.length - 1] === 0xd9;
-  if (isJpeg && declaredType === "image/jpeg") {
-    const dimensions = readJpegDimensions(bytes);
-    return dimensions ? { mimeType: "image/jpeg", ...dimensions } : null;
-  }
-
-  const isPng =
-    bytes.length > 24 &&
-    bytes[0] === 0x89 &&
-    bytes[1] === 0x50 &&
-    bytes[2] === 0x4e &&
-    bytes[3] === 0x47 &&
-    bytes[4] === 0x0d &&
-    bytes[5] === 0x0a &&
-    bytes[6] === 0x1a &&
-    bytes[7] === 0x0a;
-  if (isPng && declaredType === "image/png") {
-    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-    const hasIhdr =
-      view.getUint32(8, false) === 13 &&
-      String.fromCharCode(...bytes.slice(12, 16)) === "IHDR";
-    const hasIend =
-      bytes.length >= 12 &&
-      String.fromCharCode(...bytes.slice(bytes.length - 8, bytes.length - 4)) === "IEND";
-    if (!hasIhdr || !hasIend) return null;
-    return {
-      mimeType: "image/png",
-      width: view.getUint32(16, false),
-      height: view.getUint32(20, false),
-    };
-  }
-
-  const isWebp =
-    bytes.length > 30 &&
-    String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" &&
-    String.fromCharCode(...bytes.slice(8, 12)) === "WEBP";
-  if (isWebp && declaredType === "image/webp") {
-    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-    if (view.getUint32(4, true) + 8 !== bytes.length) return null;
-    const chunk = String.fromCharCode(...bytes.slice(12, 16));
-    const chunkLength = view.getUint32(16, true);
-    if (chunk === "VP8X" && chunkLength === 10) {
-      const width = 1 + bytes[24] + (bytes[25] << 8) + (bytes[26] << 16);
-      const height = 1 + bytes[27] + (bytes[28] << 8) + (bytes[29] << 16);
-      return { mimeType: "image/webp", width, height };
-    }
+async function sanitizeSourceImage(bytes: Uint8Array, declaredType: string) {
+  try {
+    const image = sharp(Buffer.from(bytes), {
+      failOn: "error",
+      limitInputPixels: MAX_IMAGE_DIMENSION * MAX_IMAGE_DIMENSION,
+    });
+    const metadata = await image.metadata();
+    const expectedFormat =
+      SHARP_FORMAT_BY_MIME[declaredType as keyof typeof SHARP_FORMAT_BY_MIME];
     if (
-      chunk === "VP8 " &&
-      bytes[23] === 0x9d &&
-      bytes[24] === 0x01 &&
-      bytes[25] === 0x2a
+      !expectedFormat ||
+      metadata.format !== expectedFormat ||
+      !metadata.width ||
+      !metadata.height ||
+      (metadata.pages && metadata.pages !== 1)
     ) {
-      const width = ((bytes[27] << 8) | bytes[26]) & 0x3fff;
-      const height = ((bytes[29] << 8) | bytes[28]) & 0x3fff;
-      return { mimeType: "image/webp", width, height };
+      return null;
     }
-    if (chunk === "VP8L" && chunkLength >= 5 && bytes[20] === 0x2f) {
-      const bits = bytes[21] | (bytes[22] << 8) | (bytes[23] << 16) | (bytes[24] << 24);
-      const width = (bits & 0x3fff) + 1;
-      const height = ((bits >>> 14) & 0x3fff) + 1;
-      return { mimeType: "image/webp", width, height };
-    }
-  }
 
-  return null;
+    if (
+      metadata.width < MIN_IMAGE_DIMENSION ||
+      metadata.height < MIN_IMAGE_DIMENSION ||
+      metadata.width > MAX_IMAGE_DIMENSION ||
+      metadata.height > MAX_IMAGE_DIMENSION
+    ) {
+      return { dimensionsInvalid: true } as const;
+    }
+
+    const { data, info } = await image
+      .rotate()
+      .flatten({ background: "#ffffff" })
+      .resize({
+        width: 1600,
+        height: 1600,
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .jpeg({ quality: 88, mozjpeg: true })
+      .toBuffer({ resolveWithObject: true });
+
+    if (
+      info.width < MIN_IMAGE_DIMENSION ||
+      info.height < MIN_IMAGE_DIMENSION ||
+      data.length < 10 * 1024 ||
+      data.length > MAX_NORMALIZED_UPLOAD_BYTES
+    ) {
+      return null;
+    }
+
+    return {
+      dimensionsInvalid: false,
+      imageBytes: new Uint8Array(data),
+      mimeType: "image/jpeg" as const,
+    };
+  } catch {
+    return null;
+  }
 }
 
 function retryAfterSeconds(resetAt: number) {
@@ -227,6 +179,16 @@ export async function POST(request: Request) {
     );
   }
 
+  const processingLimit = consumeStylePreviewRateLimit(request, "processing");
+  if (!processingLimit.allowed) {
+    return jsonError(
+      429,
+      "PROCESSING_LIMIT",
+      "This network has sent too many preview requests. Please try again later.",
+      retryAfterSeconds(processingLimit.resetAt),
+    );
+  }
+
   let form: FormData;
   try {
     form = await request.formData();
@@ -283,16 +245,11 @@ export async function POST(request: Request) {
   }
 
   const imageBytes = new Uint8Array(await photo.arrayBuffer());
-  const metadata = readImageMetadata(imageBytes, photo.type);
-  if (!metadata) {
+  const sanitizedImage = await sanitizeSourceImage(imageBytes, photo.type);
+  if (!sanitizedImage) {
     return jsonError(415, "PHOTO_INVALID", "The photo format could not be verified.");
   }
-  if (
-    metadata.width < MIN_IMAGE_DIMENSION ||
-    metadata.height < MIN_IMAGE_DIMENSION ||
-    metadata.width > MAX_IMAGE_DIMENSION ||
-    metadata.height > MAX_IMAGE_DIMENSION
-  ) {
+  if (sanitizedImage.dimensionsInvalid) {
     return jsonError(
       400,
       "PHOTO_DIMENSIONS",
@@ -320,8 +277,8 @@ export async function POST(request: Request) {
   const timeout = setTimeout(() => controller.abort(), 270_000);
   try {
     const result = await createStylePreview({
-      imageBytes,
-      mimeType: metadata.mimeType,
+      imageBytes: sanitizedImage.imageBytes,
+      mimeType: sanitizedImage.mimeType,
       selection,
       signal: controller.signal,
     });
