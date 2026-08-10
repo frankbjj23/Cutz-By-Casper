@@ -7,8 +7,8 @@ export type GalleryItem = {
 };
 
 export const casperProfile = {
-  src: "/images/casper/casper-clippers.jpg",
-  alt: "Casper holding barber clippers.",
+  src: "/images/casper/casper-signature-portrait.png",
+  alt: "Editorial portrait of Casper in a tailored dark suit holding barber clippers.",
 };
 
 export const haircutStyles: GalleryItem[] = [

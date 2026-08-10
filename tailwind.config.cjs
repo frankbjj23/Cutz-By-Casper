@@ -8,10 +8,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        pearl: "#FAF7F2",
-        ink: "#111111",
-        fog: "#E7E3DC",
-        gold: "#C9A464",
+        pearl: "#F4EFE6",
+        ink: "#0A0A0B",
+        fog: "#D9D1C4",
+        gold: "#B99A5A",
+        graphite: "#151516",
+        smoke: "#A9A39A",
+        espresso: "#1B1512",
       },
       fontFamily: {
         display: [

@@ -8,7 +8,7 @@ import { BOOKSY_URL, business, SITE_URL } from "@/lib/site";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Cutz By Casper | Barber in Lyndhurst, NJ",
+    default: "Cutz By Casper | Refined Barbering in Lyndhurst, NJ",
     template: "%s | Cutz By Casper",
   },
   description: business.description,
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: business.name,
-    title: "Cutz By Casper | Barber in Lyndhurst, NJ",
+    title: "Cutz By Casper | Refined Barbering in Lyndhurst, NJ",
     description: business.description,
     images: [
       {
@@ -32,15 +32,15 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cutz By Casper | Barber in Lyndhurst, NJ",
+    title: "Cutz By Casper | Refined Barbering in Lyndhurst, NJ",
     description: business.description,
     images: ["/og.png"],
   },
 };
 
 export const viewport: Viewport = {
-  colorScheme: "light",
-  themeColor: "#faf7f2",
+  colorScheme: "dark",
+  themeColor: "#0a0a0b",
 };
 
 const structuredData = {
@@ -64,10 +64,10 @@ const structuredData = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
-      <body className="gradient-bg min-h-screen pb-20 sm:pb-0">
+      <body className="gradient-bg min-h-screen pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-0">
         <a
           href="#main-content"
-          className="sr-only z-50 rounded-full bg-ink px-4 py-2 text-pearl focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+          className="sr-only z-50 border border-gold bg-ink px-4 py-2 text-pearl focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
         >
           Skip to content
         </a>

@@ -7,7 +7,7 @@ export const business = {
   name: "Cutz By Casper",
   barberName: "Casper",
   description:
-    "Explore Casper's barbering work and book live appointments through Booksy in Lyndhurst, New Jersey.",
+    "Refined barbering by Casper in Lyndhurst, New Jersey. Explore the work and reserve a live appointment through Booksy.",
   address: {
     street: "442 Ridge Rd",
     city: "Lyndhurst",
@@ -32,15 +32,15 @@ export const mapsUrl =
 
 export const serviceCategories = [
   {
-    name: "Precision haircuts",
-    description: "Fades, tapers, textured styles, and clean line-ups.",
+    name: "Precision Haircuts",
+    description: "Fades, tapers, texture, and line work shaped into one considered finish.",
   },
   {
-    name: "Haircut and beard",
-    description: "A coordinated cut, beard blend, and detailed finish.",
+    name: "Haircut & Beard",
+    description: "A coordinated haircut, beard blend, and detailed finish with balanced proportions.",
   },
   {
-    name: "Beard work and shape-ups",
-    description: "Focused grooming and edge work between full cuts.",
+    name: "Beard Work & Shape-Ups",
+    description: "Focused beard grooming, shape-ups, and edge work between full appointments.",
   },
 ] as const;

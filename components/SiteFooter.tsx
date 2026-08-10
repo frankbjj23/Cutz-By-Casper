@@ -3,37 +3,40 @@ import { addressDisplay, BOOKSY_URL, mapsUrl } from "@/lib/site";
 
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-fog bg-white/55">
-      <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 text-sm text-ink/65 sm:grid-cols-2 sm:items-end">
-        <div className="space-y-2">
-          <p className="font-semibold uppercase tracking-[0.25em] text-ink">
+    <footer className="border-t border-white/10 bg-black/25">
+      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 text-sm text-pearl/60 sm:grid-cols-2 sm:items-end sm:px-8">
+        <div className="space-y-3">
+          <p className="font-display text-xl uppercase tracking-[0.2em] text-pearl">
             Cutz By Casper
+          </p>
+          <p className="max-w-sm text-xs uppercase tracking-[0.2em] text-gold">
+            Refined barbering in Lyndhurst
           </p>
           <a
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="block underline-offset-4 hover:text-ink hover:underline"
+            className="block underline-offset-4 hover:text-pearl hover:underline"
           >
             {addressDisplay}
           </a>
         </div>
-        <div className="flex flex-wrap gap-x-5 gap-y-2 sm:justify-end">
-          <Link href="/styles" className="hover:text-ink">
-            Styles
+        <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs uppercase tracking-[0.16em] sm:justify-end">
+          <Link href="/styles" className="hover:text-gold">
+            Portfolio
           </Link>
-          <Link href="/book" className="hover:text-ink">
+          <Link href="/book" className="hover:text-gold">
             Booking details
           </Link>
           <a
             href={BOOKSY_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-ink"
+            className="hover:text-gold"
           >
             Booksy
           </a>
-          <Link href="/privacy" className="hover:text-ink">
+          <Link href="/privacy" className="hover:text-gold">
             Privacy
           </Link>
         </div>

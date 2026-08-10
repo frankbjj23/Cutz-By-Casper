@@ -91,7 +91,7 @@ export default function Lightbox({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/80 px-4 py-4 sm:py-10"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/90 px-4 py-4 backdrop-blur-sm sm:py-10"
       role="dialog"
       aria-modal="true"
       aria-label={`${item.name} expanded`}
@@ -112,7 +112,7 @@ export default function Lightbox({
       }}
     >
       <div
-        className="relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-4xl overflow-x-hidden overflow-y-auto overscroll-contain rounded-3xl bg-pearl shadow-soft sm:max-h-[calc(100dvh-5rem)]"
+        className="relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-4xl overflow-x-hidden overflow-y-auto overscroll-contain border border-white/10 bg-graphite shadow-soft sm:max-h-[calc(100dvh-5rem)]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="relative aspect-[4/5] w-full sm:aspect-[16/10]">
@@ -124,16 +124,16 @@ export default function Lightbox({
             className="object-cover"
           />
         </div>
-        <div className="flex flex-col gap-2 border-t border-fog px-6 py-5">
+        <div className="flex flex-col gap-3 border-t border-white/10 px-6 py-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <p className="text-lg font-semibold text-ink">{item.name}</p>
-              <p className="text-sm text-ink/70">{item.alt}</p>
+              <p className="font-display text-xl text-pearl">{item.name}</p>
+              <p className="text-sm text-pearl/60">{item.alt}</p>
             </div>
             <button
               ref={closeRef}
               type="button"
-              className="rounded-full border border-ink px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:bg-ink hover:text-pearl"
+              className="border border-gold/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-pearl transition hover:bg-gold hover:text-ink"
               onClick={onClose}
             >
               Close
@@ -144,7 +144,7 @@ export default function Lightbox({
               ref={prevRef}
               type="button"
               onClick={onPrev}
-              className="text-sm font-semibold uppercase tracking-[0.2em] text-ink/70 transition hover:text-ink"
+              className="inline-flex min-h-11 items-center text-sm font-semibold uppercase tracking-[0.2em] text-pearl/60 transition hover:text-gold"
             >
               Prev
             </button>
@@ -152,7 +152,7 @@ export default function Lightbox({
               ref={nextRef}
               type="button"
               onClick={onNext}
-              className="text-sm font-semibold uppercase tracking-[0.2em] text-ink/70 transition hover:text-ink"
+              className="inline-flex min-h-11 items-center text-sm font-semibold uppercase tracking-[0.2em] text-pearl/60 transition hover:text-gold"
             >
               Next
             </button>
