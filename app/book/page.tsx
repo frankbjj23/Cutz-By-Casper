@@ -46,6 +46,11 @@ export default function BookPage() {
           existing Booksy profile, where the live calendar, current menu, pricing,
           and booking terms stay together.
         </p>
+        <p className="mx-auto max-w-2xl border border-gold/30 bg-gold/5 px-5 py-4 text-sm leading-7 text-pearl/70">
+          New location: Ridgefield Park, New Jersey. Booksy may temporarily show
+          Casper&apos;s former Lyndhurst location while the profile is updated. Confirm the
+          Ridgefield Park appointment details before traveling.
+        </p>
         <a
           href={BOOKSY_URL}
           target="_blank"

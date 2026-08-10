@@ -1,18 +1,25 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   ACCEPTED_IMAGE_TYPES,
+  beardStyleReferenceImages,
   beardStyles,
   defaultStylePreviewSelection,
   getStylePreviewOptionLabels,
+  hairColorSwatches,
   hairColors,
+  hairStyleReferenceImages,
   hairStyles,
   MAX_NORMALIZED_UPLOAD_BYTES,
   MAX_SOURCE_UPLOAD_BYTES,
   MIN_IMAGE_DIMENSION,
   STYLE_PREVIEW_CONSENT_VERSION,
   STYLE_PREVIEW_SESSION_KEY,
+  type BeardStyleId,
+  type HairColorId,
+  type HairStyleId,
   type StylePreviewSelection,
 } from "@/lib/style-preview";
 import { BOOKSY_URL } from "@/lib/site";
@@ -165,10 +172,15 @@ function RadioCard(props: {
   description: string;
   disabled?: boolean;
   groupName: string;
+  imageSrc?: string;
   label: string;
   onChange: () => void;
+  swatch?: string;
   value: string;
+  visualLabel?: string;
 }) {
+  const hasVisual = Boolean(props.imageSrc || props.swatch);
+
   return (
     <label
       className={`block cursor-pointer border p-4 transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-gold ${
@@ -186,7 +198,36 @@ function RadioCard(props: {
         disabled={props.disabled}
         className="sr-only"
       />
-      <span className="flex items-start gap-3">
+      {props.imageSrc ? (
+        <span className="relative block aspect-[4/3] overflow-hidden border border-white/10 bg-black/30">
+          <Image
+            src={props.imageSrc}
+            alt=""
+            fill
+            sizes="(max-width: 639px) calc(100vw - 5.5rem), 260px"
+            className="object-cover"
+          />
+          {props.visualLabel ? (
+            <span className="absolute bottom-0 left-0 bg-ink/90 px-3 py-2 text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-pearl/75">
+              {props.visualLabel}
+            </span>
+          ) : null}
+        </span>
+      ) : props.swatch ? (
+        <span className="block border border-white/10 bg-black/30 p-2">
+          <span
+            aria-hidden="true"
+            className="block h-16 w-full border border-white/10"
+            style={{ background: props.swatch }}
+          />
+          {props.visualLabel ? (
+            <span className="mt-2 block text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-pearl/60">
+              {props.visualLabel}
+            </span>
+          ) : null}
+        </span>
+      ) : null}
+      <span className={`flex items-start gap-3 ${hasVisual ? "mt-4" : ""}`}>
         <span
           aria-hidden="true"
           className={`mt-1 size-3 shrink-0 rounded-full border ${
@@ -200,6 +241,16 @@ function RadioCard(props: {
       </span>
     </label>
   );
+}
+
+function getDirectionVisual(category: PreviewCategory, id: string) {
+  if (category === "hair") {
+    return { imageSrc: hairStyleReferenceImages[id as HairStyleId] };
+  }
+  if (category === "beard") {
+    return { imageSrc: beardStyleReferenceImages[id as BeardStyleId] };
+  }
+  return { swatch: hairColorSwatches[id as HairColorId] };
 }
 
 export default function StylePreviewStudio() {
@@ -644,7 +695,7 @@ export default function StylePreviewStudio() {
     return (
       <section className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
         <div className="space-y-6 pt-4">
-          <p className="eyebrow">Private style preview</p>
+          <p className="eyebrow">Private haircut &amp; beard preview</p>
           <h1 className="font-display text-5xl leading-[0.94] tracking-tight text-pearl sm:text-7xl">
             See the direction.
             <span className="block italic text-gold">Keep the decision yours.</span>
@@ -723,7 +774,7 @@ export default function StylePreviewStudio() {
   return (
     <section aria-labelledby="preview-studio-heading">
       <header className="max-w-3xl space-y-5">
-        <p className="eyebrow">Private style preview</p>
+        <p className="eyebrow">Private haircut &amp; beard preview</p>
         <h1
           id="preview-studio-heading"
           ref={studioHeadingRef}
@@ -806,7 +857,11 @@ export default function StylePreviewStudio() {
             </p>
 
             <label className="secondary-button mt-6 cursor-pointer focus-within:outline focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-gold">
-              {photo ? "Replace photo" : "Choose a photo"}
+              {phase === "preparing"
+                ? "Preparing photo…"
+                : photo
+                  ? "Replace photo"
+                  : "Choose a photo"}
               <input
                 ref={fileInputRef}
                 id="style-preview-photo"
@@ -815,10 +870,11 @@ export default function StylePreviewStudio() {
                 accept="image/jpeg,image/png,image/webp"
                 onChange={selectPhoto}
                 disabled={phase === "generating" || phase === "preparing"}
+                aria-describedby="style-preview-photo-requirements"
                 className="sr-only"
               />
             </label>
-            <p className="mt-3 text-xs leading-5 text-pearl/55">
+            <p id="style-preview-photo-requirements" className="mt-3 text-xs leading-5 text-pearl/55">
               JPEG, PNG, or WebP · 10 MB source maximum · Selecting stays on your device
               until you consent and create
             </p>
@@ -877,18 +933,28 @@ export default function StylePreviewStudio() {
                 Select one {category === "color" ? "color" : "style"}
               </legend>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {directionOptions.map((option) => (
-                  <RadioCard
-                    key={option.id}
-                    groupName="preview-direction"
-                    value={option.id}
-                    checked={selectedDirection === option.id}
-                    onChange={() => selectDirection(option.id)}
-                    disabled={phase === "generating" || phase === "preparing"}
-                    label={option.name}
-                    description={option.note}
-                  />
-                ))}
+                {directionOptions.map((option) => {
+                  const visual = getDirectionVisual(category, option.id);
+                  return (
+                    <RadioCard
+                      key={option.id}
+                      groupName="preview-direction"
+                      value={option.id}
+                      checked={selectedDirection === option.id}
+                      onChange={() => selectDirection(option.id)}
+                      disabled={phase === "generating" || phase === "preparing"}
+                      label={option.name}
+                      description={option.note}
+                      imageSrc={visual.imageSrc}
+                      swatch={visual.swatch}
+                      visualLabel={
+                        category === "color"
+                          ? "Color direction"
+                          : "Reference from Casper's portfolio"
+                      }
+                    />
+                  );
+                })}
               </div>
             </fieldset>
 

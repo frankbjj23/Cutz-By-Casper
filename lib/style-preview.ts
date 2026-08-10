@@ -57,6 +57,16 @@ export const hairStyles = [
   },
 ] as const satisfies readonly PreviewOption[];
 
+export const hairStyleReferenceImages: Partial<Record<HairStyleId, string>> = {
+  "low-taper-curls": "/images/styles/02-taper-beard.jpg",
+  "low-fade-crop": "/images/styles/01-low-fade.jpg",
+  "classic-side-part": "/images/styles/12-natural-curl.jpg",
+  "buzz-lineup": "/images/styles/19-precision-lineup.jpg",
+  "mid-fade-texture": "/images/styles/06-clean-taper.jpg",
+  "high-fade-crop": "/images/styles/09-tight-fade.jpg",
+  "curly-burst-fade": "/images/styles/17-side-part.jpg",
+};
+
 export const hairColors = [
   {
     id: "keep-current",
@@ -100,6 +110,16 @@ export const hairColors = [
   },
 ] as const satisfies readonly PreviewOption[];
 
+export const hairColorSwatches: Partial<Record<HairColorId, string>> = {
+  "natural-black": "linear-gradient(135deg, #090909, #26231f)",
+  "espresso-brown": "linear-gradient(135deg, #1b100d, #4b2d24)",
+  "warm-brown": "linear-gradient(135deg, #4a2b20, #916142)",
+  silver: "linear-gradient(135deg, #3f4144, #d4d2cb)",
+  platinum: "linear-gradient(135deg, #d8d3c4, #fffaf0)",
+  copper: "linear-gradient(135deg, #6e2f1c, #c47848)",
+  burgundy: "linear-gradient(135deg, #311018, #7e293d)",
+};
+
 export const beardStyles = [
   {
     id: "keep-current",
@@ -126,17 +146,14 @@ export const beardStyles = [
     name: "Sculpted full beard",
     note: "Fuller length shaped to complement the face.",
   },
-  {
-    id: "goatee",
-    name: "Goatee",
-    note: "Focused shape around the mouth and chin.",
-  },
-  {
-    id: "mustache",
-    name: "Statement mustache",
-    note: "A neatly groomed mustache with clean-shaven cheeks and chin.",
-  },
 ] as const satisfies readonly PreviewOption[];
+
+export const beardStyleReferenceImages: Partial<Record<BeardStyleId, string>> = {
+  "clean-shaven": "/images/styles/10-silver-beard.jpg",
+  "designer-stubble": "/images/styles/11-curly-mullet.jpg",
+  "short-boxed": "/images/styles/04-skin-fade.jpg",
+  "sculpted-full": "/images/styles/15-textured-quiff.jpg",
+};
 
 export type HairStyleId = (typeof hairStyles)[number]["id"];
 export type HairColorId = (typeof hairColors)[number]["id"];

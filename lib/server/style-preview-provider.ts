@@ -1,5 +1,6 @@
 import type { StylePreviewSelection } from "@/lib/style-preview";
 import { getStylePreviewPromptParts } from "@/lib/server/style-preview-prompts";
+import sharp from "sharp";
 
 const OPENAI_API_URL = "https://api.openai.com/v1";
 const DEFAULT_IMAGE_MODEL = "gpt-image-2-2026-04-21";
@@ -238,13 +239,28 @@ export async function createStylePreview(input: {
     );
   }
 
-  const resultBytes = new Uint8Array(Buffer.from(resultBase64, "base64"));
-  const isJpeg =
-    resultBytes.length >= 10 &&
-    resultBytes[0] === 0xff &&
-    resultBytes[1] === 0xd8 &&
-    resultBytes[2] === 0xff;
-  if (!isJpeg || resultBytes.length > 4 * 1024 * 1024) {
+  let resultBytes: Uint8Array;
+  try {
+    const decoded = await sharp(Buffer.from(resultBase64, "base64"), {
+      failOn: "error",
+      limitInputPixels: 20_000_000,
+    })
+      .rotate()
+      .flatten({ background: "#ffffff" })
+      .resize({
+        width: 1024,
+        height: 1536,
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .jpeg({ quality: 78, mozjpeg: true })
+      .toBuffer();
+    resultBytes = new Uint8Array(decoded);
+  } catch {
+    resultBytes = new Uint8Array();
+  }
+
+  if (resultBytes.length < 10 * 1024 || resultBytes.length > 4 * 1024 * 1024) {
     console.warn("style_preview.output_invalid", {
       requestId,
       durationMs: Date.now() - startedAt,

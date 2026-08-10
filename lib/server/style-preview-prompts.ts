@@ -46,10 +46,6 @@ const beardStylePrompts: Record<StylePreviewSelection["beardStyle"], string> = {
     "Create a short boxed beard with realistic density, a tailored cheek line, connected mustache, and a clean natural neckline.",
   "sculpted-full":
     "Create a groomed full beard with realistic strand density, balanced length, a sculpted cheek line, and a precise natural neckline.",
-  goatee:
-    "Create a refined connected goatee around the mouth and chin, with clean-shaven cheeks and realistic hair texture.",
-  mustache:
-    "Create a neatly groomed medium mustache with clean-shaven cheeks and chin, preserving natural skin texture.",
 };
 
 export function getStylePreviewPromptParts(selection: StylePreviewSelection) {

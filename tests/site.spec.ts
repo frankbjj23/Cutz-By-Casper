@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
-const BOOKSY_URL =
-  "https://booksy.com/en-us/697614_casper_barber-shop_28371_lyndhurst";
+const BOOKSY_URL = "https://booksy.com/en-us/dl/show-business/697614";
 const BRAND_NAME = "Redeemed Precision Grooming";
 
 test("customer routes render without custom booking forms", async ({ page }) => {
@@ -20,6 +20,10 @@ test("new brand identity and Booksy transition are clear", async ({ page }) => {
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: /precision with purpose/i })).toBeVisible();
   await expect(page.getByText(/with 30 years in the industry/i)).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Ridgefield Park, New Jersey/i }),
+  ).toBeVisible();
+  await expect(page.locator("body")).not.toContainText("442 Ridge Rd");
   await expect(page.locator("body")).not.toContainText("Cutz By Casper");
 
   const skipLink = page.getByRole("link", { name: "Skip to content" });
@@ -36,7 +40,7 @@ test("new brand identity and Booksy transition are clear", async ({ page }) => {
 test("all Booksy booking links use Casper's canonical profile", async ({ page }) => {
   for (const path of ["/", "/styles", "/book"]) {
     await page.goto(path);
-    const bookingLinks = page.locator('a[href*="booksy.com/en-us/697614"]');
+    const bookingLinks = page.locator('a[href*="booksy.com/"][href*="697614"]');
     expect(await bookingLinks.count()).toBeGreaterThan(0);
 
     for (const link of await bookingLinks.all()) {
@@ -62,7 +66,7 @@ test("retired API routes return not found", async ({ request }) => {
   }
 });
 
-test("private style preview stays unlisted and unlocks with a valid invitation", async ({
+test("private style preview stays gated and unlocks with a valid invitation", async ({
   page,
   request,
 }) => {
@@ -112,7 +116,74 @@ test("private style preview stays unlisted and unlocks with a valid invitation",
   expect(await sitemap.text()).not.toContain("/preview");
 
   await page.goto("/");
-  await expect(page.locator('a[href="/preview"]')).toHaveCount(0);
+  await expect(
+    page.getByRole("link", { name: "Enter the Private Preview" }),
+  ).toHaveAttribute("href", "/preview");
+});
+
+test("private preview renders visual directions and a complete mocked result flow", async ({
+  page,
+}) => {
+  const previewJpeg = await readFile("public/images/styles/15-textured-quiff.jpg");
+  await page.route("**/api/style-preview", async (route) => {
+    if (route.request().headers()["x-preview-intent"] === "verify") {
+      await route.fulfill({
+        status: 204,
+        headers: { "X-Preview-Provider": "configured" },
+      });
+      return;
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: "image/jpeg",
+      body: previewJpeg,
+      headers: { "Cache-Control": "private, no-store" },
+    });
+  });
+
+  await page.goto("/preview");
+  await page.getByLabel("Invitation code").fill("test-preview-code");
+  await page.getByRole("button", { name: "Enter private preview" }).click();
+
+  const haircutReferences = page.locator('label img[alt=""]');
+  await expect.poll(async () => haircutReferences.count()).toBeGreaterThan(0);
+  expect(
+    await haircutReferences.evaluateAll((images) =>
+      images.every((image) => (image as HTMLImageElement).naturalWidth > 0),
+    ),
+  ).toBeTruthy();
+
+  await page
+    .getByRole("radio", { name: /Beard Length, outline, and balance/i })
+    .check({ force: true });
+  await page.getByRole("radio", { name: /Short boxed beard/i }).check({ force: true });
+  await expect(
+    page.getByRole("button", { name: "Preview Short boxed beard" }),
+  ).toBeVisible();
+
+  await page
+    .getByLabel("Choose a photo")
+    .setInputFiles("public/images/casper/casper-signature-portrait.png");
+  await page.getByLabel(/i am 18 or older/i).check();
+  await page.getByRole("button", { name: "Preview Short boxed beard" }).click();
+
+  await expect(page.getByRole("heading", { name: "Your selected direction" })).toBeFocused();
+  await expect(page.getByAltText("AI preview showing Short boxed beard")).toBeVisible();
+  await page.getByRole("button", { name: "Yes — keep it" }).click();
+  await expect(
+    page.getByRole("complementary").getByRole("link", { name: "Reserve on Booksy" }),
+  ).toHaveAttribute("href", BOOKSY_URL);
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download look card" }).click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(
+    /redeemed-precision-(look-card|style-preview)\.jpg/,
+  );
+
+  await page.getByRole("button", { name: "Delete photo and preview" }).click();
+  await expect(page.getByAltText("AI preview showing Short boxed beard")).toHaveCount(0);
 });
 
 test("style preview API rejects unauthorized and malformed requests without generation", async ({
@@ -290,6 +361,12 @@ test("SEO discovery files and page-specific social metadata are present", async 
     name: "Casper",
   });
   expect(structuredData.employee.sameAs).toBeUndefined();
+  expect(structuredData.address).toMatchObject({
+    addressLocality: "Ridgefield Park",
+    addressRegion: "NJ",
+  });
+  expect(structuredData.address.streetAddress).toBeUndefined();
+  expect(structuredData.address.postalCode).toBeUndefined();
 
   const brandAssets = await page.evaluate(async () => {
     const load = (src: string) =>
@@ -327,6 +404,9 @@ test("private preview fits mobile and suppresses the competing booking bar", asy
   await page.getByRole("button", { name: "Enter private preview" }).click();
   await expect(page.getByRole("heading", { name: /choose one considered direction/i })).toBeVisible();
   await expect(page.getByRole("link", { name: /view live availability/i })).toHaveCount(0);
+  await expect(page.getByRole("radio", { name: /Haircut Shape, blend, and finish/i })).toBeVisible();
+  await expect(page.getByRole("radio", { name: /Beard Length, outline, and balance/i })).toBeVisible();
+  await expect(page.getByRole("radio", { name: /Hair color Concept color only/i })).toBeVisible();
 
   const hasOverflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,

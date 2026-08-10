@@ -3,12 +3,11 @@ import Link from "next/link";
 import Gallery from "@/components/Gallery";
 import { casperProfile, haircutStyles } from "@/lib/gallery";
 import {
-  addressDisplay,
   BOOKSY_URL,
   BRAND_LOGO_PATH,
   BRAND_MARK_PATH,
   business,
-  mapsUrl,
+  locationDisplay,
   serviceCategories,
 } from "@/lib/site";
 
@@ -47,7 +46,7 @@ export default function HomePage() {
               />
               <div className="flex items-center gap-4">
                 <span className="editorial-rule" aria-hidden="true" />
-                <p className="eyebrow">Redeemed Precision Grooming · Lyndhurst</p>
+                <p className="eyebrow">Redeemed Precision Grooming · Ridgefield Park</p>
               </div>
               <h1 className="font-display text-5xl leading-[0.92] tracking-[-0.025em] text-pearl sm:text-7xl lg:text-[6.5rem]">
                 Precision
@@ -96,7 +95,7 @@ export default function HomePage() {
                 Casper
               </p>
               <p className="mt-1 text-[0.65rem] font-semibold uppercase tracking-[0.26em] text-gold">
-                Barber · Lyndhurst, NJ
+                Barber · Ridgefield Park, NJ
               </p>
             </div>
           </div>
@@ -125,6 +124,66 @@ export default function HomePage() {
               <p className="mt-4 text-sm leading-7 text-pearl/55">{service.description}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="border-y border-gold/20 bg-black/25">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:py-24">
+          <div className="max-w-2xl space-y-6">
+            <p className="eyebrow">Private consultation preview</p>
+            <h2 className="section-title">
+              See a haircut or beard direction before the appointment.
+            </h2>
+            <p className="max-w-xl text-sm leading-7 text-pearl/60">
+              Invitation-only AI preview for adults using their own photo. Explore one
+              haircut, beard, or color direction at a time, then bring the concept to
+              Casper for an in-person consultation.
+            </p>
+            <p className="border-l border-gold pl-4 text-xs leading-6 text-pearl/55">
+              A visual concept is not a guaranteed cut, color result, or available service.
+              Current services and appointments remain on Booksy.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/preview" className="primary-button">
+                Enter the Private Preview
+              </Link>
+              <a
+                href={BOOKSY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="secondary-button"
+              >
+                Reserve on Booksy
+              </a>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3" aria-label="Haircut and beard reference directions">
+            <figure className="relative aspect-[4/5] overflow-hidden border border-gold/25 bg-black">
+              <Image
+                src="/images/styles/02-taper-beard.jpg"
+                alt="Low taper with natural curls from Casper's portfolio"
+                fill
+                sizes="(max-width: 1023px) 46vw, 21vw"
+                className="object-cover"
+              />
+              <figcaption className="absolute inset-x-0 bottom-0 bg-ink/90 px-4 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-pearl">
+                Haircut direction
+              </figcaption>
+            </figure>
+            <figure className="relative aspect-[4/5] translate-y-6 overflow-hidden border border-gold/25 bg-black">
+              <Image
+                src="/images/styles/15-textured-quiff.jpg"
+                alt="Sculpted full beard from Casper's portfolio"
+                fill
+                sizes="(max-width: 1023px) 46vw, 21vw"
+                className="object-cover"
+              />
+              <figcaption className="absolute inset-x-0 bottom-0 bg-ink/90 px-4 py-3 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-pearl">
+                Beard direction
+              </figcaption>
+            </figure>
+          </div>
         </div>
       </section>
 
@@ -225,22 +284,16 @@ export default function HomePage() {
           <div className="border-b border-gold/25 bg-espresso p-8 sm:p-12 lg:border-b-0 lg:border-r">
             <p className="eyebrow">Visit</p>
             <h2 className="mt-5 font-display text-4xl leading-tight text-pearl sm:text-5xl">
-              Lyndhurst,
+              Ridgefield Park,
               <span className="block italic text-gold">New Jersey.</span>
             </h2>
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-7 block text-sm text-pearl/60 underline decoration-gold underline-offset-8 transition hover:text-pearl"
-            >
-              {addressDisplay}
-            </a>
+            <p className="mt-7 text-sm text-pearl/65">{locationDisplay}</p>
           </div>
           <div className="flex flex-col justify-center gap-6 p-8 sm:p-12">
             <p className="max-w-xl text-sm leading-7 text-pearl/60">
-              Hours and open appointment times can change. Check Casper&apos;s live Booksy
-              calendar before making the trip.
+              Casper has moved to Ridgefield Park. His exact appointment address is being
+              updated on Booksy, which may temporarily show the former Lyndhurst location.
+              Confirm the Ridgefield Park details before traveling.
             </p>
             <div className="flex flex-wrap gap-3">
               <a
@@ -251,14 +304,9 @@ export default function HomePage() {
               >
                 Check Availability
               </a>
-              <a
-                href={mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="secondary-button"
-              >
-                Open Map
-              </a>
+              <span className="inline-flex min-h-12 items-center border border-white/15 px-5 py-3 text-xs leading-5 text-pearl/60">
+                Exact address update in progress
+              </span>
             </div>
           </div>
         </div>
