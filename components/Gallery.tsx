@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { GalleryItem } from "@/lib/gallery";
 import Lightbox from "./Lightbox";
 
@@ -23,6 +23,7 @@ export default function Gallery({ items, title, showFilter = true }: GalleryProp
   const [activeTag, setActiveTag] = useState("All");
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const lightboxTriggerRef = useRef<HTMLButtonElement | null>(null);
 
   const tags = useMemo(() => getUniqueTags(items), [items]);
   const hasTags = tags.length > 1;
@@ -32,7 +33,8 @@ export default function Gallery({ items, title, showFilter = true }: GalleryProp
     return items.filter((item) => item.tags?.includes(activeTag));
   }, [activeTag, hasTags, items]);
 
-  const openLightbox = (index: number) => {
+  const openLightbox = (index: number, trigger: HTMLButtonElement) => {
+    lightboxTriggerRef.current = trigger;
     setLightboxIndex(index);
     setIsLightboxOpen(true);
   };
@@ -69,7 +71,7 @@ export default function Gallery({ items, title, showFilter = true }: GalleryProp
           <button
             key={item.id}
             type="button"
-            onClick={() => openLightbox(index)}
+            onClick={(event) => openLightbox(index, event.currentTarget)}
             className="group text-left"
           >
             <div className="lux-card overflow-hidden transition duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
@@ -99,6 +101,7 @@ export default function Gallery({ items, title, showFilter = true }: GalleryProp
         items={filteredItems}
         index={Math.min(lightboxIndex, Math.max(filteredItems.length - 1, 0))}
         isOpen={isLightboxOpen}
+        returnFocusRef={lightboxTriggerRef}
         onClose={() => setIsLightboxOpen(false)}
         onNext={() =>
           setLightboxIndex((current) =>

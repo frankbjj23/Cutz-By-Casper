@@ -11,6 +11,7 @@ module.exports = {
         pearl: "#FAF7F2",
         ink: "#111111",
         fog: "#E7E3DC",
+        gold: "#C9A464",
       },
       fontFamily: {
         display: [
