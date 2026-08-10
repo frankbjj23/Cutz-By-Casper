@@ -1,5 +1,5 @@
-export const STYLE_PREVIEW_CONSENT_VERSION = "2026-08-10-v1";
-export const STYLE_PREVIEW_SESSION_KEY = "casper-style-preview-access";
+export const STYLE_PREVIEW_CONSENT_VERSION = "2026-08-10-v2";
+export const STYLE_PREVIEW_SESSION_KEY = "redeemed-style-preview-access";
 
 export const MAX_SOURCE_UPLOAD_BYTES = 10 * 1024 * 1024;
 export const MAX_NORMALIZED_UPLOAD_BYTES = 3 * 1024 * 1024;

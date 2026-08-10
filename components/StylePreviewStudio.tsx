@@ -590,7 +590,7 @@ export default function StylePreviewStudio() {
 
         context.fillStyle = "#B99A5A";
         context.font = "700 24px Arial, sans-serif";
-        context.fillText("CUTZ BY CASPER", 110, 145);
+        context.fillText("REDEEMED · PRECISION GROOMING", 110, 145);
         context.fillStyle = "#F4EFE6";
         context.font = "52px Georgia, serif";
         context.fillText("Private style direction", 110, 215);
@@ -611,12 +611,12 @@ export default function StylePreviewStudio() {
         context.fillText(new Date().toLocaleDateString(), 110, 1485);
 
         const card = await blobFromCanvas(canvas, 0.92);
-        triggerDownload(card, "cutz-by-casper-look-card.jpg");
+        triggerDownload(card, "redeemed-precision-look-card.jpg");
       } finally {
         image.close();
       }
     } catch {
-      triggerDownload(resultBlob, "cutz-by-casper-style-preview.jpg");
+      triggerDownload(resultBlob, "redeemed-precision-style-preview.jpg");
     }
   }
 
@@ -918,7 +918,8 @@ export default function StylePreviewStudio() {
               />
               <span>
                 I am 18 or older, this photo is of me, and I consent to temporary
-                processing by Cutz By Casper and OpenAI solely to create this preview.
+                processing by Redeemed Precision Grooming and OpenAI solely to create
+                this preview.
               </span>
             </label>
             <p className="mt-4 text-xs leading-6 text-ink/65">

@@ -5,6 +5,9 @@ import { casperProfile, haircutStyles } from "@/lib/gallery";
 import {
   addressDisplay,
   BOOKSY_URL,
+  BRAND_LOGO_PATH,
+  BRAND_MARK_PATH,
+  business,
   mapsUrl,
   serviceCategories,
 } from "@/lib/site";
@@ -29,22 +32,31 @@ const bookingSteps = [
 
 export default function HomePage() {
   return (
-    <main id="main-content" className="overflow-hidden">
+    <main id="main-content" tabIndex={-1} className="overflow-hidden">
       <section className="border-b border-white/10">
         <div className="mx-auto grid min-h-[calc(100svh-4rem)] max-w-7xl lg:grid-cols-[1fr_0.9fr]">
           <div className="flex items-center px-5 py-16 sm:px-8 sm:py-24 lg:py-28">
             <div className="max-w-2xl space-y-7">
+              <Image
+                src={BRAND_MARK_PATH}
+                alt=""
+                width={512}
+                height={512}
+                sizes="(max-width: 639px) 112px, 128px"
+                className="h-auto w-28 border border-gold/35 bg-black p-2 sm:w-32"
+              />
               <div className="flex items-center gap-4">
                 <span className="editorial-rule" aria-hidden="true" />
-                <p className="eyebrow">Refined barbering · Lyndhurst</p>
+                <p className="eyebrow">Redeemed Precision Grooming · Lyndhurst</p>
               </div>
               <h1 className="font-display text-5xl leading-[0.92] tracking-[-0.025em] text-pearl sm:text-7xl lg:text-[6.5rem]">
-                Precision,
-                <span className="block italic text-gold">tailored.</span>
+                Precision
+                <span className="block italic text-gold">with purpose.</span>
               </h1>
               <p className="max-w-xl text-base leading-8 text-pearl/65 sm:text-lg">
-                A considered approach to haircuts, beard work, and finishing—shaped
-                around the details that define your look.
+                Thirty years in the industry, grounded in faith, professionalism,
+                genuine relationships, and a commitment to helping people feel better
+                about themselves.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
                 <a
@@ -156,21 +168,24 @@ export default function HomePage() {
       </section>
 
       <section className="mx-auto grid max-w-7xl gap-12 px-5 py-24 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:py-32">
-        <div className="relative min-h-72 border border-gold/25 bg-espresso">
-          <div className="absolute inset-5 border border-white/10" aria-hidden="true" />
-          <div className="absolute inset-0 grid place-items-center">
-            <span className="font-display text-[10rem] leading-none text-gold/80 sm:text-[13rem]" aria-hidden="true">
-              C
-            </span>
-          </div>
+        <div className="relative min-h-80 overflow-hidden border border-gold/25 bg-black sm:min-h-[30rem]">
+          <Image
+            src={BRAND_LOGO_PATH}
+            alt="Redeemed Precision Grooming — Premium Barbering"
+            fill
+            sizes="(max-width: 1023px) 100vw, 43vw"
+            className="object-contain p-2 sm:p-8"
+          />
+          <div className="absolute inset-5 border border-gold/20" aria-hidden="true" />
         </div>
         <div className="space-y-6">
-          <p className="eyebrow">Behind the chair</p>
-          <h2 className="section-title">A focused approach to every cut.</h2>
+          <p className="eyebrow">Meet Casper</p>
+          <h2 className="section-title">Thirty years. One enduring standard.</h2>
           <p className="max-w-xl text-sm leading-8 text-pearl/60">
-            Casper provides precision haircuts, beard work, and shape-ups in Lyndhurst.
-            Explore the portfolio for examples of fades, tapers, texture, and detailed
-            finishing work.
+            {business.bio}
+          </p>
+          <p className="border-l border-gold pl-5 font-display text-xl italic leading-8 text-pearl/85">
+            The client always comes first.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link href="/styles" className="secondary-button">

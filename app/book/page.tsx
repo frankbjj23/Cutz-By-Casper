@@ -3,6 +3,8 @@ import Link from "next/link";
 import {
   BOOKSY_PRIVACY_URL,
   BOOKSY_URL,
+  BRAND_OG_PATH,
+  business,
   SITE_URL,
 } from "@/lib/site";
 
@@ -16,22 +18,23 @@ export const metadata: Metadata = {
     canonical: "/book",
   },
   openGraph: {
-    title: "Book an Appointment | Cutz By Casper",
+    title: `Book an Appointment | ${business.name}`,
     description,
     url: SITE_URL + "/book",
-    images: ["/og.png"],
+    siteName: business.name,
+    images: [BRAND_OG_PATH],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Book an Appointment | Cutz By Casper",
+    title: `Book an Appointment | ${business.name}`,
     description,
-    images: ["/og.png"],
+    images: [BRAND_OG_PATH],
   },
 };
 
 export default function BookPage() {
   return (
-    <main id="main-content" className="mx-auto flex max-w-6xl flex-col gap-14 px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
+    <main id="main-content" tabIndex={-1} className="mx-auto flex max-w-6xl flex-col gap-14 px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
       <section className="mx-auto max-w-3xl space-y-7 text-center">
         <p className="eyebrow">Official booking calendar</p>
         <h1 className="font-display text-5xl leading-[0.95] tracking-tight text-pearl sm:text-7xl">
@@ -39,8 +42,9 @@ export default function BookPage() {
           <span className="block italic text-gold">your time.</span>
         </h1>
         <p className="mx-auto max-w-2xl text-base leading-8 text-pearl/60">
-          Casper&apos;s live availability, current service menu, pricing, and booking
-          terms are kept together on Booksy.
+          Redeemed Precision Grooming appointments are completed through Casper&apos;s
+          existing Booksy profile, where the live calendar, current menu, pricing,
+          and booking terms stay together.
         </p>
         <a
           href={BOOKSY_URL}

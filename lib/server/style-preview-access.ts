@@ -9,13 +9,13 @@ type RateLimitBucket = {
 };
 
 type StylePreviewGlobal = typeof globalThis & {
-  __casperStylePreviewRateLimits?: Map<string, RateLimitBucket>;
+  __redeemedStylePreviewRateLimits?: Map<string, RateLimitBucket>;
 };
 
 const globalStore = globalThis as StylePreviewGlobal;
 const rateLimits =
-  globalStore.__casperStylePreviewRateLimits ??
-  (globalStore.__casperStylePreviewRateLimits = new Map<string, RateLimitBucket>());
+  globalStore.__redeemedStylePreviewRateLimits ??
+  (globalStore.__redeemedStylePreviewRateLimits = new Map<string, RateLimitBucket>());
 
 function configuredAccessHash() {
   const candidate = process.env.STYLE_PREVIEW_ACCESS_HASH ?? DEFAULT_ACCESS_HASH;

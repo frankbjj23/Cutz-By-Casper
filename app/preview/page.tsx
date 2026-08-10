@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import StylePreviewStudio from "@/components/StylePreviewStudio";
-import { SITE_URL } from "@/lib/site";
+import { BRAND_OG_PATH, business, SITE_URL } from "@/lib/site";
 
 const description =
-  "Invitation-only virtual hair, beard, and color consultation for Cutz By Casper.";
+  `Invitation-only virtual hair, beard, and color consultation for ${business.name}.`;
 
 export const metadata: Metadata = {
   title: "Private Style Preview",
@@ -23,22 +23,23 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Private Style Preview | Cutz By Casper",
+    title: `Private Style Preview | ${business.name}`,
     description,
     url: SITE_URL + "/preview",
-    images: ["/og.png"],
+    siteName: business.name,
+    images: [BRAND_OG_PATH],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Private Style Preview | Cutz By Casper",
+    title: `Private Style Preview | ${business.name}`,
     description,
-    images: ["/og.png"],
+    images: [BRAND_OG_PATH],
   },
 };
 
 export default function PreviewPage() {
   return (
-    <main id="main-content" className="mx-auto max-w-7xl px-5 pb-24 pt-12 sm:px-8 sm:pt-20">
+    <main id="main-content" tabIndex={-1} className="mx-auto max-w-7xl px-5 pb-24 pt-12 sm:px-8 sm:pt-20">
       <StylePreviewStudio />
 
       <section
