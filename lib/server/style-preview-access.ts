@@ -1,7 +1,7 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
 const DEFAULT_ACCESS_HASH =
-  "fb12241d474e5a5b6916fd353595a6469080ca86621d1c637f5e13098ecb8415";
+  "e3ca364bc6c1f2e92f82d7bc4359dc9e43c1a9b1261c9054187b9e163e96c490";
 
 type RateLimitBucket = {
   count: number;
