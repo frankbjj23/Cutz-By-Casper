@@ -7,6 +7,10 @@ Customers can browse Casper's work on the site, then use his existing Booksy pro
 for the current service menu, prices, policies, and live appointment availability.
 Booksy is the sole booking calendar.
 
+An unlisted, invitation-only `/preview` beta lets an adult submit one self-photo and
+create one temporary AI hair, beard, or color concept. The site does not persist the
+input or result, and no photo is transferred to Booksy.
+
 ## Live links
 
 - Website: https://cutz-by-casper-umri.vercel.app
@@ -20,6 +24,7 @@ Booksy is the sole booking calendar.
 - Tailwind CSS
 - Vercel
 - Booksy for third-party booking
+- OpenAI Image API for the private style-preview beta
 
 The website does not maintain a custom booking database, payment checkout, SMS
 service, admin calendar, or automated chat service.
@@ -36,9 +41,12 @@ Install and run:
     npm ci
     npm run dev
 
-Open http://localhost:3000.
+Copy `.env.example` to `.env.local`, then provide `OPENAI_API_KEY` only when testing a
+real image generation. The site and all non-billable checks build without the key.
+The checked-in invitation hash protects the initial beta; rotate it with
+`STYLE_PREVIEW_ACCESS_HASH` when needed.
 
-No environment variables are required.
+Open http://localhost:3000.
 
 ## Quality checks
 
@@ -56,7 +64,13 @@ canonical Booksy links, retired API routes, SEO discovery files, and mobile over
 - /styles — filterable haircut portfolio
 - /book — branded handoff to Casper's canonical Booksy profile
 - /privacy — site and third-party booking privacy boundary
+- /preview — unlisted, noindex, invitation-only style-preview beta
+- /api/style-preview — same-origin, invite-protected image-edit route
 - /robots.txt and /sitemap.xml — search discovery files
+
+`/preview` is intentionally absent from public navigation and the sitemap. Do not make
+it public until durable rate limiting, a reviewed provider agreement, production cost
+controls, and a larger authorized-photo quality evaluation are complete.
 
 ## Booking source of truth
 

@@ -1,6 +1,14 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { BOOKSY_URL } from "@/lib/site";
 
 export default function MobileBookingBar() {
+  const pathname = usePathname();
+  if (pathname === "/preview") {
+    return null;
+  }
+
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-ink/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl sm:hidden">
       <a

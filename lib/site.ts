@@ -2,6 +2,8 @@ export const SITE_URL = "https://cutz-by-casper-umri.vercel.app";
 export const BOOKSY_URL =
   "https://booksy.com/en-us/697614_casper_barber-shop_28371_lyndhurst";
 export const BOOKSY_PRIVACY_URL = "https://booksy.com/en-us/p/privacy";
+export const OPENAI_DATA_CONTROLS_URL =
+  "https://developers.openai.com/api/docs/guides/your-data#default-usage-policies-by-endpoint";
 
 export const business = {
   name: "Cutz By Casper",
