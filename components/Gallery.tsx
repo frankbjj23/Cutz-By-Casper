@@ -52,10 +52,10 @@ export default function Gallery({ items, title, showFilter = true }: GalleryProp
                 key={tag}
                 type="button"
                 onClick={() => setActiveTag(tag)}
-                className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+                className={`border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold ${
                   isActive
-                    ? "border-ink bg-ink text-pearl"
-                    : "border-fog text-ink/70 hover:border-ink hover:text-ink"
+                    ? "border-gold bg-gold text-ink"
+                    : "border-white/15 text-pearl/60 hover:border-gold hover:text-gold"
                 }`}
                 aria-pressed={isActive}
               >
@@ -72,22 +72,23 @@ export default function Gallery({ items, title, showFilter = true }: GalleryProp
             key={item.id}
             type="button"
             onClick={(event) => openLightbox(index, event.currentTarget)}
-            className="group text-left"
+            aria-label={`Open ${item.name}`}
+            className="group text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold"
           >
-            <div className="lux-card overflow-hidden transition duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
+            <div className="lux-card overflow-hidden transition duration-500 group-hover:-translate-y-1 group-hover:border-gold/45 group-hover:shadow-lg group-focus-visible:border-gold/70">
               <div className="relative aspect-[4/5] w-full">
                 <Image
                   src={item.src}
-                  alt={item.alt}
+                  alt=""
                   fill
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  className="object-cover transition duration-500 group-hover:scale-[1.03]"
+                  sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
+                  className="object-cover transition duration-700 group-hover:scale-[1.03]"
                 />
               </div>
-              <div className="space-y-1 px-4 py-3">
-                <p className="text-sm font-semibold text-ink">{item.name}</p>
+              <div className="space-y-1 border-t border-white/10 px-4 py-4">
+                <p className="font-display text-base leading-snug text-pearl">{item.name}</p>
                 {item.tags?.length ? (
-                  <p className="text-xs uppercase tracking-[0.2em] text-ink/60">
+                  <p className="text-[0.7rem] uppercase tracking-[0.22em] text-gold/80">
                     {item.tags.slice(0, 2).join(" · ")}
                   </p>
                 ) : null}

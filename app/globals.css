@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 body {
-  @apply bg-pearl text-ink font-sans antialiased;
+  @apply bg-ink text-pearl font-sans antialiased;
 }
 
 * {
@@ -15,37 +15,65 @@ body {
 }
 
 ::selection {
-  background: rgba(201, 164, 100, 0.35);
+  background: rgba(185, 154, 90, 0.38);
 }
 
 .gradient-bg {
-  background: radial-gradient(circle at top left, rgba(201, 164, 100, 0.18), transparent 55%),
-    radial-gradient(circle at 30% 20%, rgba(11, 13, 16, 0.08), transparent 45%),
-    linear-gradient(120deg, rgba(247, 243, 238, 1), rgba(232, 225, 215, 0.55));
+  background:
+    radial-gradient(circle at 82% 8%, rgba(185, 154, 90, 0.1), transparent 24rem),
+    radial-gradient(circle at 8% 44%, rgba(92, 60, 40, 0.12), transparent 30rem),
+    linear-gradient(145deg, #0a0a0b 0%, #111010 58%, #0a0a0b 100%);
 }
 
 .lux-card {
-  @apply bg-white shadow-soft rounded-3xl border border-fog;
+  @apply border border-white/10 bg-graphite shadow-soft;
 }
 
 .section-title {
-  @apply font-display text-3xl md:text-4xl tracking-wide;
+  @apply font-display text-3xl leading-tight tracking-[0.015em] text-pearl md:text-5xl;
 }
 
 .eyebrow {
-  @apply text-xs font-semibold uppercase tracking-[0.32em] text-ink/60;
+  @apply text-[0.7rem] font-semibold uppercase tracking-[0.34em] text-gold;
 }
 
 .primary-button {
-  @apply inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-6 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-pearl transition hover:bg-ink/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink;
+  @apply inline-flex min-h-12 items-center justify-center border border-gold bg-gold px-7 py-3 text-center text-[0.7rem] font-bold uppercase tracking-[0.22em] text-ink transition duration-300 hover:border-pearl hover:bg-pearl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold;
 }
 
 .secondary-button {
-  @apply inline-flex min-h-11 items-center justify-center rounded-full border border-ink px-6 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-ink transition hover:bg-ink hover:text-pearl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink;
+  @apply inline-flex min-h-12 items-center justify-center border border-white/25 px-7 py-3 text-center text-[0.7rem] font-bold uppercase tracking-[0.22em] text-pearl transition duration-300 hover:border-gold hover:text-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold;
+}
+
+.light-panel {
+  @apply bg-pearl text-ink;
+}
+
+.editorial-rule {
+  @apply h-px w-16 bg-gold;
 }
 
 @layer utilities {
   .shadow-soft {
-    box-shadow: 0 10px 30px rgba(17, 17, 17, 0.08);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+  }
+}
+
+@media (min-width: 768px) {
+  .gradient-bg {
+    background-attachment: fixed;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .gradient-bg {
+    background-attachment: scroll;
   }
 }
