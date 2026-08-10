@@ -3,13 +3,19 @@ import type { Metadata, Viewport } from "next";
 import MobileBookingBar from "@/components/MobileBookingBar";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
-import { BOOKSY_URL, business, SITE_URL } from "@/lib/site";
+import {
+  BOOKSY_URL,
+  BRAND_LOGO_PATH,
+  BRAND_OG_PATH,
+  business,
+  SITE_URL,
+} from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Cutz By Casper | Refined Barbering in Lyndhurst, NJ",
-    template: "%s | Cutz By Casper",
+    default: "Redeemed Precision Grooming | Premium Barbering in Lyndhurst, NJ",
+    template: "%s | Redeemed Precision Grooming",
   },
   description: business.description,
   alternates: {
@@ -19,22 +25,22 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: business.name,
-    title: "Cutz By Casper | Refined Barbering in Lyndhurst, NJ",
+    title: "Redeemed Precision Grooming | Premium Barbering in Lyndhurst, NJ",
     description: business.description,
     images: [
       {
-        url: "/og.png",
+        url: BRAND_OG_PATH,
         width: 1200,
         height: 630,
-        alt: "Cutz By Casper — barbering in Lyndhurst, New Jersey",
+        alt: "Redeemed Precision Grooming — premium barbering in Lyndhurst, New Jersey",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cutz By Casper | Refined Barbering in Lyndhurst, NJ",
+    title: "Redeemed Precision Grooming | Premium Barbering in Lyndhurst, NJ",
     description: business.description,
-    images: ["/og.png"],
+    images: [BRAND_OG_PATH],
   },
 };
 
@@ -49,7 +55,8 @@ const structuredData = {
   name: business.name,
   description: business.description,
   url: SITE_URL,
-  image: SITE_URL + "/og.png",
+  image: SITE_URL + BRAND_OG_PATH,
+  logo: SITE_URL + BRAND_LOGO_PATH,
   address: {
     "@type": "PostalAddress",
     streetAddress: business.address.street,
@@ -59,6 +66,10 @@ const structuredData = {
     addressCountry: business.address.country,
   },
   sameAs: [BOOKSY_URL],
+  employee: {
+    "@type": "Person",
+    name: business.barberName,
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

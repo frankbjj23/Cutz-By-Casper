@@ -1,17 +1,36 @@
+import Image from "next/image";
 import Link from "next/link";
-import { addressDisplay, BOOKSY_URL, mapsUrl } from "@/lib/site";
+import {
+  addressDisplay,
+  BOOKSY_URL,
+  BRAND_MARK_PATH,
+  business,
+  mapsUrl,
+} from "@/lib/site";
 
 export default function SiteFooter() {
   return (
     <footer className="border-t border-white/10 bg-black/25">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 py-14 text-sm text-pearl/60 sm:grid-cols-2 sm:items-end sm:px-8">
-        <div className="space-y-3">
-          <p className="font-display text-xl uppercase tracking-[0.2em] text-pearl">
-            Cutz By Casper
-          </p>
-          <p className="max-w-sm text-xs uppercase tracking-[0.2em] text-gold">
-            Refined barbering in Lyndhurst
-          </p>
+        <div className="space-y-4">
+          <div className="flex items-center gap-4">
+            <Image
+              src={BRAND_MARK_PATH}
+              alt=""
+              width={56}
+              height={56}
+              sizes="56px"
+              className="size-14 border border-gold/40 object-cover"
+            />
+            <div>
+              <p className="font-display text-lg uppercase tracking-[0.14em] text-pearl">
+                {business.name}
+              </p>
+              <p className="mt-1 text-[0.65rem] uppercase tracking-[0.22em] text-gold">
+                {business.descriptor} · Lyndhurst, New Jersey
+              </p>
+            </div>
+          </div>
           <a
             href={mapsUrl}
             target="_blank"

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Gallery from "@/components/Gallery";
 import { haircutStyles } from "@/lib/gallery";
-import { BOOKSY_URL, SITE_URL } from "@/lib/site";
+import { BOOKSY_URL, BRAND_OG_PATH, business, SITE_URL } from "@/lib/site";
 
 const description =
-  "Browse Casper's barbering portfolio, including fades, tapers, textured cuts, beard work, and line-ups.";
+  "Browse Casper's work at Redeemed Precision Grooming, including fades, tapers, textured cuts, beard work, and line-ups.";
 
 export const metadata: Metadata = {
   title: "Haircut Style Gallery",
@@ -13,22 +13,23 @@ export const metadata: Metadata = {
     canonical: "/styles",
   },
   openGraph: {
-    title: "Haircut Style Gallery | Cutz By Casper",
+    title: `Haircut Style Gallery | ${business.name}`,
     description,
     url: SITE_URL + "/styles",
-    images: ["/og.png"],
+    siteName: business.name,
+    images: [BRAND_OG_PATH],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Haircut Style Gallery | Cutz By Casper",
+    title: `Haircut Style Gallery | ${business.name}`,
     description,
-    images: ["/og.png"],
+    images: [BRAND_OG_PATH],
   },
 };
 
 export default function StylesPage() {
   return (
-    <main id="main-content" className="mx-auto flex max-w-7xl flex-col gap-16 px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
+    <main id="main-content" tabIndex={-1} className="mx-auto flex max-w-7xl flex-col gap-16 px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
       <section className="grid gap-10 border-b border-white/10 pb-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
         <div className="space-y-6">
           <p className="eyebrow">Selected work</p>

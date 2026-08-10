@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import {
   BOOKSY_PRIVACY_URL,
   BOOKSY_URL,
+  BRAND_OG_PATH,
+  business,
   OPENAI_DATA_CONTROLS_URL,
   SITE_URL,
 } from "@/lib/site";
 
 const description =
-  "Privacy information for the Cutz By Casper website, private style preview, and Booksy booking link.";
+  `Privacy information for the ${business.name} website, private style preview, and Booksy booking link.`;
 
 export const metadata: Metadata = {
   title: "Privacy",
@@ -16,22 +18,23 @@ export const metadata: Metadata = {
     canonical: "/privacy",
   },
   openGraph: {
-    title: "Privacy | Cutz By Casper",
+    title: `Privacy | ${business.name}`,
     description,
     url: SITE_URL + "/privacy",
-    images: ["/og.png"],
+    siteName: business.name,
+    images: [BRAND_OG_PATH],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Privacy | Cutz By Casper",
+    title: `Privacy | ${business.name}`,
     description,
-    images: ["/og.png"],
+    images: [BRAND_OG_PATH],
   },
 };
 
 export default function PrivacyPage() {
   return (
-    <main id="main-content" className="mx-auto max-w-4xl px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
+    <main id="main-content" tabIndex={-1} className="mx-auto max-w-4xl px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
       <article className="lux-card space-y-10 p-7 sm:p-12">
         <header className="space-y-5 border-b border-white/10 pb-10">
           <p className="eyebrow">Effective August 10, 2026</p>
@@ -60,8 +63,8 @@ export default function PrivacyPage() {
           <p className="text-sm leading-7 text-pearl/60">
             Adults who have an invitation may submit one photo of themselves and select a
             fixed hair, beard, or hair-color direction. The feature sends the prepared image,
-            selected direction, and confirmation of adult self-photo consent to a Cutz By
-            Casper server function. After validation, that function sends the image and fixed
+            selected direction, and confirmation of adult self-photo consent to a Redeemed
+            Precision Grooming server function. After validation, that function sends the image and fixed
             edit instructions to OpenAI solely to create the requested preview.
           </p>
           <div className="grid gap-5 sm:grid-cols-2">
@@ -69,7 +72,7 @@ export default function PrivacyPage() {
               <h3 className="font-display text-xl text-pearl">What this site keeps</h3>
               <p className="mt-3 text-sm leading-7 text-pearl/60">
                 The photo and result are processed in server memory and returned directly to
-                your browser. They are not saved to a Cutz By Casper database, file store,
+                your browser. They are not saved to a Redeemed Precision Grooming database, file store,
                 portfolio, public gallery, or marketing list. The result remains in your
                 browser until you delete it, replace it, refresh, or close the page. If you
                 download a look card, that separate copy remains on your device until you
@@ -104,7 +107,7 @@ export default function PrivacyPage() {
           <p className="text-sm leading-7 text-pearl/60">
             To slow repeated access attempts and generations, the server temporarily keeps a
             one-way hash of the requesting network address in process memory. The raw address
-            is not added to a Cutz By Casper database. Access-attempt counters expire after 15
+            is not added to a Redeemed Precision Grooming database. Access-attempt counters expire after 15
             minutes, and generation counters expire after one hour; hosting security logs may
             follow Vercel&apos;s separate retention practices.
           </p>

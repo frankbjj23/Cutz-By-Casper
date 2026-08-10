@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { BOOKSY_URL } from "@/lib/site";
+import { BOOKSY_URL, BRAND_MARK_PATH } from "@/lib/site";
 
 export default function SiteHeader() {
   return (
@@ -7,24 +8,27 @@ export default function SiteHeader() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3 sm:px-8">
         <Link
           href="/"
-          className="group flex items-center gap-3 text-pearl"
+          aria-label="Redeemed Precision Grooming home"
+          className="group flex min-w-0 items-center gap-3 text-pearl"
         >
-          <span
-            className="grid size-9 place-items-center border border-gold/60 font-display text-lg text-gold transition group-hover:border-gold"
-            aria-hidden="true"
-          >
-            C
-          </span>
-          <span className="leading-none">
-            <span className="block text-[0.65rem] font-semibold uppercase tracking-[0.28em] text-gold">
-              Cutz by
+          <Image
+            src={BRAND_MARK_PATH}
+            alt=""
+            width={48}
+            height={48}
+            sizes="48px"
+            className="size-10 shrink-0 border border-gold/45 object-cover transition group-hover:border-gold sm:size-12"
+          />
+          <span className="min-w-0 leading-none">
+            <span className="block text-[0.55rem] font-semibold uppercase tracking-[0.25em] text-gold sm:text-[0.62rem]">
+              Redeemed
             </span>
-            <span className="mt-1 block font-display text-base uppercase tracking-[0.2em] sm:text-lg">
-              Casper
+            <span className="mt-1 block whitespace-nowrap font-display text-[0.64rem] uppercase tracking-[0.1em] sm:text-sm sm:tracking-[0.16em]">
+              Precision Grooming
             </span>
           </span>
         </Link>
-        <nav className="flex items-center gap-5" aria-label="Primary navigation">
+        <nav className="flex shrink-0 items-center gap-4 sm:gap-5" aria-label="Primary navigation">
           <Link
             href="/styles"
             className="hidden text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-pearl/65 transition hover:text-gold sm:inline"

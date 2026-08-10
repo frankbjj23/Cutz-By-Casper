@@ -164,7 +164,11 @@ export async function POST(request: Request) {
   const origin = request.headers.get("origin");
   const allowedOrigin = process.env.STYLE_PREVIEW_ALLOWED_ORIGIN ?? new URL(request.url).origin;
   if (origin !== allowedOrigin) {
-    return jsonError(403, "ORIGIN_DENIED", "This request must come from the Cutz By Casper site.");
+    return jsonError(
+      403,
+      "ORIGIN_DENIED",
+      "This request must come from the Redeemed Precision Grooming site.",
+    );
   }
 
   const authorization = request.headers.get("authorization");
@@ -328,7 +332,7 @@ export async function POST(request: Request) {
       headers: {
         ...RESPONSE_HEADERS,
         "Content-Type": result.mimeType,
-        "Content-Disposition": 'inline; filename="casper-style-preview.jpg"',
+        "Content-Disposition": 'inline; filename="redeemed-precision-style-preview.jpg"',
       },
     });
   } catch (error) {

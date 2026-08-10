@@ -1,7 +1,8 @@
-# Cutz By Casper
+# Redeemed Precision Grooming
 
-Cutz By Casper is a mobile-first barber portfolio and booking handoff for Casper in
-Lyndhurst, New Jersey.
+Redeemed Precision Grooming is Casper's mobile-first premium barbering portfolio
+and booking handoff in Lyndhurst, New Jersey. The brand story is grounded in 30 years
+in the industry, faith, professionalism, relationships, and client-first service.
 
 Customers can browse Casper's work on the site, then use his existing Booksy profile
 for the current service menu, prices, policies, and live appointment availability.
@@ -28,6 +29,9 @@ input or result, and no photo is transferred to Booksy.
 
 The website does not maintain a custom booking database, payment checkout, SMS
 service, admin calendar, or automated chat service.
+
+The existing Vercel URL and GitHub repository retain the prior project slug so live
+links and deployment integrations do not break during the public-facing rebrand.
 
 ## Local development
 

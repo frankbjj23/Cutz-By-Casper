@@ -122,7 +122,7 @@ function getBackupPath(filePath) {
 function placeholderFor(filePath) {
   const relPath = path.relative(process.cwd(), filePath).replace(/\\/g, '/');
   if (relPath === 'app/page.tsx') {
-    return `export default function Home() {\n  return (\n    <main style={{ padding: 24 }}>\n      <h1>Cutz By Casper</h1>\n      <p>Site is running.</p>\n    </main>\n  );\n}\n`;
+    return `export default function Home() {\n  return (\n    <main style={{ padding: 24 }}>\n      <h1>Redeemed Precision Grooming</h1>\n      <p>Site is running.</p>\n    </main>\n  );\n}\n`;
   }
 
   const ext = path.extname(filePath).toLowerCase();

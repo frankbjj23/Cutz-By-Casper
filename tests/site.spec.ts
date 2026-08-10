@@ -2,13 +2,35 @@ import { expect, test } from "@playwright/test";
 
 const BOOKSY_URL =
   "https://booksy.com/en-us/697614_casper_barber-shop_28371_lyndhurst";
+const BRAND_NAME = "Redeemed Precision Grooming";
 
 test("customer routes render without custom booking forms", async ({ page }) => {
   for (const path of ["/", "/styles", "/book", "/privacy"]) {
     await page.goto(path);
     await expect(page.locator("main")).toBeVisible();
     await expect(page.locator("form")).toHaveCount(0);
+    await expect(page).toHaveTitle(new RegExp(BRAND_NAME));
   }
+});
+
+test("new brand identity and Booksy transition are clear", async ({ page }) => {
+  await page.goto("/");
+  await expect(
+    page.getByRole("link", { name: `${BRAND_NAME} home` }),
+  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: /precision with purpose/i })).toBeVisible();
+  await expect(page.getByText(/with 30 years in the industry/i)).toBeVisible();
+  await expect(page.locator("body")).not.toContainText("Cutz By Casper");
+
+  const skipLink = page.getByRole("link", { name: "Skip to content" });
+  await skipLink.focus();
+  await skipLink.click();
+  await expect(page.locator("main")).toBeFocused();
+
+  await page.goto("/book");
+  await expect(
+    page.getByText(/appointments are completed through Casper's existing Booksy profile/i),
+  ).toBeVisible();
 });
 
 test("all Booksy booking links use Casper's canonical profile", async ({ page }) => {
@@ -159,7 +181,7 @@ test("style preview API rejects unauthorized and malformed requests without gene
     },
     multipart: {
       consent: "true",
-      consentVersion: "2026-08-10-v1",
+      consentVersion: "2026-08-10-v2",
       hairStyle: "browser-supplied-prompt",
       hairColor: "keep-current",
       beardStyle: "keep-current",
@@ -175,7 +197,7 @@ test("style preview API rejects unauthorized and malformed requests without gene
     },
     multipart: {
       consent: "true",
-      consentVersion: "2026-08-10-v1",
+      consentVersion: "2026-08-10-v2",
       hairStyle: "low-taper-curls",
       hairColor: "natural-black",
       beardStyle: "short-boxed",
@@ -191,7 +213,7 @@ test("style preview API rejects unauthorized and malformed requests without gene
     },
     multipart: {
       consent: "true",
-      consentVersion: "2026-08-10-v1",
+      consentVersion: "2026-08-10-v2",
       hairStyle: "low-taper-curls",
       hairColor: "keep-current",
       beardStyle: "keep-current",
@@ -219,13 +241,25 @@ test("SEO discovery files and page-specific social metadata are present", async 
     await page.goto(path);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", pageUrl);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", pageUrl);
+    await expect(page.locator('meta[property="og:site_name"]')).toHaveAttribute(
+      "content",
+      BRAND_NAME,
+    );
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      "content",
+      new RegExp(BRAND_NAME),
+    );
+    await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute(
+      "content",
+      new RegExp(BRAND_NAME),
+    );
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
       "content",
-      siteUrl + "/og.png",
+      siteUrl + "/redeemed-og.png",
     );
     await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
       "content",
-      siteUrl + "/og.png",
+      siteUrl + "/redeemed-og.png",
     );
   }
 
@@ -236,11 +270,48 @@ test("SEO discovery files and page-specific social metadata are present", async 
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBeTruthy();
   expect(await sitemap.text()).toContain("/book");
+
+  const favicon = await request.get("/icon.jpg");
+  expect(favicon.ok()).toBeTruthy();
+  expect(favicon.headers()["content-type"]).toContain("image/jpeg");
+
+  await page.goto("/");
+  const structuredData = JSON.parse(
+    (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
+  );
+  expect(structuredData.name).toBe(BRAND_NAME);
+  expect(structuredData.alternateName).toBeUndefined();
+  expect(JSON.stringify(structuredData)).not.toContain("Cutz By Casper");
+  expect(structuredData.logo).toBe(
+    siteUrl + "/images/brand/redeemed-precision-logo.jpg",
+  );
+  expect(structuredData.employee).toMatchObject({
+    "@type": "Person",
+    name: "Casper",
+  });
+  expect(structuredData.employee.sameAs).toBeUndefined();
+
+  const brandAssets = await page.evaluate(async () => {
+    const load = (src: string) =>
+      new Promise<{ height: number; width: number }>((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve({ height: image.naturalHeight, width: image.naturalWidth });
+        image.onerror = () => reject(new Error(`Could not load ${src}`));
+        image.src = src;
+      });
+    return {
+      mark: await load("/images/brand/redeemed-mark.jpg"),
+      social: await load("/redeemed-og.png"),
+    };
+  });
+  expect(brandAssets.mark).toEqual({ height: 512, width: 512 });
+  expect(brandAssets.social).toEqual({ height: 630, width: 1200 });
 });
 
 test("mobile layout has no horizontal overflow and keeps booking visible", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 320, height: 568 });
   await page.goto("/");
+  await expect(page.getByRole("link", { name: `${BRAND_NAME} home` })).toBeVisible();
   await expect(page.getByRole("link", { name: /view live availability/i })).toBeVisible();
 
   const hasOverflow = await page.evaluate(
