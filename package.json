@@ -1,42 +1,38 @@
 {
   "name": "cutz-by-casper",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "expire-holds": "node --loader ts-node/esm scripts/expire-holds.ts",
-    "send-reminders": "node --loader ts-node/esm scripts/send-reminders.ts",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "pretest": "npm run build",
+    "test": "playwright test",
+    "check": "npm run lint && npm run typecheck && npm test && npm run scan-encoding",
     "scan-encoding": "node tools/scan-encoding.mjs",
-    "fix-encoding": "node tools/fix-encoding.mjs",
-    "check-env": "node tools/check-env.mjs"
+    "fix-encoding": "node tools/fix-encoding.mjs"
   },
   "dependencies": {
-    "@supabase/auth-helpers-nextjs": "^0.8.7",
-    "@supabase/supabase-js": "^2.45.4",
-    "luxon": "^3.4.4",
-    "next": "14.2.5",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "stripe": "^14.25.0",
-    "twilio": "^4.23.0",
-    "zod": "^3.23.8"
+    "next": "16.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@types/node": "^20.14.2",
-    "@types/luxon": "^3.4.2",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.19",
-    "postcss": "^8.4.39",
-    "tailwindcss": "^3.4.7",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.4",
-    "vitest": "^1.6.0"
+    "@playwright/test": "1.62.1",
+    "@types/node": "22.20.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "autoprefixer": "10.5.4",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.0",
+    "postcss": "8.5.26",
+    "tailwindcss": "3.4.19",
+    "typescript": "5.9.3"
   }
 }

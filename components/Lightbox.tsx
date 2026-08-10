@@ -1,13 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
+import type { RefObject } from "react";
 import type { GalleryItem } from "@/lib/gallery";
 
 type LightboxProps = {
   items: GalleryItem[];
   index: number;
   isOpen: boolean;
+  returnFocusRef: RefObject<HTMLButtonElement | null>;
   onClose: () => void;
   onNext: () => void;
   onPrev: () => void;
@@ -17,6 +19,7 @@ export default function Lightbox({
   items,
   index,
   isOpen,
+  returnFocusRef,
   onClose,
   onNext,
   onPrev,
@@ -25,18 +28,25 @@ export default function Lightbox({
   const prevRef = useRef<HTMLButtonElement | null>(null);
   const nextRef = useRef<HTMLButtonElement | null>(null);
   const touchStartX = useRef<number | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const item = items[index];
 
-  const focusables = useMemo(
-    () => [closeRef, prevRef, nextRef],
-    []
-  );
-
   useEffect(() => {
     if (!isOpen) return;
+
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const returnFocusNode = returnFocusRef.current ?? previousFocusRef.current;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     closeRef.current?.focus();
-  }, [isOpen]);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      returnFocusNode?.focus();
+    };
+  }, [isOpen, returnFocusRef]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -56,7 +66,7 @@ export default function Lightbox({
       }
       if (event.key !== "Tab") return;
 
-      const nodes = focusables
+      const nodes = [closeRef, prevRef, nextRef]
         .map((ref) => ref.current)
         .filter(Boolean) as HTMLButtonElement[];
       if (!nodes.length) return;
@@ -75,13 +85,13 @@ export default function Lightbox({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [focusables, isOpen, onClose, onNext, onPrev]);
+  }, [isOpen, onClose, onNext, onPrev]);
 
   if (!isOpen || !item) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/80 px-4 py-10"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/80 px-4 py-4 sm:py-10"
       role="dialog"
       aria-modal="true"
       aria-label={`${item.name} expanded`}
@@ -102,7 +112,7 @@ export default function Lightbox({
       }}
     >
       <div
-        className="relative w-full max-w-4xl overflow-hidden rounded-3xl bg-pearl shadow-soft"
+        className="relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-4xl overflow-x-hidden overflow-y-auto overscroll-contain rounded-3xl bg-pearl shadow-soft sm:max-h-[calc(100dvh-5rem)]"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="relative aspect-[4/5] w-full sm:aspect-[16/10]">

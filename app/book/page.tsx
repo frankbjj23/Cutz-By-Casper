@@ -1,309 +1,108 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  BOOKSY_PRIVACY_URL,
+  BOOKSY_URL,
+  SITE_URL,
+} from "@/lib/site";
 
-type Service = {
-  id: string;
-  name: string;
-  duration_minutes: number;
-  price_display: string;
-  note?: string | null;
-  price_from?: boolean;
-  deposit_amount: number;
-};
+const description =
+  "View Casper's current services, prices, policies, and live appointment times on Booksy.";
 
-type Slot = {
-  startTimeLocalISO: string;
-  label: string;
+export const metadata: Metadata = {
+  title: "Book an Appointment",
+  description,
+  alternates: {
+    canonical: "/book",
+  },
+  openGraph: {
+    title: "Book an Appointment | Cutz By Casper",
+    description,
+    url: SITE_URL + "/book",
+    images: ["/og.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Book an Appointment | Cutz By Casper",
+    description,
+    images: ["/og.png"],
+  },
 };
 
 export default function BookPage() {
-  const BUSINESS_PHONE_DISPLAY = "(201) 889-6440";
-  const BUSINESS_PHONE_E164 = "+12018896440";
-
-  const [services, setServices] = useState<Service[]>([]);
-  const [serviceId, setServiceId] = useState<string>("");
-  const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10));
-  const [slots, setSlots] = useState<Slot[]>([]);
-  const [slot, setSlot] = useState<string>("");
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [smsOptIn, setSmsOptIn] = useState(false);
-  const [policyAck, setPolicyAck] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [demoBanner, setDemoBanner] = useState(false);
-  const [demoMessage, setDemoMessage] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch("/api/services")
-      .then((res) => res.json())
-      .then((data) => {
-        setServices(data.services ?? []);
-        if (data.services?.length) {
-          setServiceId(data.services[0].id);
-        }
-      })
-      .catch(() => setError("Unable to load services."));
-  }, []);
-
-  useEffect(() => {
-    fetch("/api/demo")
-      .then((res) => res.json())
-      .then((data) => setDemoBanner(Boolean(data.demo)))
-      .catch(() => setDemoBanner(false));
-  }, []);
-
-  const selectedService = useMemo(
-    () => services.find((service) => service.id === serviceId),
-    [services, serviceId]
-  );
-  const isDirectService = Boolean(selectedService?.price_from);
-
-  useEffect(() => {
-    if (!serviceId || !date) return;
-    if (isDirectService) {
-      setSlots([]);
-      setSlot("");
-      return;
-    }
-    fetch(`/api/availability?date=${date}&serviceId=${serviceId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setSlots(data.slots ?? []);
-        setSlot("");
-      })
-      .catch(() => setError("Unable to load availability."));
-  }, [serviceId, date, isDirectService]);
-
-  const handleCheckout = async () => {
-    setError(null);
-    if (isDirectService) {
-      setError("This service requires texting Casper directly to confirm.");
-      return;
-    }
-    if (!slot || !policyAck || !serviceId) {
-      setError("Select a time and accept the policy to continue.");
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch("/api/appointments/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          serviceId,
-          startTimeLocalISO: slot,
-          fullName,
-          phoneE164: phone,
-          smsOptIn,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error ?? "Unable to start checkout.");
-      }
-      if (data.demo) {
-        setDemoMessage(data.replyText ?? "Demo mode: request recorded.");
-        return;
-      }
-      window.location.href = data.checkoutUrl;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Checkout failed.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="mx-auto max-w-3xl px-6 pb-24 pt-12">
-      <header className="flex items-center justify-between">
-        <Link href="/" className="text-xs uppercase tracking-[0.35em] text-ink/60">
-          Cutz By Casper
-        </Link>
-        <Link href="/" className="text-sm text-ink/70">
-          Back to home
-        </Link>
-      </header>
-
-      <div className="mt-10 space-y-10">
-        <div>
-          <h1 className="section-title">Book your appointment</h1>
-          <p className="mt-3 text-sm text-ink/70">
-            Select a service and a preferred time. Deposit secures the booking.
-          </p>
-          {demoBanner && (
-            <p className="mt-4 rounded-2xl border border-fog bg-white px-4 py-3 text-xs uppercase tracking-[0.2em] text-ink/60">
-              Demo mode: payments & SMS reminders are disabled.
-            </p>
-          )}
-        </div>
-
-        <div className="lux-card p-6">
-          <label className="text-xs uppercase tracking-[0.3em] text-ink/60">
-            Service
-          </label>
-          <select
-            className="mt-3 w-full rounded-full border border-fog bg-white px-4 py-3 text-sm"
-            value={serviceId}
-            onChange={(event) => setServiceId(event.target.value)}
-          >
-            {services.map((service) => (
-              <option key={service.id} value={service.id}>
-                {service.name} - {service.price_display}
-              </option>
-            ))}
-          </select>
-          {selectedService && (
-            <div className="mt-4 space-y-2 text-sm text-ink/70">
-              <p>{selectedService.duration_minutes} min</p>
-              {selectedService.note && <p>{selectedService.note}</p>}
-            </div>
-          )}
-        </div>
-
-        <div className="lux-card p-6">
-          <label className="text-xs uppercase tracking-[0.3em] text-ink/60">
-            Date
-          </label>
-          <input
-            type="date"
-            className="mt-3 w-full rounded-full border border-fog bg-white px-4 py-3 text-sm"
-            value={date}
-            onChange={(event) => setDate(event.target.value)}
-          />
-          <div className="mt-6">
-            <label className="text-xs uppercase tracking-[0.3em] text-ink/60">
-              Available times
-            </label>
-            {isDirectService ? (
-              <p className="mt-4 text-sm text-ink/70">
-                This service requires texting Casper directly to confirm.
-              </p>
-            ) : (
-              <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3">
-                {slots.length === 0 && (
-                  <p className="col-span-full text-sm text-ink/60">
-                    No availability for this date.
-                  </p>
-                )}
-                {slots.map((slotOption) => (
-                  <button
-                    key={slotOption.startTimeLocalISO}
-                    className={`rounded-full border px-4 py-2 text-sm transition ${
-                      slot === slotOption.startTimeLocalISO
-                        ? "border-ink bg-ink text-pearl"
-                        : "border-fog bg-white text-ink hover:border-ink"
-                    }`}
-                    onClick={() => setSlot(slotOption.startTimeLocalISO)}
-                    type="button"
-                  >
-                    {slotOption.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {isDirectService && (
-          <div className="lux-card space-y-4 p-6">
-            <p className="text-xs uppercase tracking-[0.3em] text-ink/60">
-              Before & after hours
-            </p>
-            <p className="text-sm text-ink/70">
-              This service requires texting Casper directly to confirm. Please text
-              {` ${BUSINESS_PHONE_DISPLAY}`} to coordinate.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href={`sms:${BUSINESS_PHONE_E164}`}
-                className="rounded-full bg-ink px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-pearl transition hover:bg-ink/90"
-              >
-                Text Casper
-              </a>
-              <a
-                href={`tel:${BUSINESS_PHONE_E164}`}
-                className="rounded-full border border-ink px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition hover:bg-ink hover:text-pearl"
-              >
-                Call
-              </a>
-            </div>
-          </div>
-        )}
-
-        <div className="lux-card space-y-4 p-6">
-          <div>
-            <label className="text-xs uppercase tracking-[0.3em] text-ink/60">
-              Full name
-            </label>
-            <input
-              type="text"
-              className="mt-2 w-full rounded-full border border-fog bg-white px-4 py-3 text-sm"
-              value={fullName}
-              onChange={(event) => setFullName(event.target.value)}
-            />
-          </div>
-          <div>
-            <label className="text-xs uppercase tracking-[0.3em] text-ink/60">
-              Phone (E.164)
-            </label>
-            <input
-              type="tel"
-              placeholder="+15551234567"
-              className="mt-2 w-full rounded-full border border-fog bg-white px-4 py-3 text-sm"
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-            />
-          </div>
-          <label className="flex items-center gap-3 text-sm text-ink/70">
-            <input
-              type="checkbox"
-              checked={smsOptIn}
-              onChange={(event) => setSmsOptIn(event.target.checked)}
-            />
-            I want SMS confirmations and reminders.
-          </label>
-        </div>
-
-        <div className="lux-card space-y-4 p-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-ink/60">
-            Deposit policy
-          </p>
-          <p className="text-sm text-ink/70">
-            $20 deposit charged now to confirm booking. Reschedule allowed only 72+ hours
-            before. 15+ minutes late is a no-show and deposit is forfeited. Deposit is
-            non-refundable.
-          </p>
-          <p className="text-xs uppercase tracking-[0.3em] text-ink/60">
-            Strict policy on 24hr cancellations.
-          </p>
-          <label className="flex items-center gap-3 text-sm text-ink/70">
-            <input
-              type="checkbox"
-              checked={policyAck}
-              onChange={(event) => setPolicyAck(event.target.checked)}
-            />
-            I acknowledge the policy.
-          </label>
-        </div>
-
-        {demoMessage && <p className="text-sm text-ink/70">{demoMessage}</p>}
-        {error && <p className="text-sm text-red-600">{error}</p>}
-
-        <button
-          className="w-full rounded-full bg-ink px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-pearl transition hover:bg-ink/90"
-          onClick={handleCheckout}
-          disabled={loading || isDirectService}
+    <main id="main-content" className="mx-auto flex max-w-4xl flex-col gap-10 px-5 pb-24 pt-12 sm:px-6 sm:pt-16">
+      <section className="space-y-6 text-center">
+        <p className="eyebrow">Official booking calendar</p>
+        <h1 className="font-display text-4xl leading-tight sm:text-5xl">
+          Book with Casper on Booksy.
+        </h1>
+        <p className="mx-auto max-w-2xl text-base leading-7 text-ink/70">
+          Booksy shows Casper&apos;s live availability, current service menu, prices, and
+          booking terms in one place.
+        </p>
+        <a
+          href={BOOKSY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Continue to Casper's Booksy profile (opens in a new tab)"
+          className="primary-button"
         >
-          {loading
-            ? "Starting checkout..."
-            : demoBanner
-              ? "Request Appointment (Demo - no payment)"
-              : `Pay $${selectedService?.deposit_amount ?? 20} deposit`}
-        </button>
+          Continue to Booksy
+        </a>
+      </section>
+
+      <section className="lux-card p-7 sm:p-9" aria-labelledby="what-happens-heading">
+        <h2 id="what-happens-heading" className="section-title">
+          What happens next
+        </h2>
+        <ol className="mt-7 grid gap-6 sm:grid-cols-3">
+          <li className="space-y-2 border-l border-gold pl-4">
+            <p className="text-xs font-semibold tracking-[0.2em] text-ink/65">01</p>
+            <p className="font-semibold">Choose a service</p>
+          </li>
+          <li className="space-y-2 border-l border-gold pl-4">
+            <p className="text-xs font-semibold tracking-[0.2em] text-ink/65">02</p>
+            <p className="font-semibold">Select an open time</p>
+          </li>
+          <li className="space-y-2 border-l border-gold pl-4">
+            <p className="text-xs font-semibold tracking-[0.2em] text-ink/65">03</p>
+            <p className="font-semibold">Review and confirm</p>
+          </li>
+        </ol>
+      </section>
+
+      <section className="grid gap-5 sm:grid-cols-2">
+        <div className="lux-card p-6">
+          <h2 className="text-lg font-semibold">One source of truth</h2>
+          <p className="mt-3 text-sm leading-6 text-ink/70">
+            The website does not maintain a second calendar. Booksy is the live source for
+            appointment availability and booking details.
+          </p>
+        </div>
+        <div className="lux-card p-6">
+          <h2 className="text-lg font-semibold">Your booking information</h2>
+          <p className="mt-3 text-sm leading-6 text-ink/70">
+            Booking is completed on Booksy, which processes the information you provide.
+            Review the{" "}
+            <a
+              href={BOOKSY_PRIVACY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-ink underline decoration-gold decoration-2 underline-offset-4"
+            >
+              Booksy privacy notice
+            </a>
+            .
+          </p>
+        </div>
+      </section>
+
+      <div className="text-center">
+        <Link href="/" className="text-sm font-semibold underline decoration-gold decoration-2 underline-offset-4">
+          Return home
+        </Link>
       </div>
-    </div>
+    </main>
   );
 }
