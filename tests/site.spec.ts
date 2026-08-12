@@ -307,7 +307,7 @@ test("SEO discovery files and page-specific social metadata are present", async 
   request,
 }) => {
   const siteUrl = "https://redeemedbycasper.com";
-  for (const path of ["/", "/styles", "/book", "/privacy"]) {
+  for (const path of ["/", "/styles", "/book", "/privacy", "/preview"]) {
     const pageUrl = path === "/" ? siteUrl : siteUrl + path;
     await page.goto(path);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", pageUrl);
@@ -326,11 +326,11 @@ test("SEO discovery files and page-specific social metadata are present", async 
     );
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
       "content",
-      siteUrl + "/redeemed-og.png",
+      siteUrl + "/redeemed-casper-og-v2.jpg",
     );
     await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute(
       "content",
-      siteUrl + "/redeemed-og.png",
+      siteUrl + "/redeemed-casper-og-v2.jpg",
     );
   }
 
@@ -378,7 +378,7 @@ test("SEO discovery files and page-specific social metadata are present", async 
       });
     return {
       mark: await load("/images/brand/redeemed-mark.jpg"),
-      social: await load("/redeemed-og.png"),
+      social: await load("/redeemed-casper-og-v2.jpg"),
     };
   });
   expect(brandAssets.mark).toEqual({ height: 512, width: 512 });
