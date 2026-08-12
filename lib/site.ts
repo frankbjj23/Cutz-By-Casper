@@ -1,4 +1,4 @@
-export const SITE_URL = "https://redeemedbycasper.com";
+export const SITE_URL = "https://cutz-by-casper-umri.vercel.app";
 export const BRAND_LOGO_PATH = "/images/brand/redeemed-precision-logo.jpg";
 export const BRAND_MARK_PATH = "/images/brand/redeemed-mark.jpg";
 export const BRAND_OG_PATH = "/redeemed-og.png";

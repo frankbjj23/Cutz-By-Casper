@@ -306,7 +306,7 @@ test("SEO discovery files and page-specific social metadata are present", async 
   page,
   request,
 }) => {
-  const siteUrl = "https://redeemedbycasper.com";
+  const siteUrl = "https://cutz-by-casper-umri.vercel.app";
   for (const path of ["/", "/styles", "/book", "/privacy"]) {
     const pageUrl = path === "/" ? siteUrl : siteUrl + path;
     await page.goto(path);
