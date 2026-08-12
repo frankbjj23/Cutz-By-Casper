@@ -1,7 +1,7 @@
 export const SITE_URL = "https://redeemedbycasper.com";
 export const BRAND_LOGO_PATH = "/images/brand/redeemed-precision-logo.jpg";
 export const BRAND_MARK_PATH = "/images/brand/redeemed-mark.jpg";
-export const BRAND_OG_PATH = "/redeemed-og.png";
+export const BRAND_OG_PATH = "/redeemed-casper-og-v2.jpg";
 export const BOOKSY_URL = "https://booksy.com/en-us/dl/show-business/697614";
 export const BOOKSY_PRIVACY_URL = "https://booksy.com/en-us/p/privacy";
 export const OPENAI_DATA_CONTROLS_URL =

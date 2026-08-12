@@ -32,7 +32,7 @@ export const metadata: Metadata = {
         url: BRAND_OG_PATH,
         width: 1200,
         height: 630,
-        alt: "Redeemed Precision Grooming — premium barbering in Ridgefield Park, New Jersey",
+        alt: "Redeemed Precision Grooming logo beside Casper in a tailored suit",
       },
     ],
   },
