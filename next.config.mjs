@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "cutz-by-casper-umri.vercel.app" }],
+        destination: "https://redeemedbycasper.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     const privatePreviewHeaders = [
       { key: "Cache-Control", value: "private, no-store, max-age=0" },
