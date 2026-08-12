@@ -17,7 +17,7 @@ shows the former Lyndhurst location. Confirm the new appointment details before 
 
 ## Live links
 
-- Website: https://cutz-by-casper-umri.vercel.app
+- Website: https://redeemedbycasper.com
 - Booking: https://booksy.com/en-us/dl/show-business/697614
 
 ## Stack
@@ -34,8 +34,8 @@ shows the former Lyndhurst location. Confirm the new appointment details before 
 The website does not maintain a custom booking database, payment checkout, SMS
 service, admin calendar, or automated chat service.
 
-The existing Vercel URL and GitHub repository retain the prior project slug so live
-links and deployment integrations do not break during the public-facing rebrand.
+The Vercel project and GitHub repository retain the prior project slug so the existing
+deployment integration continues to work behind the Redeemed by Casper domain.
 
 ## Local development
 
@@ -53,6 +53,10 @@ Copy `.env.example` to `.env.local`, then provide `OPENAI_API_KEY` only when tes
 real image generation. The site and all non-billable checks build without the key.
 The checked-in invitation hash protects the initial beta; rotate it with
 `STYLE_PREVIEW_ACCESS_HASH` when needed.
+
+In Vercel Production, set `STYLE_PREVIEW_ALLOWED_ORIGIN` to
+`https://redeemedbycasper.com`. Keep preview and local values scoped to their own
+origins so the exact-origin guard does not block those environments.
 
 Open http://localhost:3000.
 
