@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { completeBookingStaffInvite } from "@/app/admin/actions";
-import AdminInviteActivation from "@/components/AdminInviteActivation";
 import { getBookingStaff } from "@/lib/server/booking-auth";
 import { getBookingSupabaseConfig } from "@/lib/supabase/config";
 
@@ -101,7 +100,15 @@ export default async function AcceptBookingInvitePage({
             </button>
           </form>
         ) : (
-          <AdminInviteActivation />
+          <div className="mt-8 border border-gold/30 bg-gold/5 p-5 text-sm leading-7 text-pearl/75">
+            <p>Verify a six-digit owner code before creating the private password.</p>
+            <Link
+              href="/admin/owner-access"
+              className="mt-4 inline-block font-semibold text-gold underline underline-offset-4"
+            >
+              Request an owner code
+            </Link>
+          </div>
         )}
 
         <Link

@@ -96,13 +96,23 @@ test("custom booking admin stays private and fails closed before database activa
   ).toBeVisible();
   await expect(page.getByText(/no password can be created here yet/i)).toBeVisible();
 
+  const ownerAccessResponse = await request.get("/admin/owner-access");
+  expect(ownerAccessResponse.ok()).toBeTruthy();
+  expect(ownerAccessResponse.headers()["cache-control"]).toContain("no-store");
+
+  await page.goto("/admin/owner-access");
+  await expect(
+    page.getByRole("heading", { name: "Use a code, not an email link" }),
+  ).toBeVisible();
+  await expect(page.getByText(/no owner code can be requested here yet/i)).toBeVisible();
+
   const invalidConfirmation = await request.get("/auth/confirm", {
     maxRedirects: 0,
   });
   expect(invalidConfirmation.status()).toBe(307);
   const confirmationRedirect = new URL(invalidConfirmation.headers().location!);
   expect(confirmationRedirect.pathname + confirmationRedirect.search).toBe(
-    "/admin/login?error=invite-invalid",
+    "/admin/owner-access",
   );
 });
 

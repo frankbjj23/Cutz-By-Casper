@@ -15,7 +15,7 @@ const messages: Record<string, string> = {
   "not-authorized": "This account is not approved for the private booking room.",
   "not-configured": "The private booking room has not been connected yet.",
   "invite-invalid":
-    "That invitation link is invalid or has expired. Request a new owner invitation.",
+    "That old email link cannot be used. Request a six-digit owner code instead.",
 };
 
 export default async function AdminLoginPage({
@@ -97,6 +97,15 @@ export default async function AdminLoginPage({
             </button>
           </form>
         )}
+
+        {configured ? (
+          <Link
+            href="/admin/owner-access"
+            className="mt-8 inline-block text-xs font-semibold uppercase tracking-[0.18em] text-gold underline decoration-gold underline-offset-8"
+          >
+            Create or reset the owner password
+          </Link>
+        ) : null}
 
         <Link
           href="/"
