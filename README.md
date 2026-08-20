@@ -1,7 +1,8 @@
-# Redeemed Precision Grooming
+# Redeemed by Casper
 
-Redeemed Precision Grooming is Casper's mobile-first premium barbering portfolio
-and booking handoff in Ridgefield Park, New Jersey. The brand story is grounded in 30 years
+Redeemed by Casper is the project and domain identity for Redeemed Precision Grooming,
+Casper's mobile-first premium barbering portfolio and booking handoff in Ridgefield Park,
+New Jersey. The public brand story is grounded in 30 years
 in the industry, faith, professionalism, relationships, and client-first service.
 
 Customers can browse Casper's work on the site, then use his existing Booksy profile

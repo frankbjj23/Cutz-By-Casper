@@ -148,11 +148,13 @@ test("private preview renders visual directions and a complete mocked result flo
 
   const haircutReferences = page.locator('label img[alt=""]');
   await expect.poll(async () => haircutReferences.count()).toBeGreaterThan(0);
-  expect(
-    await haircutReferences.evaluateAll((images) =>
-      images.every((image) => (image as HTMLImageElement).naturalWidth > 0),
-    ),
-  ).toBeTruthy();
+  await expect
+    .poll(() =>
+      haircutReferences.evaluateAll((images) =>
+        images.every((image) => (image as HTMLImageElement).naturalWidth > 0),
+      ),
+    )
+    .toBeTruthy();
 
   await page
     .getByRole("radio", { name: /Beard Length, outline, and balance/i })
