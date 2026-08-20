@@ -36,6 +36,8 @@ payments yet.
   writing directly to the database.
 - Staff access requires both a verified Supabase Auth session and an active row in
   `staff_members`.
+- Owner activation uses a typed six-digit email code. Email templates must not use
+  a one-click authentication URL because automated email scanners can consume it.
 - The public booking transaction derives duration, price, deposit, policy, hours,
   and balance from trusted database rows. Browser-supplied values are not trusted.
 - A database exclusion constraint and transaction lock prevent two customers from
@@ -65,13 +67,15 @@ These values are editable and must be reviewed by Casper before cutover.
 
 1. Create Casper's Auth user with signup disabled for the public.
 2. Add Casper's Auth user ID to `staff_members` with the `owner` role.
-3. Add the booking-specific Supabase URL and publishable key to the private preview
-   environment, then verify `/admin/login` and RLS.
-4. Build the public availability endpoint and Stripe test checkout.
-5. Add signed customer management links, notification delivery, and Google Calendar
+3. Set the Supabase Magic Link template to display `{{ .Token }}` and direct the
+   owner to `/admin/owner-access` without using `{{ .ConfirmationURL }}`.
+4. Add the booking-specific Supabase URL and publishable key to the private preview
+   environment, then verify `/admin/login`, `/admin/owner-access`, and RLS.
+5. Build the public availability endpoint and Stripe test checkout.
+6. Add signed customer management links, notification delivery, and Google Calendar
    OAuth/sync.
-6. Run a closed pilot while Booksy remains the operational calendar.
-7. Reconcile future Booksy appointments and choose a cutover date before changing
+7. Run a closed pilot while Booksy remains the operational calendar.
+8. Reconcile future Booksy appointments and choose a cutover date before changing
    public booking buttons.
 
 The Stripe checkout session and database hold will both use 30 minutes because

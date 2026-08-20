@@ -35,8 +35,9 @@ shows the former Lyndhurst location. Confirm the new appointment details before 
 
 The production website does not yet accept custom bookings or payments. The current
 development branch contains a locked-down Supabase schema and private owner dashboard
-shell; Stripe checkout, notifications, Google Calendar delivery, and the customer
-calendar are the next test-mode phases. See
+shell. Owner activation uses a six-digit email code typed into the site so automated
+email link checks cannot consume access. Stripe checkout, notifications, Google
+Calendar delivery, and the customer calendar are the next test-mode phases. See
 `docs/custom-booking-foundation.md` for the approved rules and rollout gates.
 
 The Vercel project and GitHub repository retain the prior project slug so the existing
