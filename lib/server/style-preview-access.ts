@@ -1,8 +1,5 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
-const DEFAULT_ACCESS_HASH =
-  "e3ca364bc6c1f2e92f82d7bc4359dc9e43c1a9b1261c9054187b9e163e96c490";
-
 type RateLimitBucket = {
   count: number;
   resetAt: number;
@@ -18,8 +15,10 @@ const rateLimits =
   (globalStore.__redeemedStylePreviewRateLimits = new Map<string, RateLimitBucket>());
 
 function configuredAccessHash() {
-  const candidate = process.env.STYLE_PREVIEW_ACCESS_HASH ?? DEFAULT_ACCESS_HASH;
-  return /^[a-f0-9]{64}$/i.test(candidate) ? candidate.toLowerCase() : null;
+  const candidate = process.env.STYLE_PREVIEW_ACCESS_HASH;
+  return candidate && /^[a-f0-9]{64}$/i.test(candidate)
+    ? candidate.toLowerCase()
+    : null;
 }
 
 export function hasValidStylePreviewAccess(code: string | null) {

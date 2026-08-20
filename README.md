@@ -52,8 +52,9 @@ Install and run:
 
 Copy `.env.example` to `.env.local`, then provide `OPENAI_API_KEY` only when testing a
 real image generation. The site and all non-billable checks build without the key.
-The checked-in invitation hash protects the initial beta; rotate it with
-`STYLE_PREVIEW_ACCESS_HASH` when needed.
+Set `STYLE_PREVIEW_ACCESS_HASH` to the SHA-256 hash of the invitation code in every
+environment where the private preview should be enabled. Without it, access fails
+closed.
 
 In Vercel Production, set `STYLE_PREVIEW_ALLOWED_ORIGIN` to
 `https://redeemedbycasper.com`. Keep preview and local values scoped to their own
