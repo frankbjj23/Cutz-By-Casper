@@ -8,6 +8,7 @@ node_modules
 out
 playwright-report
 test-results
+.tmp-booking-postgres/
 *.tsbuildinfo
 
 # env

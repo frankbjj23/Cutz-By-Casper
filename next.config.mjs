@@ -1,4 +1,14 @@
 /** @type {import('next').NextConfig} */
+const bookingSupabaseUrl = process.env.NEXT_PUBLIC_BOOKING_SUPABASE_URL;
+let bookingSupabaseOrigin = "";
+try {
+  bookingSupabaseOrigin = bookingSupabaseUrl
+    ? new URL(bookingSupabaseUrl).origin
+    : "";
+} catch {
+  bookingSupabaseOrigin = "";
+}
+
 const securityHeaders = [
   {
     key: "Content-Security-Policy",
@@ -13,7 +23,7 @@ const securityHeaders = [
       "font-src 'self' data:",
       "style-src 'self' 'unsafe-inline'",
       "script-src 'self' 'unsafe-inline'",
-      "connect-src 'self'",
+      `connect-src 'self'${bookingSupabaseOrigin ? ` ${bookingSupabaseOrigin}` : ""}`,
       "worker-src 'self' blob:",
       "upgrade-insecure-requests",
     ].join("; "),
@@ -55,6 +65,8 @@ const nextConfig = {
       { source: "/:path*", headers: securityHeaders },
       { source: "/preview", headers: privatePreviewHeaders },
       { source: "/api/style-preview", headers: privatePreviewHeaders },
+      { source: "/admin/:path*", headers: privatePreviewHeaders },
+      { source: "/auth/:path*", headers: privatePreviewHeaders },
     ];
   },
 };

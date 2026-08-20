@@ -7,7 +7,8 @@ in the industry, faith, professionalism, relationships, and client-first service
 
 Customers can browse Casper's work on the site, then use his existing Booksy profile
 for the current service menu, prices, policies, and live appointment availability.
-Booksy is the sole booking calendar.
+Booksy remains the sole live booking calendar while a private custom-booking
+foundation is developed and tested. The public site has not been switched.
 
 An invitation-only, noindex `/preview` beta lets an adult submit one self-photo and
 create one temporary AI hair, beard, or color concept. The site does not persist the
@@ -32,8 +33,11 @@ shows the former Lyndhurst location. Confirm the new appointment details before 
 - OpenAI Image API for the private style-preview beta
 - Sharp for full server-side image decoding, metadata removal, and normalization
 
-The website does not maintain a custom booking database, payment checkout, SMS
-service, admin calendar, or automated chat service.
+The production website does not yet accept custom bookings or payments. The current
+development branch contains a locked-down Supabase schema and private owner dashboard
+shell; Stripe checkout, notifications, Google Calendar delivery, and the customer
+calendar are the next test-mode phases. See
+`docs/custom-booking-foundation.md` for the approved rules and rollout gates.
 
 The Vercel project and GitHub repository retain the prior project slug so the existing
 deployment integration continues to work behind the Redeemed by Casper domain.
@@ -80,6 +84,8 @@ canonical Booksy links, retired API routes, SEO discovery files, and mobile over
 - /privacy — site and third-party booking privacy boundary
 - /preview — linked from the homepage, noindex, invitation-only style-preview beta
 - /api/style-preview — same-origin, invite-protected image-edit route
+- /admin/login — noindex private booking-owner sign-in; inactive until the new
+  booking database is connected
 - /robots.txt and /sitemap.xml — search discovery files
 
 `/preview` remains absent from the global navigation and sitemap. Do not remove the

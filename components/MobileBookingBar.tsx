@@ -5,7 +5,7 @@ import { BOOKSY_URL } from "@/lib/site";
 
 export default function MobileBookingBar() {
   const pathname = usePathname();
-  if (pathname === "/preview") {
+  if (pathname === "/preview" || pathname.startsWith("/admin")) {
     return null;
   }
 
