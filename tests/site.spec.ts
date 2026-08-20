@@ -66,6 +66,46 @@ test("retired API routes return not found", async ({ request }) => {
   }
 });
 
+test("custom booking admin stays private and fails closed before database activation", async ({
+  page,
+  request,
+}) => {
+  const adminResponse = await request.get("/admin", { maxRedirects: 0 });
+  expect(adminResponse.status()).toBe(307);
+  expect(adminResponse.headers().location).toBe("/admin/login");
+
+  const loginResponse = await request.get("/admin/login");
+  expect(loginResponse.ok()).toBeTruthy();
+  expect(loginResponse.headers()["cache-control"]).toContain("no-store");
+  expect(loginResponse.headers()["x-robots-tag"]).toContain("noindex");
+  expect(loginResponse.headers()["x-frame-options"]).toBe("DENY");
+
+  await page.goto("/admin/login");
+  await expect(page.getByRole("heading", { name: "Casper's sign in" })).toBeVisible();
+  await expect(page.getByText(/has not been added to this environment/i)).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  await expect(page.getByRole("link", { name: /reserve on Booksy/i })).toHaveCount(0);
+
+  const invitationResponse = await request.get("/admin/accept-invite");
+  expect(invitationResponse.ok()).toBeTruthy();
+  expect(invitationResponse.headers()["cache-control"]).toContain("no-store");
+
+  await page.goto("/admin/accept-invite");
+  await expect(
+    page.getByRole("heading", { name: "Set your private password" }),
+  ).toBeVisible();
+  await expect(page.getByText(/no password can be created here yet/i)).toBeVisible();
+
+  const invalidConfirmation = await request.get("/auth/confirm", {
+    maxRedirects: 0,
+  });
+  expect(invalidConfirmation.status()).toBe(307);
+  const confirmationRedirect = new URL(invalidConfirmation.headers().location!);
+  expect(confirmationRedirect.pathname + confirmationRedirect.search).toBe(
+    "/admin/login?error=invite-invalid",
+  );
+});
+
 test("public routes send browser security headers", async ({ request }) => {
   const response = await request.get("/");
   const headers = response.headers();
@@ -349,7 +389,11 @@ test("SEO discovery files and page-specific social metadata are present", async 
 
   const robots = await request.get("/robots.txt");
   expect(robots.ok()).toBeTruthy();
-  expect(await robots.text()).toContain("/sitemap.xml");
+  const robotsText = await robots.text();
+  expect(robotsText).toContain("/sitemap.xml");
+  expect(robotsText).toContain("Disallow: /admin");
+  expect(robotsText).toContain("Disallow: /api");
+  expect(robotsText).toContain("Disallow: /auth");
 
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBeTruthy();
