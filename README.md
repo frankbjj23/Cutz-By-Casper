@@ -7,7 +7,8 @@ in the industry, faith, professionalism, relationships, and client-first service
 
 Customers can browse Casper's work on the site, optionally save a consent-based name
 and phone number and/or email in the protected website database, then use his existing
-Booksy profile for the current service menu, prices, policies, and live appointment availability.
+official Booksy widget for the current service menu, prices, policies, and live
+appointment availability without first leaving the website.
 Booksy remains the sole live booking calendar while a private custom-booking
 foundation is developed and tested. The public site has not been switched.
 
@@ -34,7 +35,7 @@ Booksy remains the authority for appointment and location details before travel.
 - TypeScript
 - Tailwind CSS
 - Vercel
-- Booksy for third-party booking
+- Casper's official Booksy widget for third-party booking
 - Supabase for protected booking-contact storage and the private staff dashboard
 - OpenAI Image API for the private style-preview beta
 - Sharp for full server-side image decoding, metadata removal, and normalization
@@ -109,6 +110,7 @@ Do not hard-code Booksy review totals, availability, holiday closures, prices, o
 policies into this site. Those details can change and should be read from Casper's
 live Booksy profile.
 
-Booksy's public profile cannot be embedded in an iframe. If an embedded booking
-experience is added later, use only the unique widget code generated inside Casper's
-Booksy Biz account.
+The official Booksy widget uses business ID `697614`, country `us`, and language
+`en-US`, exactly as supplied from Casper's Booksy Biz account. Do not replace it with
+an arbitrary iframe or a different business ID. The canonical direct Booksy profile
+remains the fallback when the widget is blocked or unavailable.

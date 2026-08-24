@@ -95,6 +95,60 @@ test("booking contact form validates consent and fails open to Booksy when stora
   expect(getResponse.status()).toBe(405);
 });
 
+test("a saved website contact opens Casper's official Booksy widget without leaving the site", async ({
+  page,
+}) => {
+  let widgetRequestUrl = "";
+  await page.route("**/api/booking-contact", async (route) => {
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({ ok: true }),
+    });
+  });
+  await page.route("https://booksy.com/widget/code.js?**", async (route) => {
+    widgetRequestUrl = route.request().url();
+    await route.fulfill({
+      status: 200,
+      contentType: "application/javascript",
+      body: `(() => {
+        const currentScript = [...document.scripts].find((script) => script.src.includes("/widget/code.js"));
+        const container = document.createElement("div");
+        container.className = "booksy-widget-container";
+        const button = document.createElement("div");
+        button.className = "booksy-widget-button";
+        button.addEventListener("click", () => {
+          const count = Number(document.body.dataset.booksyOpened || "0") + 1;
+          document.body.dataset.booksyOpened = String(count);
+        });
+        container.appendChild(button);
+        currentScript?.parentNode?.insertBefore(container, currentScript);
+      })();`,
+    });
+  });
+
+  await page.goto("/book");
+  await page.getByLabel("Full name").fill("Widget Test Guest");
+  await page.getByLabel(/Email/).fill("widget-test@example.com");
+  await page.getByLabel(/I agree that Redeemed Precision Grooming/i).check();
+  await page.getByRole("button", { name: "Save & Continue to Booksy" }).click();
+
+  await expect(page.getByRole("button", { name: "Open Live Booking Calendar" })).toBeEnabled();
+  await expect.poll(() => page.locator("body").getAttribute("data-booksy-opened")).toBe("1");
+  const widgetUrl = new URL(widgetRequestUrl);
+  expect(widgetUrl.searchParams.get("id")).toBe("697614");
+  expect(widgetUrl.searchParams.get("country")).toBe("us");
+  expect(widgetUrl.searchParams.get("lang")).toBe("en-US");
+  expect(new URL(page.url()).pathname).toBe("/book");
+
+  await page.getByRole("button", { name: "Open Live Booking Calendar" }).click();
+  await expect.poll(() => page.locator("body").getAttribute("data-booksy-opened")).toBe("2");
+  await expect(page.getByRole("link", { name: "Open Booksy in a new tab" })).toHaveAttribute(
+    "href",
+    BOOKSY_URL,
+  );
+});
+
 test("retired API routes return not found", async ({ request }) => {
   for (const path of [
     "/api/services",
@@ -161,6 +215,12 @@ test("public routes send browser security headers", async ({ request }) => {
   const headers = response.headers();
 
   expect(headers["content-security-policy"]).toContain("default-src 'self'");
+  expect(headers["content-security-policy"]).toContain(
+    "script-src 'self' 'unsafe-inline' https://booksy.com",
+  );
+  expect(headers["content-security-policy"]).toContain(
+    "frame-src 'self' https://booksy.com",
+  );
   expect(headers["permissions-policy"]).toContain("camera=()");
   expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");
   expect(headers["x-content-type-options"]).toBe("nosniff");

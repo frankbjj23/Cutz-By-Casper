@@ -155,9 +155,10 @@ export default function PrivacyPage() {
         <section className="space-y-3">
           <h2 className="font-display text-2xl text-pearl">Booksy bookings</h2>
           <p className="text-sm leading-7 text-pearl/60">
-            After the optional website contact step, booking continues on Casper&apos;s Booksy
-            profile. Booksy separately processes the information you enter there under its
-            own terms and privacy practices. Review the{" "}
+            After the optional website contact step, Casper&apos;s official Booksy calendar may
+            open in an embedded window on this site. That window is still provided and
+            operated by Booksy. Booksy separately processes the information you enter there
+            under its own terms and privacy practices. Review the{" "}
             <a
               href={BOOKSY_PRIVACY_URL}
               target="_blank"

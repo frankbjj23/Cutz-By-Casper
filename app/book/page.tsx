@@ -43,9 +43,9 @@ export default function BookPage() {
           <span className="block italic text-gold">your time.</span>
         </h1>
         <p className="mx-auto max-w-2xl text-base leading-8 text-pearl/60">
-          Save your contact details on this site, then continue to Casper&apos;s existing
-          Booksy profile, where the live calendar, current menu, pricing, and booking
-          terms stay together.
+          Save your contact details on this site, then use Casper&apos;s official Booksy
+          calendar here to choose the service and time. Booksy still handles the live
+          availability, pricing, and final confirmation.
         </p>
         <p className="mx-auto max-w-2xl border border-gold/30 bg-gold/5 px-5 py-4 text-sm leading-7 text-pearl/70">
           Current Booksy location: {locationDisplay}. Confirm the appointment time and
