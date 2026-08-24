@@ -1,6 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2.112.4";
 
-const CONSENT_VERSION = "2026-08-24-v1";
+const CONSENT_VERSION = "2026-08-24-v2";
 const MAX_REQUESTS_PER_HOUR = 5;
 const RESPONSE_HEADERS = {
   "Cache-Control": "private, no-store, max-age=0",
@@ -137,14 +137,6 @@ Deno.serve(async (request) => {
 
   const now = new Date();
   const hourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
-
-  const { error: purgeError } = await supabase
-    .from("booking_contacts")
-    .delete()
-    .lte("expires_at", now.toISOString());
-  if (purgeError) {
-    console.error("booking_contact.expiry_purge_failed", { code: purgeError.code });
-  }
 
   const { count, error: countError } = await supabase
     .from("booking_contacts")

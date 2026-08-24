@@ -86,7 +86,7 @@ test("booking contact form validates consent and fails open to Booksy when stora
     data: {
       fullName: "A",
       consent: true,
-      consentVersion: "2026-08-24-v1",
+      consentVersion: "2026-08-24-v2",
     },
   });
   expect(invalidContact.status()).toBe(400);

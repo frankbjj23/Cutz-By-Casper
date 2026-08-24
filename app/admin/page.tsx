@@ -23,7 +23,7 @@ type BookingContactRow = {
   email: string | null;
   phone_e164: string | null;
   created_at: string;
-  expires_at: string;
+  expires_at: string | null;
 };
 
 function formatMoney(cents: number) {
@@ -83,7 +83,6 @@ export default async function AdminPage() {
         .select("id, full_name, email, phone_e164, created_at, expires_at", {
           count: "exact",
         })
-        .gt("expires_at", now)
         .order("created_at", { ascending: false })
         .limit(25),
     ]);
@@ -174,7 +173,9 @@ export default async function AdminPage() {
                   {contact.email ? <p className="break-all">{contact.email}</p> : null}
                 </div>
                 <p className="text-xs text-pearl/45">
-                  Expires {formatContactDate(contact.expires_at)}
+                  {contact.expires_at
+                    ? `Legacy notice: expires ${formatContactDate(contact.expires_at)}`
+                    : "Kept until deleted"}
                 </p>
               </article>
             ))}

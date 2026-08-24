@@ -14,7 +14,9 @@ foundation is developed and tested. The public site has not been switched.
 
 The saved website record is a booking handoff contact, not a confirmed appointment
 and not marketing consent. It is available only to approved staff in the private
-dashboard and is automatically deleted within 12 months.
+dashboard. New contacts have no automatic expiration and remain until approved staff
+deletes them or the customer requests deletion. Legacy contacts keep the 12-month
+limit shown when they originally consented.
 
 An invitation-only, noindex `/preview` beta lets an adult submit one self-photo and
 create one temporary AI hair, beard, or color concept. The site does not persist the

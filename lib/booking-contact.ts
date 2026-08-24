@@ -1,4 +1,4 @@
-export const BOOKING_CONTACT_CONSENT_VERSION = "2026-08-24-v1";
+export const BOOKING_CONTACT_CONSENT_VERSION = "2026-08-24-v2";
 
 export type BookingContactSubmission = {
   fullName: string;

@@ -185,9 +185,69 @@ begin
   if not exists (
     select 1
     from cron.job
+    where jobname = 'purge-expired-legacy-redeemed-booking-contacts'
+  ) then
+    raise exception 'Legacy booking-contact retention job is missing';
+  end if;
+
+  if exists (
+    select 1
+    from cron.job
     where jobname = 'purge-expired-redeemed-booking-contacts'
   ) then
-    raise exception 'Daily booking-contact retention job is missing';
+    raise exception 'The former all-contact deletion job still exists';
+  end if;
+end;
+$$;
+
+do $$
+begin
+  insert into public.booking_contacts (
+    full_name,
+    email,
+    consent_version,
+    consented_at,
+    source_path,
+    network_fingerprint,
+    created_at,
+    expires_at
+  ) values
+    (
+      'Legacy Retention Test',
+      'legacy-retention-test@example.com',
+      '2026-08-24-v1',
+      now() - interval '13 months',
+      '/book',
+      repeat('a', 64),
+      now() - interval '13 months',
+      now() - interval '1 month'
+    ),
+    (
+      'Current Retention Test',
+      'current-retention-test@example.com',
+      '2026-08-24-v2',
+      now(),
+      '/book',
+      repeat('b', 64),
+      now(),
+      null
+    );
+
+  perform booking_private.purge_expired_booking_contacts();
+
+  if exists (
+    select 1 from public.booking_contacts
+    where email = 'legacy-retention-test@example.com'
+  ) then
+    raise exception 'Expired legacy contact was not removed';
+  end if;
+
+  if not exists (
+    select 1 from public.booking_contacts
+    where email = 'current-retention-test@example.com'
+      and expires_at is null
+  ) then
+    raise exception 'Current contact was incorrectly deleted or assigned an expiration';
   end if;
 end;
 $$;

@@ -80,10 +80,11 @@ export default function PrivacyPage() {
             <div className="border border-white/10 p-5">
               <h3 className="font-display text-xl text-pearl">Retention and choice</h3>
               <p className="mt-3 text-sm leading-7 text-pearl/60">
-                Booking contacts are kept for no longer than 12 months and are removed by a
-                daily deletion job. The consent is for this booking follow-up only; it does
-                not add you to a marketing list. You may instead use the direct Booksy link
-                without saving information on this site.
+                New booking contacts are kept until approved staff deletes them or the
+                customer requests deletion. Earlier contacts submitted under a fixed
+                12-month notice remain governed by that earlier promise. The consent is for
+                booking follow-up only; it does not add you to a marketing list. You may
+                instead use the direct Booksy link without saving information on this site.
               </p>
             </div>
           </div>

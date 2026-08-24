@@ -168,9 +168,10 @@ export default function BookingContactForm() {
             className="mt-1 size-4 shrink-0 accent-[#c7a55d]"
           />
           <span className="text-xs leading-6 text-pearl/60">
-            I agree that {"Redeemed Precision Grooming"} may store these details for up
-            to 12 months to follow up about this booking handoff. This does not confirm
-            an appointment or subscribe me to marketing. See the{" "}
+            I agree that {"Redeemed Precision Grooming"} may store these details until
+            approved staff deletes them or I request deletion, so Casper can follow up
+            about this booking handoff. This does not confirm an appointment or subscribe
+            me to marketing. See the{" "}
             <a href="/privacy#booking-contact" className="font-semibold text-pearl underline decoration-gold underline-offset-4">
               privacy details
             </a>
