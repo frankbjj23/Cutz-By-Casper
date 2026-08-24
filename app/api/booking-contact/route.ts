@@ -4,7 +4,6 @@ import {
   consumeBookingContactRateLimit,
   getRequestNetworkAddress,
 } from "@/lib/server/booking-contact-rate";
-import { getBookingSupabaseConfig } from "@/lib/supabase/config";
 import { SITE_URL } from "@/lib/site";
 
 export const runtime = "nodejs";
@@ -16,6 +15,10 @@ const RESPONSE_HEADERS = {
   "X-Content-Type-Options": "nosniff",
   "X-Robots-Tag": "noindex, nofollow, noarchive",
 };
+const DEFAULT_BOOKING_CONTACT_SUPABASE_URL =
+  "https://wtbcvhcwmbjthcrywuwd.supabase.co";
+const DEFAULT_BOOKING_CONTACT_PUBLISHABLE_KEY =
+  "sb_publishable_6oRcDDxTYi7slj9ZEoQNxA_-TdmPv55";
 
 function jsonError(status: number, code: string, message: string, retryAfter?: number) {
   const headers: Record<string, string> = { ...RESPONSE_HEADERS };
@@ -79,23 +82,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true }, { status: 201, headers: RESPONSE_HEADERS });
   }
 
-  const config = getBookingSupabaseConfig();
-  if (!config) {
-    return jsonError(
-      503,
-      "STORAGE_UNAVAILABLE",
-      "Contact saving is temporarily unavailable. You can still continue to Booksy.",
-    );
-  }
+  const receiverUrl =
+    process.env.BOOKING_CONTACT_SUPABASE_URL?.trim() ||
+    DEFAULT_BOOKING_CONTACT_SUPABASE_URL;
+  const receiverKey =
+    process.env.BOOKING_CONTACT_SUPABASE_PUBLISHABLE_KEY?.trim() ||
+    DEFAULT_BOOKING_CONTACT_PUBLISHABLE_KEY;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
   try {
-    const upstream = await fetch(`${config.url}/functions/v1/capture-booking-contact`, {
+    const upstream = await fetch(`${receiverUrl}/functions/v1/capture-booking-contact`, {
       method: "POST",
       headers: {
-        apikey: config.publishableKey,
-        authorization: `Bearer ${config.publishableKey}`,
+        apikey: receiverKey,
+        authorization: `Bearer ${receiverKey}`,
         "content-type": "application/json",
         "x-redeemed-site-origin": allowedOrigin,
         "x-redeemed-client-ip": getRequestNetworkAddress(request),
