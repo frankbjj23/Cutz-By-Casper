@@ -16,7 +16,8 @@ The saved website record is a booking handoff contact, not a confirmed appointme
 and not marketing consent. It is available only to approved staff in the private
 dashboard. New contacts have no automatic expiration and remain until approved staff
 deletes them or the customer requests deletion. Legacy contacts keep the 12-month
-limit shown when they originally consented.
+limit shown when they originally consented. Matching email addresses or phone numbers
+are consolidated into one master contact with all unique methods and a handoff count.
 
 An invitation-only, noindex `/preview` beta lets an adult submit one self-photo and
 create one temporary AI hair, beard, or color concept. The site does not persist the

@@ -22,8 +22,14 @@ type BookingContactRow = {
   full_name: string;
   email: string | null;
   phone_e164: string | null;
-  created_at: string;
+  first_seen_at: string;
+  last_seen_at: string;
+  handoff_count: number;
   expires_at: string | null;
+  booking_contact_methods: Array<{
+    kind: "email" | "phone";
+    value: string;
+  }>;
 };
 
 function formatMoney(cents: number) {
@@ -80,11 +86,12 @@ export default async function AdminPage() {
         .eq("active", true),
       supabase!
         .from("booking_contacts")
-        .select("id, full_name, email, phone_e164, created_at, expires_at", {
-          count: "exact",
-        })
-        .order("created_at", { ascending: false })
-        .limit(25),
+        .select(
+          "id, full_name, email, phone_e164, first_seen_at, last_seen_at, handoff_count, expires_at, booking_contact_methods(kind, value)",
+          { count: "exact" },
+        )
+        .order("last_seen_at", { ascending: false })
+        .limit(500),
     ]);
 
   const rows = (appointments ?? []) as unknown as AppointmentRow[];
@@ -126,7 +133,7 @@ export default async function AdminPage() {
           </p>
         </div>
         <div className="lux-card p-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Saved contacts</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Master contacts</p>
           <p className="mt-3 font-display text-4xl text-gold">
             {bookingContactError ? "—" : (bookingContactCount ?? contactRows.length)}
           </p>
@@ -142,43 +149,83 @@ export default async function AdminPage() {
       <section className="mt-8 border border-gold/25 bg-[#111113] p-5 sm:p-8" aria-labelledby="contacts-heading">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow">Website handoff</p>
+            <p className="eyebrow">Master contact sheet</p>
             <h2 id="contacts-heading" className="mt-4 font-display text-3xl text-pearl">
-              Saved booking contacts
+              One person, one contact
             </h2>
           </div>
-          <p className="text-xs leading-5 text-pearl/50">Not confirmed Booksy appointments</p>
+          <p className="max-w-sm text-xs leading-5 text-pearl/50">
+            Repeated handoffs merge by email or phone. These are not confirmed Booksy appointments.
+          </p>
         </div>
 
         {bookingContactError ? (
           <p role="alert" className="mt-6 border border-red-300/40 bg-red-950/30 p-4 text-sm text-red-100">
-            Saved booking contacts could not be loaded.
+            The master contact sheet could not be loaded.
           </p>
         ) : contactRows.length === 0 ? (
           <p className="mt-8 text-sm leading-7 text-pearl/60">
             No one has used the website contact handoff yet.
           </p>
         ) : (
-          <div className="mt-6 divide-y divide-pearl/10">
-            {contactRows.map((contact) => (
-              <article key={contact.id} className="grid gap-3 py-5 sm:grid-cols-[1fr_1.25fr_auto] sm:items-center">
-                <div>
-                  <p className="font-semibold text-pearl">{contact.full_name}</p>
-                  <p className="mt-1 text-xs text-pearl/45">
-                    Saved {formatContactDate(contact.created_at)}
-                  </p>
-                </div>
-                <div className="space-y-1 text-sm text-pearl/70">
-                  {contact.phone_e164 ? <p>{contact.phone_e164}</p> : null}
-                  {contact.email ? <p className="break-all">{contact.email}</p> : null}
-                </div>
-                <p className="text-xs text-pearl/45">
-                  {contact.expires_at
-                    ? `Legacy notice: expires ${formatContactDate(contact.expires_at)}`
-                    : "Kept until deleted"}
-                </p>
-              </article>
-            ))}
+          <div className="mt-6 overflow-x-auto border border-pearl/10">
+            <table className="w-full min-w-[980px] border-collapse text-left text-sm">
+              <caption className="sr-only">
+                Deduplicated website-to-Booksy contact master sheet
+              </caption>
+              <thead className="bg-black/35 text-[0.65rem] uppercase tracking-[0.16em] text-pearl/55">
+                <tr>
+                  <th scope="col" className="px-4 py-4 font-semibold">Name</th>
+                  <th scope="col" className="px-4 py-4 font-semibold">Phone</th>
+                  <th scope="col" className="px-4 py-4 font-semibold">Email</th>
+                  <th scope="col" className="px-4 py-4 font-semibold">First saved</th>
+                  <th scope="col" className="px-4 py-4 font-semibold">Last handoff</th>
+                  <th scope="col" className="px-4 py-4 text-center font-semibold">Handoffs</th>
+                  <th scope="col" className="px-4 py-4 font-semibold">Retention</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-pearl/10">
+                {contactRows.map((contact) => {
+                  const phones = contact.booking_contact_methods
+                    .filter((method) => method.kind === "phone")
+                    .map((method) => method.value);
+                  const emails = contact.booking_contact_methods
+                    .filter((method) => method.kind === "email")
+                    .map((method) => method.value);
+
+                  if (phones.length === 0 && contact.phone_e164) phones.push(contact.phone_e164);
+                  if (emails.length === 0 && contact.email) emails.push(contact.email);
+
+                  return (
+                    <tr key={contact.id} className="align-top text-pearl/70">
+                      <th scope="row" className="px-4 py-5 font-semibold text-pearl">
+                        {contact.full_name}
+                      </th>
+                      <td className="space-y-1 px-4 py-5">
+                        {phones.map((phone) => <p key={phone}>{phone}</p>)}
+                      </td>
+                      <td className="space-y-1 px-4 py-5">
+                        {emails.map((email) => <p key={email} className="break-all">{email}</p>)}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-5">
+                        {formatContactDate(contact.first_seen_at)}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-5">
+                        {formatContactDate(contact.last_seen_at)}
+                      </td>
+                      <td className="px-4 py-5 text-center font-semibold text-gold">
+                        {contact.handoff_count}
+                      </td>
+                      <td className="px-4 py-5 text-xs leading-5 text-pearl/50">
+                        {contact.expires_at
+                          ? `Legacy notice: expires ${formatContactDate(contact.expires_at)}`
+                          : "Kept until deleted"}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
       </section>

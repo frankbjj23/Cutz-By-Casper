@@ -22,7 +22,9 @@ begin
       'notification_outbox',
       'calendar_sync_jobs',
       'staff_notification_settings',
-      'booking_contacts'
+      'booking_contacts',
+      'booking_contact_methods',
+      'booking_contact_capture_events'
     ])
     and rowsecurity = false;
 
@@ -54,7 +56,9 @@ begin
       'notification_outbox',
       'calendar_sync_jobs',
       'staff_notification_settings',
-      'booking_contacts'
+      'booking_contacts',
+      'booking_contact_methods',
+      'booking_contact_capture_events'
     ])
     and (
       has_table_privilege('anon', format('%I.%I', table_schema, table_name), 'select') or
@@ -162,6 +166,26 @@ begin
   ) then
     raise exception 'Service role cannot execute booking-contact retention cleanup';
   end if;
+
+  if has_function_privilege(
+    'anon',
+    'public.capture_or_merge_booking_contact(text,text,text,text,timestamptz,text,text)',
+    'execute'
+  ) or has_function_privilege(
+    'authenticated',
+    'public.capture_or_merge_booking_contact(text,text,text,text,timestamptz,text,text)',
+    'execute'
+  ) then
+    raise exception 'Browser roles can execute master contact capture directly';
+  end if;
+
+  if not has_function_privilege(
+    'service_role',
+    'public.capture_or_merge_booking_contact(text,text,text,text,timestamptz,text,text)',
+    'execute'
+  ) then
+    raise exception 'Service role cannot execute master contact capture';
+  end if;
 end;
 $$;
 
@@ -182,6 +206,17 @@ begin
     raise exception 'Service role cannot capture booking contacts';
   end if;
 
+  if has_table_privilege('anon', 'public.booking_contact_methods', 'select')
+    or has_table_privilege('anon', 'public.booking_contact_capture_events', 'select')
+    or has_table_privilege('authenticated', 'public.booking_contact_capture_events', 'select') then
+    raise exception 'Master contact internals are exposed to a browser role';
+  end if;
+
+  if not has_table_privilege('authenticated', 'public.booking_contact_methods', 'select')
+    or not has_table_privilege('service_role', 'public.booking_contact_capture_events', 'insert') then
+    raise exception 'Master contact table privileges are incomplete';
+  end if;
+
   if not exists (
     select 1
     from cron.job
@@ -197,6 +232,79 @@ begin
   ) then
     raise exception 'The former all-contact deletion job still exists';
   end if;
+end;
+$$;
+
+do $$
+declare
+  first_contact_id uuid;
+  second_contact_id uuid;
+  third_contact_id uuid;
+  master_count integer;
+  method_count integer;
+  event_count integer;
+  total_handoffs integer;
+begin
+  first_contact_id := public.capture_or_merge_booking_contact(
+    'Master Contact Test',
+    'master-contact-one@example.com',
+    '+19995550199',
+    '2026-08-24-v2',
+    now(),
+    '/book',
+    repeat('c', 64)
+  );
+
+  second_contact_id := public.capture_or_merge_booking_contact(
+    'Master Contact Test Updated',
+    'master-contact-two@example.com',
+    '+19995550199',
+    '2026-08-24-v2',
+    now(),
+    '/book',
+    repeat('c', 64)
+  );
+
+  third_contact_id := public.capture_or_merge_booking_contact(
+    'Master Contact Test Final',
+    'MASTER-CONTACT-ONE@EXAMPLE.COM',
+    null,
+    '2026-08-24-v2',
+    now(),
+    '/book',
+    repeat('c', 64)
+  );
+
+  if first_contact_id <> second_contact_id or first_contact_id <> third_contact_id then
+    raise exception 'Matching email or phone did not resolve to one master contact';
+  end if;
+
+  select count(*), max(handoff_count)
+  into master_count, total_handoffs
+  from public.booking_contacts
+  where id = first_contact_id;
+
+  select count(*) into method_count
+  from public.booking_contact_methods
+  where contact_id = first_contact_id;
+
+  select count(*) into event_count
+  from public.booking_contact_capture_events
+  where contact_id = first_contact_id;
+
+  if master_count <> 1 or total_handoffs <> 3 then
+    raise exception 'Master contact row or handoff count is incorrect';
+  end if;
+
+  if method_count <> 3 then
+    raise exception 'Master contact did not retain two emails and one phone';
+  end if;
+
+  if event_count <> 3 then
+    raise exception 'Capture event count does not match successful handoffs';
+  end if;
+
+  delete from public.booking_contacts where id = first_contact_id;
 end;
 $$;
 

@@ -66,7 +66,9 @@ export default function PrivacyPage() {
             mobile number, email address, or both that you submit. It also stores the time
             and version of your consent, the source page, and a one-way keyed network hash
             used for abuse protection. The raw network address is not placed in the booking
-            contact table.
+            contact table. Repeated handoffs sharing an email address or phone number are
+            combined into one master contact, while retaining the unique contact methods
+            and the number of handoffs.
           </p>
           <div className="grid gap-5 sm:grid-cols-2">
             <div className="border border-white/10 p-5">
@@ -91,7 +93,9 @@ export default function PrivacyPage() {
           <p className="text-sm leading-7 text-pearl/60">
             Supabase hosts the protected booking-contact database and its secure receiving
             function. Table access is blocked for anonymous visitors. Approved staff can
-            view or delete booking contacts through the private dashboard.
+            view the master contact sheet or delete contacts through the private dashboard.
+            Short-lived abuse-control events contain only the one-way network hash and are
+            removed after 24 hours.
           </p>
         </section>
 

@@ -139,7 +139,7 @@ Deno.serve(async (request) => {
   const hourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
 
   const { count, error: countError } = await supabase
-    .from("booking_contacts")
+    .from("booking_contact_capture_events")
     .select("id", { count: "exact", head: true })
     .eq("network_fingerprint", networkFingerprint)
     .gte("created_at", hourAgo);
@@ -151,17 +151,20 @@ Deno.serve(async (request) => {
     return json(429, { error: { code: "RATE_LIMITED" } }, 3600);
   }
 
-  const { error: insertError } = await supabase.from("booking_contacts").insert({
-    full_name: fullName,
-    email,
-    phone_e164: phoneE164,
-    consent_version: CONSENT_VERSION,
-    consented_at: consentedAt.toISOString(),
-    source_path: "/book",
-    network_fingerprint: networkFingerprint,
-  });
-  if (insertError) {
-    console.error("booking_contact.insert_failed", { code: insertError.code });
+  const { error: captureError } = await supabase.rpc(
+    "capture_or_merge_booking_contact",
+    {
+      p_full_name: fullName,
+      p_email: email,
+      p_phone_e164: phoneE164,
+      p_consent_version: CONSENT_VERSION,
+      p_consented_at: consentedAt.toISOString(),
+      p_source_path: "/book",
+      p_network_fingerprint: networkFingerprint,
+    },
+  );
+  if (captureError) {
+    console.error("booking_contact.capture_failed", { code: captureError.code });
     return json(503, { error: { code: "STORAGE_UNAVAILABLE" } });
   }
 
