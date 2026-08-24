@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { BOOKSY_URL, BRAND_MARK_PATH } from "@/lib/site";
+import { BRAND_MARK_PATH } from "@/lib/site";
 
 export default function SiteHeader() {
   return (
@@ -35,15 +35,13 @@ export default function SiteHeader() {
           >
             Portfolio
           </Link>
-          <a
-            href={BOOKSY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Book on Booksy (opens in a new tab)"
+          <Link
+            href="/book"
+            aria-label="Start booking"
             className="border border-gold bg-gold px-4 py-2.5 text-[0.7rem] font-bold uppercase tracking-[0.18em] text-ink transition hover:bg-pearl sm:px-5 sm:tracking-[0.22em]"
           >
             Book
-          </a>
+          </Link>
         </nav>
       </div>
     </header>

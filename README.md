@@ -5,10 +5,15 @@ Casper's mobile-first premium barbering portfolio and booking handoff in Ridgefi
 New Jersey. The public brand story is grounded in 30 years
 in the industry, faith, professionalism, relationships, and client-first service.
 
-Customers can browse Casper's work on the site, then use his existing Booksy profile
-for the current service menu, prices, policies, and live appointment availability.
+Customers can browse Casper's work on the site, optionally save a consent-based name
+and phone number and/or email in the protected website database, then use his existing
+Booksy profile for the current service menu, prices, policies, and live appointment availability.
 Booksy remains the sole live booking calendar while a private custom-booking
 foundation is developed and tested. The public site has not been switched.
+
+The saved website record is a booking handoff contact, not a confirmed appointment
+and not marketing consent. It is available only to approved staff in the private
+dashboard and is automatically deleted within 12 months.
 
 An invitation-only, noindex `/preview` beta lets an adult submit one self-photo and
 create one temporary AI hair, beard, or color concept. The site does not persist the
@@ -30,11 +35,13 @@ Booksy remains the authority for appointment and location details before travel.
 - Tailwind CSS
 - Vercel
 - Booksy for third-party booking
+- Supabase for protected booking-contact storage and the private staff dashboard
 - OpenAI Image API for the private style-preview beta
 - Sharp for full server-side image decoding, metadata removal, and normalization
 
-The production website does not yet accept custom bookings or payments. The codebase
-contains a locked-down Supabase schema and private owner dashboard foundation.
+The production website does not yet accept custom bookings or payments. It does offer
+an optional website-owned contact handoff before Booksy. The codebase also contains a
+locked-down Supabase schema and private owner dashboard foundation.
 Owner access uses a six-digit email code typed into the site so automated
 email link checks cannot consume access. Stripe checkout, notifications, Google
 Calendar delivery, and the customer calendar are the next test-mode phases. See
@@ -75,16 +82,18 @@ Open http://localhost:3000.
     npm run scan-encoding
 
 The Playwright tests build the production application and verify the customer routes,
-canonical Booksy links, retired API routes, SEO discovery files, and mobile overflow.
+booking-contact validation and graceful fallback, canonical Booksy links, retired API
+routes, SEO discovery files, and mobile overflow.
 
 ## Routes
 
 - / — services overview, booking path, gallery preview, and location
 - /styles — filterable haircut portfolio
-- /book — branded handoff to Casper's canonical Booksy profile
-- /privacy — site and third-party booking privacy boundary
+- /book — optional website contact capture followed by Casper's canonical Booksy profile
+- /privacy — site storage, style-preview, and third-party booking privacy boundaries
 - /preview — linked from the homepage, noindex, invitation-only style-preview beta
 - /api/style-preview — same-origin, invite-protected image-edit route
+- /api/booking-contact — same-origin, validated server handoff to the protected Supabase receiver
 - /admin/login — noindex private booking-owner sign-in for the dormant custom-booking
   foundation
 - /robots.txt and /sitemap.xml — search discovery files

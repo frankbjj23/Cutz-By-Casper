@@ -17,6 +17,15 @@ type AppointmentRow = {
   customers: { full_name: string } | null;
 };
 
+type BookingContactRow = {
+  id: string;
+  full_name: string;
+  email: string | null;
+  phone_e164: string | null;
+  created_at: string;
+  expires_at: string;
+};
+
 function formatMoney(cents: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -35,6 +44,15 @@ function formatAppointmentTime(value: string) {
   }).format(new Date(value));
 }
 
+function formatContactDate(value: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
+}
+
 export default async function AdminPage() {
   const staff = await requireBookingStaff();
   const supabase = await createBookingServerClient();
@@ -43,6 +61,7 @@ export default async function AdminPage() {
   const [
     { data: appointments, error: appointmentError, count: appointmentCount },
     { count: serviceCount, error: serviceError },
+    { data: bookingContacts, error: bookingContactError, count: bookingContactCount },
   ] =
     await Promise.all([
       supabase!
@@ -59,9 +78,18 @@ export default async function AdminPage() {
         .from("services")
         .select("id", { count: "exact", head: true })
         .eq("active", true),
+      supabase!
+        .from("booking_contacts")
+        .select("id, full_name, email, phone_e164, created_at, expires_at", {
+          count: "exact",
+        })
+        .gt("expires_at", now)
+        .order("created_at", { ascending: false })
+        .limit(25),
     ]);
 
   const rows = (appointments ?? []) as unknown as AppointmentRow[];
+  const contactRows = (bookingContacts ?? []) as BookingContactRow[];
 
   return (
     <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl px-5 pb-24 pt-12 sm:px-8 sm:pt-16">
@@ -85,7 +113,7 @@ export default async function AdminPage() {
         </form>
       </div>
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-3" aria-label="Booking summary">
+      <section className="mt-8 grid gap-4 sm:grid-cols-4" aria-label="Booking summary">
         <div className="lux-card p-6">
           <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Upcoming</p>
           <p className="mt-3 font-display text-4xl text-gold">
@@ -99,11 +127,59 @@ export default async function AdminPage() {
           </p>
         </div>
         <div className="lux-card p-6">
+          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Saved contacts</p>
+          <p className="mt-3 font-display text-4xl text-gold">
+            {bookingContactError ? "—" : (bookingContactCount ?? contactRows.length)}
+          </p>
+        </div>
+        <div className="lux-card p-6">
           <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Booking status</p>
           <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-pearl">
             Private test only
           </p>
         </div>
+      </section>
+
+      <section className="mt-8 border border-gold/25 bg-[#111113] p-5 sm:p-8" aria-labelledby="contacts-heading">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow">Website handoff</p>
+            <h2 id="contacts-heading" className="mt-4 font-display text-3xl text-pearl">
+              Saved booking contacts
+            </h2>
+          </div>
+          <p className="text-xs leading-5 text-pearl/50">Not confirmed Booksy appointments</p>
+        </div>
+
+        {bookingContactError ? (
+          <p role="alert" className="mt-6 border border-red-300/40 bg-red-950/30 p-4 text-sm text-red-100">
+            Saved booking contacts could not be loaded.
+          </p>
+        ) : contactRows.length === 0 ? (
+          <p className="mt-8 text-sm leading-7 text-pearl/60">
+            No one has used the website contact handoff yet.
+          </p>
+        ) : (
+          <div className="mt-6 divide-y divide-pearl/10">
+            {contactRows.map((contact) => (
+              <article key={contact.id} className="grid gap-3 py-5 sm:grid-cols-[1fr_1.25fr_auto] sm:items-center">
+                <div>
+                  <p className="font-semibold text-pearl">{contact.full_name}</p>
+                  <p className="mt-1 text-xs text-pearl/45">
+                    Saved {formatContactDate(contact.created_at)}
+                  </p>
+                </div>
+                <div className="space-y-1 text-sm text-pearl/70">
+                  {contact.phone_e164 ? <p>{contact.phone_e164}</p> : null}
+                  {contact.email ? <p className="break-all">{contact.email}</p> : null}
+                </div>
+                <p className="text-xs text-pearl/45">
+                  Expires {formatContactDate(contact.expires_at)}
+                </p>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="mt-8 border border-pearl/15 bg-[#111113] p-5 sm:p-8" aria-labelledby="upcoming-heading">

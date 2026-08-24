@@ -58,15 +58,13 @@ export default function HomePage() {
                 about themselves.
               </p>
               <div className="flex flex-wrap gap-3 pt-2">
-                <a
-                  href={BOOKSY_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Reserve an appointment on Booksy (opens in a new tab)"
+                <Link
+                  href="/book"
+                  aria-label="Start booking an appointment"
                   className="primary-button"
                 >
                   Reserve an Appointment
-                </a>
+                </Link>
                 <Link href="/styles" className="secondary-button">
                   Explore the Portfolio
                 </Link>
@@ -147,14 +145,9 @@ export default function HomePage() {
               <Link href="/preview" className="primary-button">
                 Enter the Private Preview
               </Link>
-              <a
-                href={BOOKSY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="secondary-button"
-              >
-                Reserve on Booksy
-              </a>
+              <Link href="/book" className="secondary-button">
+                Start Booking
+              </Link>
             </div>
           </div>
 
@@ -200,14 +193,12 @@ export default function HomePage() {
               Booksy is Casper&apos;s one live calendar. The service menu, open times,
               current pricing, and terms stay together in one place.
             </p>
-            <a
-              href={BOOKSY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/book"
               className="inline-flex min-h-12 items-center justify-center border border-ink bg-ink px-7 py-3 text-[0.68rem] font-bold uppercase tracking-[0.22em] text-pearl transition hover:bg-espresso"
             >
-              Book on Booksy
-            </a>
+              Start Booking
+            </Link>
           </div>
           <ol className="border-t border-ink/20">
             {bookingSteps.map((step) => (
@@ -295,14 +286,12 @@ export default function HomePage() {
               appointment time and location on Booksy before traveling.
             </p>
             <div className="flex flex-wrap gap-3">
-              <a
-                href={BOOKSY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/book"
                 className="primary-button"
               >
                 Check Availability
-              </a>
+              </Link>
               <span className="inline-flex min-h-12 items-center border border-white/15 px-5 py-3 text-xs leading-5 text-pearl/60">
                 Current Booksy listing
               </span>

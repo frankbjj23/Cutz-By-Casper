@@ -11,6 +11,7 @@ export default defineConfig([
     "coverage/**",
     "out/**",
     "playwright-report/**",
+    "supabase/functions/**",
     "test-results/**",
   ]),
 ]);

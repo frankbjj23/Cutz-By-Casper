@@ -4,8 +4,8 @@ import { readFile } from "node:fs/promises";
 const BOOKSY_URL = "https://booksy.com/en-us/dl/show-business/697614";
 const BRAND_NAME = "Redeemed Precision Grooming";
 
-test("customer routes render without custom booking forms", async ({ page }) => {
-  for (const path of ["/", "/styles", "/book", "/privacy"]) {
+test("general customer routes render without unrelated forms", async ({ page }) => {
+  for (const path of ["/", "/styles", "/privacy"]) {
     await page.goto(path);
     await expect(page.locator("main")).toBeVisible();
     await expect(page.locator("form")).toHaveCount(0);
@@ -33,26 +33,66 @@ test("new brand identity and Booksy transition are clear", async ({ page }) => {
 
   await page.goto("/book");
   await expect(
-    page.getByText(/appointments are completed through Casper's existing Booksy profile/i),
+    page.getByText(/save your contact details on this site/i),
   ).toBeVisible();
 });
 
-test("all Booksy booking links use Casper's canonical profile", async ({ page }) => {
-  for (const path of ["/", "/styles", "/book"]) {
+test("primary booking links use the website handoff and direct Booksy links stay canonical", async ({ page }) => {
+  for (const path of ["/", "/styles"]) {
     await page.goto(path);
-    const bookingLinks = page.locator('a[href*="booksy.com/"][href*="697614"]');
-    expect(await bookingLinks.count()).toBeGreaterThan(0);
-
-    for (const link of await bookingLinks.all()) {
-      await expect(link).toHaveAttribute("href", BOOKSY_URL);
-    }
+    expect(await page.locator('a[href="/book"]').count()).toBeGreaterThan(0);
   }
 
   await page.goto("/book");
+  await expect(
+    page.getByRole("link", { name: /continue directly to Booksy without saving/i }),
+  ).toHaveAttribute("href", BOOKSY_URL);
   await expect(page.getByRole("link", { name: "Booksy privacy notice" })).toHaveAttribute(
     "href",
     "https://booksy.com/en-us/p/privacy",
   );
+});
+
+test("booking contact form validates consent and fails open to Booksy when storage is unavailable", async ({
+  page,
+  request,
+}) => {
+  await page.goto("/book");
+  const form = page.getByRole("button", { name: "Save & Continue to Booksy" });
+  await expect(form).toBeVisible();
+  await page.getByLabel("Full name").fill("Website Test Guest");
+  await page.getByLabel(/Mobile number/).fill("201-555-0123");
+  await page.getByLabel(/I agree that Redeemed Precision Grooming/i).check();
+  await form.click();
+  await expect(page.locator('p[role="alert"]')).toContainText(/temporarily unavailable/i);
+  await expect(
+    page.getByRole("link", { name: /continue directly to Booksy without saving/i }),
+  ).toHaveAttribute("href", BOOKSY_URL);
+
+  const wrongOrigin = await request.post("/api/booking-contact", {
+    headers: { Origin: "https://example.com", "Content-Type": "application/json" },
+    data: {},
+  });
+  expect(wrongOrigin.status()).toBe(403);
+
+  const wrongContentType = await request.post("/api/booking-contact", {
+    headers: { Origin: "http://127.0.0.1:3100", "Content-Type": "text/plain" },
+    data: "not json",
+  });
+  expect(wrongContentType.status()).toBe(415);
+
+  const invalidContact = await request.post("/api/booking-contact", {
+    headers: { Origin: "http://127.0.0.1:3100", "Content-Type": "application/json" },
+    data: {
+      fullName: "A",
+      consent: true,
+      consentVersion: "2026-08-24-v1",
+    },
+  });
+  expect(invalidContact.status()).toBe(400);
+
+  const getResponse = await request.get("/api/booking-contact");
+  expect(getResponse.status()).toBe(405);
 });
 
 test("retired API routes return not found", async ({ request }) => {
@@ -148,9 +188,9 @@ test("private style preview stays gated and unlocks with a valid invitation", as
     "accept",
     "image/jpeg,image/png,image/webp",
   );
-  await expect(page.getByRole("link", { name: "Reserve on Booksy" })).toHaveAttribute(
+  await expect(page.locator("main").getByRole("link", { name: "Start Booking", exact: true })).toHaveAttribute(
     "href",
-    BOOKSY_URL,
+    "/book",
   );
 
   await page
@@ -235,8 +275,8 @@ test("private preview renders visual directions and a complete mocked result flo
   await expect(page.getByAltText("AI preview showing Short boxed beard")).toBeVisible();
   await page.getByRole("button", { name: "Yes — keep it" }).click();
   await expect(
-    page.getByRole("complementary").getByRole("link", { name: "Reserve on Booksy" }),
-  ).toHaveAttribute("href", BOOKSY_URL);
+    page.getByRole("complementary").getByRole("link", { name: "Start Booking" }),
+  ).toHaveAttribute("href", "/book");
 
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download look card" }).click();
@@ -456,7 +496,7 @@ test("mobile layout has no horizontal overflow and keeps booking visible", async
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto("/");
   await expect(page.getByRole("link", { name: `${BRAND_NAME} home` })).toBeVisible();
-  await expect(page.getByRole("link", { name: /view live availability/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /view live availability and start booking/i })).toBeVisible();
 
   const hasOverflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
@@ -470,7 +510,7 @@ test("private preview fits mobile and suppresses the competing booking bar", asy
   await page.getByLabel("Invitation code").fill("test-preview-code");
   await page.getByRole("button", { name: "Enter private preview" }).click();
   await expect(page.getByRole("heading", { name: /choose one considered direction/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /view live availability/i })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /view live availability and start booking/i })).toHaveCount(0);
   await expect(page.getByRole("radio", { name: /Haircut Shape, blend, and finish/i })).toBeVisible();
   await expect(page.getByRole("radio", { name: /Beard Length, outline, and balance/i })).toBeVisible();
   await expect(page.getByRole("radio", { name: /Hair color Concept color only/i })).toBeVisible();

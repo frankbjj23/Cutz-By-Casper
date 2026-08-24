@@ -37,21 +37,60 @@ export default function PrivacyPage() {
     <main id="main-content" tabIndex={-1} className="mx-auto max-w-4xl px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
       <article className="lux-card space-y-10 p-7 sm:p-12">
         <header className="space-y-5 border-b border-white/10 pb-10">
-          <p className="eyebrow">Effective August 10, 2026</p>
+          <p className="eyebrow">Effective August 24, 2026</p>
           <h1 className="font-display text-5xl text-pearl sm:text-7xl">Privacy</h1>
           <p className="max-w-2xl text-sm leading-7 text-pearl/60">
-            This page explains how the website, its invitation-only style preview, and
-            Casper&apos;s third-party booking system handle information.
+            This page explains how the website, its booking-contact handoff,
+            invitation-only style preview, and Casper&apos;s third-party booking system
+            handle information.
           </p>
         </header>
 
         <section className="space-y-3">
           <h2 className="font-display text-2xl text-pearl">This website</h2>
           <p className="text-sm leading-7 text-pearl/60">
-            This site does not offer user accounts or an on-site booking form. We do not ask
-            you to submit booking, payment, or health information here. Vercel, the hosting
-            provider, may process limited technical information needed to deliver and secure
-            the site.
+            This site does not offer public user accounts, process payments, or confirm
+            appointments. It offers the optional booking-contact form described below.
+            Vercel, the hosting provider, may process limited technical information needed
+            to deliver and secure the site.
+          </p>
+        </section>
+
+        <section id="booking-contact" className="scroll-mt-28 space-y-5">
+          <div>
+            <p className="eyebrow">Before Booksy</p>
+            <h2 className="mt-4 font-display text-3xl text-pearl">Website booking contact</h2>
+          </div>
+          <p className="text-sm leading-7 text-pearl/60">
+            If you choose Save &amp; Continue to Booksy, this site stores your name and the
+            mobile number, email address, or both that you submit. It also stores the time
+            and version of your consent, the source page, and a one-way keyed network hash
+            used for abuse protection. The raw network address is not placed in the booking
+            contact table.
+          </p>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="border border-white/10 p-5">
+              <h3 className="font-display text-xl text-pearl">Why it is kept</h3>
+              <p className="mt-3 text-sm leading-7 text-pearl/60">
+                Casper and approved staff may use these details to recognize and follow up
+                with people who started the booking handoff. A saved contact is not proof
+                that an appointment was completed or confirmed on Booksy.
+              </p>
+            </div>
+            <div className="border border-white/10 p-5">
+              <h3 className="font-display text-xl text-pearl">Retention and choice</h3>
+              <p className="mt-3 text-sm leading-7 text-pearl/60">
+                Booking contacts are kept for no longer than 12 months and are removed by a
+                daily deletion job. The consent is for this booking follow-up only; it does
+                not add you to a marketing list. You may instead use the direct Booksy link
+                without saving information on this site.
+              </p>
+            </div>
+          </div>
+          <p className="text-sm leading-7 text-pearl/60">
+            Supabase hosts the protected booking-contact database and its secure receiving
+            function. Table access is blocked for anonymous visitors. Approved staff can
+            view or delete booking contacts through the private dashboard.
           </p>
         </section>
 
@@ -116,9 +155,9 @@ export default function PrivacyPage() {
         <section className="space-y-3">
           <h2 className="font-display text-2xl text-pearl">Booksy bookings</h2>
           <p className="text-sm leading-7 text-pearl/60">
-            Booking links take you to Casper&apos;s profile on Booksy. Booksy processes the
-            information you enter there under its own terms and privacy practices. Review
-            the{" "}
+            After the optional website contact step, booking continues on Casper&apos;s Booksy
+            profile. Booksy separately processes the information you enter there under its
+            own terms and privacy practices. Review the{" "}
             <a
               href={BOOKSY_PRIVACY_URL}
               target="_blank"
@@ -144,8 +183,9 @@ export default function PrivacyPage() {
           <h2 className="font-display text-2xl text-pearl">Questions</h2>
           <p className="text-sm leading-7 text-pearl/60">
             For information submitted through Booksy, contact Booksy through its published
-            support and privacy channels. For a question about the private preview, do not
-            upload a photo; contact Casper through the contact option on his Booksy profile.
+            support and privacy channels. To ask about or request deletion of a website
+            booking contact, contact Casper through the contact option on his Booksy
+            profile. For a question about the private preview, do not upload a photo.
           </p>
         </section>
       </article>

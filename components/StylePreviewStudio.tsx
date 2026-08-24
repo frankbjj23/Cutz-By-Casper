@@ -22,7 +22,6 @@ import {
   type HairStyleId,
   type StylePreviewSelection,
 } from "@/lib/style-preview";
-import { BOOKSY_URL } from "@/lib/site";
 import {
   type ChangeEvent,
   type FormEvent,
@@ -756,15 +755,12 @@ export default function StylePreviewStudio() {
             <Link href="/styles" className="text-pearl/65 transition hover:text-gold">
               Browse the portfolio
             </Link>
-            <a
-              href={BOOKSY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              referrerPolicy="no-referrer"
+            <Link
+              href="/book"
               className="text-pearl/65 transition hover:text-gold"
             >
-              Reserve on Booksy
-            </a>
+              Start Booking
+            </Link>
           </div>
         </div>
       </section>
@@ -792,15 +788,12 @@ export default function StylePreviewStudio() {
           <Link href="/styles" className="text-pearl/65 transition hover:text-gold">
             Browse without a photo
           </Link>
-          <a
-            href={BOOKSY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            referrerPolicy="no-referrer"
+          <Link
+            href="/book"
             className="text-pearl/65 transition hover:text-gold"
           >
-            Reserve on Booksy
-          </a>
+            Start Booking
+          </Link>
         </div>
       </header>
 
@@ -1116,15 +1109,12 @@ export default function StylePreviewStudio() {
 
                 {resultAccepted ? (
                   <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                    <a
-                      href={BOOKSY_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      referrerPolicy="no-referrer"
+                    <Link
+                      href="/book"
                       className="primary-button"
                     >
-                      Reserve on Booksy
-                    </a>
+                      Start Booking
+                    </Link>
                     <button type="button" onClick={downloadLookCard} className="secondary-button">
                       Download look card
                     </button>

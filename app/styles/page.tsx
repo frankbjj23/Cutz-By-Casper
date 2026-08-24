@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Gallery from "@/components/Gallery";
 import { haircutStyles } from "@/lib/gallery";
-import { BOOKSY_URL, BRAND_OG_PATH, business, SITE_URL } from "@/lib/site";
+import { BRAND_OG_PATH, business, SITE_URL } from "@/lib/site";
 
 const description =
   "Browse Casper's work at Redeemed Precision Grooming, including fades, tapers, textured cuts, beard work, and line-ups.";
@@ -43,14 +44,9 @@ export default function StylesPage() {
             Explore Casper&apos;s work across fades, tapers, textured styles, beard
             shaping, and detailed line-ups.
           </p>
-          <a
-            href={BOOKSY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="primary-button"
-          >
+          <Link href="/book" className="primary-button">
             Reserve an Appointment
-          </a>
+          </Link>
         </div>
       </section>
 

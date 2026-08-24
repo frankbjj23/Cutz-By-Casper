@@ -10,6 +10,7 @@ coverage
 playwright-report
 test-results
 .tmp-booking-postgres/
+supabase/.temp/
 *.tsbuildinfo
 
 # env

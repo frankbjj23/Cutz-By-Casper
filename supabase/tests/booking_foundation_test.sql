@@ -21,7 +21,8 @@ begin
       'appointment_events',
       'notification_outbox',
       'calendar_sync_jobs',
-      'staff_notification_settings'
+      'staff_notification_settings',
+      'booking_contacts'
     ])
     and rowsecurity = false;
 
@@ -52,7 +53,8 @@ begin
       'appointment_events',
       'notification_outbox',
       'calendar_sync_jobs',
-      'staff_notification_settings'
+      'staff_notification_settings',
+      'booking_contacts'
     ])
     and (
       has_table_privilege('anon', format('%I.%I', table_schema, table_name), 'select') or
@@ -139,6 +141,53 @@ begin
     'execute'
   ) then
     raise exception 'Authenticated browser role can execute create_time_block directly';
+  end if;
+
+  if has_function_privilege(
+    'anon',
+    'booking_private.purge_expired_booking_contacts()',
+    'execute'
+  ) or has_function_privilege(
+    'authenticated',
+    'booking_private.purge_expired_booking_contacts()',
+    'execute'
+  ) then
+    raise exception 'Browser roles can execute booking-contact retention cleanup';
+  end if;
+
+  if not has_function_privilege(
+    'service_role',
+    'booking_private.purge_expired_booking_contacts()',
+    'execute'
+  ) then
+    raise exception 'Service role cannot execute booking-contact retention cleanup';
+  end if;
+end;
+$$;
+
+do $$
+begin
+  if has_table_privilege('anon', 'public.booking_contacts', 'select')
+    or has_table_privilege('anon', 'public.booking_contacts', 'insert') then
+    raise exception 'Anonymous role can access booking contacts directly';
+  end if;
+
+  if not has_table_privilege('authenticated', 'public.booking_contacts', 'select')
+    or not has_table_privilege('authenticated', 'public.booking_contacts', 'delete')
+    or has_table_privilege('authenticated', 'public.booking_contacts', 'insert') then
+    raise exception 'Authenticated booking-contact privileges do not match the staff dashboard boundary';
+  end if;
+
+  if not has_table_privilege('service_role', 'public.booking_contacts', 'insert') then
+    raise exception 'Service role cannot capture booking contacts';
+  end if;
+
+  if not exists (
+    select 1
+    from cron.job
+    where jobname = 'purge-expired-redeemed-booking-contacts'
+  ) then
+    raise exception 'Daily booking-contact retention job is missing';
   end if;
 end;
 $$;

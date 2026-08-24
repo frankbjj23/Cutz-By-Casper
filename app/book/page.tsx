@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import BookingContactForm from "@/components/BookingContactForm";
 import {
   BOOKSY_PRIVACY_URL,
-  BOOKSY_URL,
   BRAND_OG_PATH,
   business,
   locationDisplay,
@@ -43,24 +43,17 @@ export default function BookPage() {
           <span className="block italic text-gold">your time.</span>
         </h1>
         <p className="mx-auto max-w-2xl text-base leading-8 text-pearl/60">
-          Redeemed Precision Grooming appointments are completed through Casper&apos;s
-          existing Booksy profile, where the live calendar, current menu, pricing,
-          and booking terms stay together.
+          Save your contact details on this site, then continue to Casper&apos;s existing
+          Booksy profile, where the live calendar, current menu, pricing, and booking
+          terms stay together.
         </p>
         <p className="mx-auto max-w-2xl border border-gold/30 bg-gold/5 px-5 py-4 text-sm leading-7 text-pearl/70">
           Current Booksy location: {locationDisplay}. Confirm the appointment time and
           location on Booksy before traveling.
         </p>
-        <a
-          href={BOOKSY_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Continue to Casper's Booksy profile (opens in a new tab)"
-          className="primary-button mt-1"
-        >
-          View Live Appointments
-        </a>
       </section>
+
+      <BookingContactForm />
 
       <section className="light-panel p-7 sm:p-12" aria-labelledby="what-happens-heading">
         <p className="text-[0.65rem] font-bold uppercase tracking-[0.32em] text-ink/65">
@@ -99,10 +92,11 @@ export default function BookPage() {
         </div>
         <div className="lux-card p-7 sm:p-8">
           <p className="eyebrow">Your information</p>
-          <h2 className="mt-5 font-display text-2xl text-pearl">Handled by Booksy</h2>
+          <h2 className="mt-5 font-display text-2xl text-pearl">Two clear steps</h2>
           <p className="mt-4 text-sm leading-7 text-pearl/60">
-            Booking is completed on Booksy, which processes the information you provide.
-            Review the{" "}
+            This site stores only the contact details you knowingly submit above. Booking
+            is completed on Booksy, which separately processes the information you provide
+            there. Review the{" "}
             <a
               href={BOOKSY_PRIVACY_URL}
               target="_blank"
