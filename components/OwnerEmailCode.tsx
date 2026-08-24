@@ -2,6 +2,12 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import {
+  isValidOwnerCode,
+  normalizeOwnerCode,
+  OWNER_CODE_MAX_LENGTH,
+  OWNER_CODE_MIN_LENGTH,
+} from "@/lib/owner-access";
 import { createBookingBrowserClient } from "@/lib/supabase/browser";
 
 type Step = "request" | "verify";
@@ -59,7 +65,7 @@ export default function OwnerEmailCode() {
       setStep("verify");
       setNotice({
         kind: "success",
-        text: "A six-digit owner code was sent. Type the newest code below.",
+        text: "An owner code was sent. Type the newest code below.",
       });
     } catch {
       setNotice({
@@ -74,9 +80,12 @@ export default function OwnerEmailCode() {
   async function verifyCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const normalizedEmail = cleanEmail(email);
-    const normalizedCode = code.replace(/\D/g, "");
-    if (!normalizedEmail || !/^\d{6}$/.test(normalizedCode)) {
-      setNotice({ kind: "error", text: "Enter the six-digit code from the newest email." });
+    const normalizedCode = normalizeOwnerCode(code);
+    if (!normalizedEmail || !isValidOwnerCode(normalizedCode)) {
+      setNotice({
+        kind: "error",
+        text: "Enter the complete 6–10 digit code from the newest email.",
+      });
       return;
     }
 
@@ -156,7 +165,7 @@ export default function OwnerEmailCode() {
               htmlFor="owner-code"
               className="text-xs font-semibold uppercase tracking-[0.2em] text-pearl/75"
             >
-              Six-digit code
+              Owner code
             </label>
             <input
               id="owner-code"
@@ -164,11 +173,11 @@ export default function OwnerEmailCode() {
               type="text"
               inputMode="numeric"
               autoComplete="one-time-code"
-              pattern="[0-9]{6}"
-              minLength={6}
-              maxLength={6}
+              pattern="[0-9]{6,10}"
+              minLength={OWNER_CODE_MIN_LENGTH}
+              maxLength={OWNER_CODE_MAX_LENGTH}
               value={code}
-              onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+              onChange={(event) => setCode(normalizeOwnerCode(event.target.value))}
               aria-describedby={notice ? "owner-access-notice" : undefined}
               aria-invalid={notice?.kind === "error"}
               required

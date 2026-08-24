@@ -101,7 +101,7 @@ export default async function AcceptBookingInvitePage({
           </form>
         ) : (
           <div className="mt-8 border border-gold/30 bg-gold/5 p-5 text-sm leading-7 text-pearl/75">
-            <p>Verify a six-digit owner code before creating the private password.</p>
+            <p>Verify the complete owner code before creating the private password.</p>
             <Link
               href="/admin/owner-access"
               className="mt-4 inline-block font-semibold text-gold underline underline-offset-4"

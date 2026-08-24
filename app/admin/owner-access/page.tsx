@@ -30,7 +30,7 @@ export default async function OwnerAccessPage() {
           Use a code, not an email link
         </h1>
         <p className="mt-5 text-sm leading-7 text-pearl/65">
-          We will email a six-digit code. Type it here to create or reset the
+          We will email a numeric owner code. Type the complete code here to create or reset the
           private booking password. Opening the email cannot use the code for you.
         </p>
 

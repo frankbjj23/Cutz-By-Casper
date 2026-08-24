@@ -15,7 +15,7 @@ const messages: Record<string, string> = {
   "not-authorized": "This account is not approved for the private booking room.",
   "not-configured": "The private booking room has not been connected yet.",
   "invite-invalid":
-    "That old email link cannot be used. Request a six-digit owner code instead.",
+    "That old email link cannot be used. Request a new owner code instead.",
 };
 
 export default async function AdminLoginPage({

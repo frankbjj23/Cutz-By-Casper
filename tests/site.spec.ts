@@ -1,8 +1,18 @@
 import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import { isValidOwnerCode, normalizeOwnerCode } from "../lib/owner-access";
 
 const BOOKSY_URL = "https://booksy.com/en-us/dl/show-business/697614";
 const BRAND_NAME = "Redeemed Precision Grooming";
+
+test("owner access accepts Supabase email code lengths", () => {
+  expect(isValidOwnerCode("123456")).toBeTruthy();
+  expect(isValidOwnerCode("12345678")).toBeTruthy();
+  expect(isValidOwnerCode("1234567890")).toBeTruthy();
+  expect(isValidOwnerCode("12345")).toBeFalsy();
+  expect(isValidOwnerCode("12345678901")).toBeFalsy();
+  expect(normalizeOwnerCode("12 34-5678")).toBe("12345678");
+});
 
 test("general customer routes render without unrelated forms", async ({ page }) => {
   for (const path of ["/", "/styles", "/privacy"]) {

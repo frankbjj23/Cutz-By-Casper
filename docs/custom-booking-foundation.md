@@ -15,7 +15,7 @@ payments yet.
   approved staff row, and one staff notification-settings row. It contains no customer,
   appointment, payment, webhook, notification, or calendar-sync records as of the
   August 24, 2026 audit.
-- The Vercel environment is connected and owner access uses a typed six-digit email
+- The Vercel environment is connected and owner access uses a typed 6–10 digit email
   code. The dashboard remains a private test surface; Booksy is still the public system.
 - Supabase's security advisor currently recommends enabling leaked-password protection.
   That hosted Auth setting should be reviewed before a customer-booking pilot. Its
@@ -44,7 +44,7 @@ payments yet.
   writing directly to the database.
 - Staff access requires both a verified Supabase Auth session and an active row in
   `staff_members`.
-- Owner activation uses a typed six-digit email code. Email templates must not use
+- Owner activation uses a typed 6–10 digit email code. Email templates must not use
   a one-click authentication URL because automated email scanners can consume it.
 - The public booking transaction derives duration, price, deposit, policy, hours,
   and balance from trusted database rows. Browser-supplied values are not trusted.

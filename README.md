@@ -45,7 +45,7 @@ Booksy remains the authority for appointment and location details before travel.
 The production website does not yet accept custom bookings or payments. It does offer
 an optional website-owned contact handoff before Booksy. The codebase also contains a
 locked-down Supabase schema and private owner dashboard foundation.
-Owner access uses a six-digit email code typed into the site so automated
+Owner access uses a 6–10 digit email code typed into the site so automated
 email link checks cannot consume access. Stripe checkout, notifications, Google
 Calendar delivery, and the customer calendar are the next test-mode phases. See
 `docs/custom-booking-foundation.md` for the approved rules and rollout gates.
