@@ -9,6 +9,36 @@ import { BOOKSY_URL, BOOKSY_WIDGET_URL } from "@/lib/site";
 
 type SubmissionState = "idle" | "saving" | "saved" | "error";
 
+const BOOKSY_OPENING_POSITION_WINDOW_MS = 1800;
+
+function moveViewportToTopImmediately() {
+  const root = document.documentElement;
+  const previousScrollBehavior = root.style.scrollBehavior;
+  root.style.scrollBehavior = "auto";
+  window.scrollTo(0, 0);
+  root.style.scrollBehavior = previousScrollBehavior;
+}
+
+function launchBooksyWidgetAtTop(button: HTMLElement) {
+  // Booksy inserts and resizes a document-height dialog after the click. Watch
+  // that short setup window so its focus/resize work cannot leave the page at
+  // the bottom, then release the page so the customer can scroll every service.
+  const observer = new MutationObserver(moveViewportToTopImmediately);
+  observer.observe(document.body, {
+    attributes: true,
+    childList: true,
+    subtree: true,
+    attributeFilter: ["style"],
+  });
+
+  button.click();
+  moveViewportToTopImmediately();
+  window.setTimeout(() => {
+    observer.disconnect();
+    moveViewportToTopImmediately();
+  }, BOOKSY_OPENING_POSITION_WINDOW_MS);
+}
+
 export default function BookingContactForm() {
   const [state, setState] = useState<SubmissionState>("idle");
   const [message, setMessage] = useState("");
@@ -24,7 +54,7 @@ export default function BookingContactForm() {
       );
       return;
     }
-    button.click();
+    launchBooksyWidgetAtTop(button);
   }
 
   function handleWidgetReady() {
@@ -41,7 +71,7 @@ export default function BookingContactForm() {
     if (container) container.style.display = "none";
     setWidgetReady(true);
     setMessage("Saved. Opening Casper’s live Booksy calendar on this page…");
-    window.setTimeout(() => button.click(), 0);
+    window.setTimeout(() => launchBooksyWidgetAtTop(button), 0);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {

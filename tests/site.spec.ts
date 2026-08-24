@@ -140,11 +140,17 @@ test("a saved website contact opens Casper's official Booksy widget without leav
             dialog.className = "booksy-widget-dialog";
             dialog.style.position = "absolute";
             dialog.style.top = "0";
-            dialog.style.height = "660px";
+            dialog.style.height = "2000px";
             dialog.style.width = "100%";
 
             document.body.append(overlay, dialog);
-            window.scrollTo(0, document.documentElement.scrollHeight);
+            window.setTimeout(() => {
+              dialog.style.height = "2034px";
+              window.scrollTo({
+                top: document.documentElement.scrollHeight,
+                behavior: "smooth",
+              });
+            }, 50);
           }
         });
         container.appendChild(button);
@@ -168,8 +174,12 @@ test("a saved website contact opens Casper's official Booksy widget without leav
   expect(new URL(page.url()).pathname).toBe("/book");
 
   const widgetDialog = page.locator(".booksy-widget-dialog");
-  await expect(widgetDialog).toHaveCSS("position", "fixed");
+  await expect(widgetDialog).toHaveCSS("position", "absolute");
   await expect.poll(async () => (await widgetDialog.boundingBox())?.y).toBe(0);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+
+  await page.evaluate(() => window.scrollTo(0, 500));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
 
   await page.locator(".booksy-widget-overlay, .booksy-widget-dialog").evaluateAll((elements) => {
     elements.forEach((element) => element.remove());
