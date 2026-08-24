@@ -14,7 +14,7 @@ type AppointmentRow = {
   status: string;
   service_name_snapshot: string;
   balance_due_cents: number;
-  customers: { full_name: string; phone_e164: string } | null;
+  customers: { full_name: string } | null;
 };
 
 function formatMoney(cents: number) {
@@ -40,12 +40,16 @@ export default async function AdminPage() {
   const supabase = await createBookingServerClient();
 
   const now = new Date().toISOString();
-  const [{ data: appointments, error: appointmentError }, { count: serviceCount }] =
+  const [
+    { data: appointments, error: appointmentError, count: appointmentCount },
+    { count: serviceCount, error: serviceError },
+  ] =
     await Promise.all([
       supabase!
         .from("appointments")
         .select(
-          "id, start_time_utc, status, service_name_snapshot, balance_due_cents, customers(full_name, phone_e164)",
+          "id, start_time_utc, status, service_name_snapshot, balance_due_cents, customers(full_name)",
+          { count: "exact" },
         )
         .gte("start_time_utc", now)
         .in("status", ["pending_payment", "confirmed"])
@@ -84,11 +88,15 @@ export default async function AdminPage() {
       <section className="mt-8 grid gap-4 sm:grid-cols-3" aria-label="Booking summary">
         <div className="lux-card p-6">
           <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Upcoming</p>
-          <p className="mt-3 font-display text-4xl text-gold">{rows.length}</p>
+          <p className="mt-3 font-display text-4xl text-gold">
+            {appointmentError ? "—" : (appointmentCount ?? rows.length)}
+          </p>
         </div>
         <div className="lux-card p-6">
           <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Active services</p>
-          <p className="mt-3 font-display text-4xl text-gold">{serviceCount ?? 0}</p>
+          <p className="mt-3 font-display text-4xl text-gold">
+            {serviceError ? "—" : (serviceCount ?? 0)}
+          </p>
         </div>
         <div className="lux-card p-6">
           <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Booking status</p>

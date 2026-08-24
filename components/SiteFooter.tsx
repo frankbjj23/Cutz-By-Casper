@@ -26,11 +26,11 @@ export default function SiteFooter() {
                 {business.name}
               </p>
               <p className="mt-1 text-[0.65rem] uppercase tracking-[0.22em] text-gold">
-                {business.descriptor} · Ridgefield Park, New Jersey
+                {business.descriptor} · {business.address.city}, New Jersey
               </p>
             </div>
           </div>
-          <p>{locationDisplay} · Exact address being updated on Booksy</p>
+          <p>{locationDisplay} · Confirm appointment details on Booksy</p>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs uppercase tracking-[0.16em] sm:justify-end">
           <Link href="/styles" className="hover:text-gold">

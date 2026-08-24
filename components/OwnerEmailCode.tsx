@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { createBookingBrowserClient } from "@/lib/supabase/browser";
 
 type Step = "request" | "verify";
+type Notice = {
+  kind: "error" | "success";
+  text: string;
+};
 
 function cleanEmail(value: string) {
   return value.trim().toLowerCase();
@@ -16,42 +20,55 @@ export default function OwnerEmailCode() {
   const [code, setCode] = useState("");
   const [step, setStep] = useState<Step>("request");
   const [pending, setPending] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
 
   async function requestCode(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const normalizedEmail = cleanEmail(email);
     if (!normalizedEmail || normalizedEmail.length > 320) {
-      setMessage("Enter the approved owner email address.");
+      setNotice({ kind: "error", text: "Enter the approved owner email address." });
       return;
     }
 
     const supabase = createBookingBrowserClient();
     if (!supabase) {
-      setMessage("The private booking room is not connected yet.");
+      setNotice({ kind: "error", text: "The private booking room is not connected yet." });
       return;
     }
 
     setPending(true);
-    setMessage(null);
-    const { error } = await supabase.auth.signInWithOtp({
-      email: normalizedEmail,
-      options: { shouldCreateUser: false },
-    });
-    setPending(false);
+    setNotice(null);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: normalizedEmail,
+        options: { shouldCreateUser: false },
+      });
 
-    if (error) {
-      setMessage(
-        error.message.toLowerCase().includes("rate limit")
-          ? "Too many emails were requested. Wait a little while, then request one new code."
-          : "A code could not be sent. Confirm the approved email and try again.",
-      );
-      return;
+      if (error) {
+        setNotice({
+          kind: "error",
+          text: error.message.toLowerCase().includes("rate limit")
+            ? "Too many emails were requested. Wait a little while, then request one new code."
+            : "A code could not be sent. Confirm the approved email and try again.",
+        });
+        return;
+      }
+
+      setEmail(normalizedEmail);
+      setCode("");
+      setStep("verify");
+      setNotice({
+        kind: "success",
+        text: "A six-digit owner code was sent. Type the newest code below.",
+      });
+    } catch {
+      setNotice({
+        kind: "error",
+        text: "The code email could not be requested right now. Check your connection and try again.",
+      });
+    } finally {
+      setPending(false);
     }
-
-    setEmail(normalizedEmail);
-    setStep("verify");
-    setMessage("A six-digit owner code was sent. Type the newest code below.");
   }
 
   async function verifyCode(event: FormEvent<HTMLFormElement>) {
@@ -59,32 +76,43 @@ export default function OwnerEmailCode() {
     const normalizedEmail = cleanEmail(email);
     const normalizedCode = code.replace(/\D/g, "");
     if (!normalizedEmail || !/^\d{6}$/.test(normalizedCode)) {
-      setMessage("Enter the six-digit code from the newest email.");
+      setNotice({ kind: "error", text: "Enter the six-digit code from the newest email." });
       return;
     }
 
     const supabase = createBookingBrowserClient();
     if (!supabase) {
-      setMessage("The private booking room is not connected yet.");
+      setNotice({ kind: "error", text: "The private booking room is not connected yet." });
       return;
     }
 
     setPending(true);
-    setMessage(null);
-    const { error } = await supabase.auth.verifyOtp({
-      email: normalizedEmail,
-      token: normalizedCode,
-      type: "email",
-    });
-    setPending(false);
+    setNotice(null);
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: normalizedEmail,
+        token: normalizedCode,
+        type: "email",
+      });
 
-    if (error) {
-      setMessage("That code is invalid or expired. Request one new code and use only the newest email.");
-      return;
+      if (error) {
+        setNotice({
+          kind: "error",
+          text: "That code is invalid or expired. Request one new code and use only the newest email.",
+        });
+        return;
+      }
+
+      router.replace("/admin/accept-invite");
+      router.refresh();
+    } catch {
+      setNotice({
+        kind: "error",
+        text: "The code could not be checked right now. Check your connection and try again.",
+      });
+    } finally {
+      setPending(false);
     }
-
-    router.replace("/admin/accept-invite");
-    router.refresh();
   }
 
   return (
@@ -105,6 +133,8 @@ export default function OwnerEmailCode() {
               autoComplete="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
+              aria-describedby={notice ? "owner-access-notice" : undefined}
+              aria-invalid={notice?.kind === "error"}
               required
               className="mt-3 w-full border border-pearl/20 bg-black px-4 py-3 text-base text-pearl outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
             />
@@ -139,6 +169,8 @@ export default function OwnerEmailCode() {
               maxLength={6}
               value={code}
               onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
+              aria-describedby={notice ? "owner-access-notice" : undefined}
+              aria-invalid={notice?.kind === "error"}
               required
               className="mt-3 w-full border border-pearl/20 bg-black px-4 py-3 text-center font-mono text-2xl tracking-[0.35em] text-pearl outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30"
             />
@@ -150,7 +182,7 @@ export default function OwnerEmailCode() {
             type="button"
             onClick={() => {
               setCode("");
-              setMessage(null);
+              setNotice(null);
               setStep("request");
             }}
             className="w-full text-xs font-semibold uppercase tracking-[0.18em] text-pearl/65 underline decoration-gold underline-offset-8"
@@ -160,13 +192,18 @@ export default function OwnerEmailCode() {
         </form>
       )}
 
-      {message ? (
+      {notice ? (
         <p
-          role="status"
-          aria-live="polite"
-          className="border border-gold/30 bg-gold/5 p-4 text-sm leading-7 text-pearl/80"
+          id="owner-access-notice"
+          role={notice.kind === "error" ? "alert" : "status"}
+          aria-live={notice.kind === "error" ? "assertive" : "polite"}
+          className={`border p-4 text-sm leading-7 ${
+            notice.kind === "error"
+              ? "border-red-300/40 bg-red-950/30 text-red-100"
+              : "border-gold/30 bg-gold/5 text-pearl/80"
+          }`}
         >
-          {message}
+          {notice.text}
         </p>
       ) : null}
     </div>

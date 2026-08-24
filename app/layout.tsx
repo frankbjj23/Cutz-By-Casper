@@ -14,7 +14,7 @@ import {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Redeemed Precision Grooming | Premium Barbering in Ridgefield Park, NJ",
+    default: `Redeemed Precision Grooming | Premium Barbering in ${business.address.city}, NJ`,
     template: "%s | Redeemed Precision Grooming",
   },
   description: business.description,
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     type: "website",
     url: SITE_URL,
     siteName: business.name,
-    title: "Redeemed Precision Grooming | Premium Barbering in Ridgefield Park, NJ",
+    title: `Redeemed Precision Grooming | Premium Barbering in ${business.address.city}, NJ`,
     description: business.description,
     images: [
       {
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Redeemed Precision Grooming | Premium Barbering in Ridgefield Park, NJ",
+    title: `Redeemed Precision Grooming | Premium Barbering in ${business.address.city}, NJ`,
     description: business.description,
     images: [BRAND_OG_PATH],
   },
@@ -59,8 +59,10 @@ const structuredData = {
   logo: SITE_URL + BRAND_LOGO_PATH,
   address: {
     "@type": "PostalAddress",
+    streetAddress: business.address.street,
     addressLocality: business.address.city,
     addressRegion: business.address.region,
+    postalCode: business.address.postalCode,
     addressCountry: business.address.country,
   },
   sameAs: [BOOKSY_URL],

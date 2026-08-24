@@ -81,8 +81,9 @@ begin
     raise exception 'Deposit and reschedule policy seed does not match the approved rules';
   end if;
 
-  if settings.location_city <> 'Ridgefield Park' or settings.address_line is not null then
-    raise exception 'Location seed must use Ridgefield Park without an unverified street address';
+  if settings.location_city is distinct from 'Ridgefield'
+    or settings.address_line is distinct from '719 Grand Ave, Ridgefield, NJ 07657' then
+    raise exception 'Location settings must match the current verified Booksy listing';
   end if;
 end;
 $$;

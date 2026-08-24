@@ -46,7 +46,7 @@ export default function HomePage() {
               />
               <div className="flex items-center gap-4">
                 <span className="editorial-rule" aria-hidden="true" />
-                <p className="eyebrow">Redeemed Precision Grooming · Ridgefield Park</p>
+                <p className="eyebrow">Redeemed Precision Grooming · Ridgefield</p>
               </div>
               <h1 className="font-display text-5xl leading-[0.92] tracking-[-0.025em] text-pearl sm:text-7xl lg:text-[6.5rem]">
                 Precision
@@ -95,7 +95,7 @@ export default function HomePage() {
                 Casper
               </p>
               <p className="mt-1 text-[0.65rem] font-semibold uppercase tracking-[0.26em] text-gold">
-                Barber · Ridgefield Park, NJ
+                Barber · Ridgefield, NJ
               </p>
             </div>
           </div>
@@ -284,16 +284,15 @@ export default function HomePage() {
           <div className="border-b border-gold/25 bg-espresso p-8 sm:p-12 lg:border-b-0 lg:border-r">
             <p className="eyebrow">Visit</p>
             <h2 className="mt-5 font-display text-4xl leading-tight text-pearl sm:text-5xl">
-              Ridgefield Park,
+              Ridgefield,
               <span className="block italic text-gold">New Jersey.</span>
             </h2>
             <p className="mt-7 text-sm text-pearl/65">{locationDisplay}</p>
           </div>
           <div className="flex flex-col justify-center gap-6 p-8 sm:p-12">
             <p className="max-w-xl text-sm leading-7 text-pearl/60">
-              Casper has moved to Ridgefield Park. His exact appointment address is being
-              updated on Booksy, which may temporarily show the former Lyndhurst location.
-              Confirm the Ridgefield Park details before traveling.
+              Casper&apos;s current Booksy profile lists {locationDisplay}. Confirm the
+              appointment time and location on Booksy before traveling.
             </p>
             <div className="flex flex-wrap gap-3">
               <a
@@ -305,7 +304,7 @@ export default function HomePage() {
                 Check Availability
               </a>
               <span className="inline-flex min-h-12 items-center border border-white/15 px-5 py-3 text-xs leading-5 text-pearl/60">
-                Exact address update in progress
+                Current Booksy listing
               </span>
             </div>
           </div>

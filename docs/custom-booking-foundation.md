@@ -1,20 +1,27 @@
 # Custom booking foundation
 
-This branch introduces the private foundation for moving Redeemed by Casper away
+This codebase contains the private foundation for moving Redeemed by Casper away
 from Booksy. It does **not** switch the public booking buttons or accept live customer
 payments yet.
 
 ## Current activation status
 
 - The dedicated `Redeemed Booking` Supabase project is active in the East Coast
-  region at the connected account's confirmed $0 monthly project cost.
-- Both database migrations are applied.
-- The reusable database contract tests pass against the live project.
-- Supabase's live security advisor reports no findings.
-- The database contains only configuration, six service seeds, and five weekly-hour
-  rows. It contains no staff, customers, appointments, or payments yet.
-- Casper's owner account and the Vercel environment connection are intentionally
-  waiting for an approved owner email and a reviewed deployment.
+  region.
+- All three migrations are applied, including the Ridgefield location correction.
+- The live address row was verified after the correction. The reusable database contract
+  tests cover the location setting along with the existing RLS and booking rules.
+- The database contains configuration, six service seeds, five weekly-hour rows, one
+  approved staff row, and one staff notification-settings row. It contains no customer,
+  appointment, payment, webhook, notification, or calendar-sync records as of the
+  August 24, 2026 audit.
+- The Vercel environment is connected and owner access uses a typed six-digit email
+  code. The dashboard remains a private test surface; Booksy is still the public system.
+- Supabase's security advisor currently recommends enabling leaked-password protection.
+  That hosted Auth setting should be reviewed before a customer-booking pilot. Its
+  performance advisor also reports unused indexes, which is expected while the booking
+  tables contain no operational traffic; do not remove the conflict, payment, or queue
+  indexes solely because of those notices.
 
 ## Approved first-version rules
 
@@ -24,7 +31,8 @@ payments yet.
 - Credit the deposit toward the final service price.
 - Transfer the deposit when an appointment is rescheduled at least 24 hours ahead.
 - Forfeit the deposit for a late change, cancellation, or no-show.
-- Use Ridgefield Park, New Jersey, without publishing an unverified street address.
+- Seed the current verified Booksy location, 719 Grand Ave, Ridgefield, NJ 07657, and
+  reconfirm it with Casper before custom-booking cutover.
 - Keep Booksy active until the new calendar, Stripe test mode, notifications, and
   owner workflows pass end-to-end testing.
 
@@ -63,19 +71,16 @@ The weekly hours seed is:
 
 These values are editable and must be reviewed by Casper before cutover.
 
-## Activation order
+## Remaining activation order
 
-1. Create Casper's Auth user with signup disabled for the public.
-2. Add Casper's Auth user ID to `staff_members` with the `owner` role.
-3. Set the Supabase Magic Link template to display `{{ .Token }}` and direct the
-   owner to `/admin/owner-access` without using `{{ .ConfirmationURL }}`.
-4. Add the booking-specific Supabase URL and publishable key to the private preview
-   environment, then verify `/admin/login`, `/admin/owner-access`, and RLS.
-5. Build the public availability endpoint and Stripe test checkout.
-6. Add signed customer management links, notification delivery, and Google Calendar
+1. Reconfirm Casper's approved owner email, service menu, working hours, policies, and
+   location details before using the private dashboard operationally.
+2. Enable leaked-password protection and complete an owner sign-in/RLS smoke test.
+3. Build the public availability endpoint and Stripe test checkout.
+4. Add signed customer management links, notification delivery, and Google Calendar
    OAuth/sync.
-7. Run a closed pilot while Booksy remains the operational calendar.
-8. Reconcile future Booksy appointments and choose a cutover date before changing
+5. Run a closed pilot while Booksy remains the operational calendar.
+6. Reconcile future Booksy appointments and choose a cutover date before changing
    public booking buttons.
 
 The Stripe checkout session and database hold will both use 30 minutes because

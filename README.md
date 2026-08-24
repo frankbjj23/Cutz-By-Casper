@@ -1,7 +1,7 @@
 # Redeemed by Casper
 
 Redeemed by Casper is the project and domain identity for Redeemed Precision Grooming,
-Casper's mobile-first premium barbering portfolio and booking handoff in Ridgefield Park,
+Casper's mobile-first premium barbering portfolio and booking handoff in Ridgefield,
 New Jersey. The public brand story is grounded in 30 years
 in the industry, faith, professionalism, relationships, and client-first service.
 
@@ -14,8 +14,8 @@ An invitation-only, noindex `/preview` beta lets an adult submit one self-photo 
 create one temporary AI hair, beard, or color concept. The site does not persist the
 input or result, and no photo is transferred to Booksy.
 
-Casper's exact Ridgefield Park street address is not hard-coded while Booksy still
-shows the former Lyndhurst location. Confirm the new appointment details before travel.
+The site reflects the current Booksy listing at 719 Grand Ave, Ridgefield, NJ 07657.
+Booksy remains the authority for appointment and location details before travel.
 
 ## Live links
 
@@ -33,9 +33,9 @@ shows the former Lyndhurst location. Confirm the new appointment details before 
 - OpenAI Image API for the private style-preview beta
 - Sharp for full server-side image decoding, metadata removal, and normalization
 
-The production website does not yet accept custom bookings or payments. The current
-development branch contains a locked-down Supabase schema and private owner dashboard
-shell. Owner activation uses a six-digit email code typed into the site so automated
+The production website does not yet accept custom bookings or payments. The codebase
+contains a locked-down Supabase schema and private owner dashboard foundation.
+Owner access uses a six-digit email code typed into the site so automated
 email link checks cannot consume access. Stripe checkout, notifications, Google
 Calendar delivery, and the customer calendar are the next test-mode phases. See
 `docs/custom-booking-foundation.md` for the approved rules and rollout gates.
@@ -85,8 +85,8 @@ canonical Booksy links, retired API routes, SEO discovery files, and mobile over
 - /privacy — site and third-party booking privacy boundary
 - /preview — linked from the homepage, noindex, invitation-only style-preview beta
 - /api/style-preview — same-origin, invite-protected image-edit route
-- /admin/login — noindex private booking-owner sign-in; inactive until the new
-  booking database is connected
+- /admin/login — noindex private booking-owner sign-in for the dormant custom-booking
+  foundation
 - /robots.txt and /sitemap.xml — search discovery files
 
 `/preview` remains absent from the global navigation and sitemap. Do not remove the

@@ -21,7 +21,7 @@ test("new brand identity and Booksy transition are clear", async ({ page }) => {
   await expect(page.getByRole("heading", { name: /precision with purpose/i })).toBeVisible();
   await expect(page.getByText(/with 30 years in the industry/i)).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /Ridgefield Park, New Jersey/i }),
+    page.getByRole("heading", { name: /Ridgefield, New Jersey/i }),
   ).toBeVisible();
   await expect(page.locator("body")).not.toContainText("442 Ridge Rd");
   await expect(page.locator("body")).not.toContainText("Cutz By Casper");
@@ -66,7 +66,7 @@ test("retired API routes return not found", async ({ request }) => {
   }
 });
 
-test("custom booking admin stays private and fails closed before database activation", async ({
+test("custom booking admin stays private and fails closed without database configuration", async ({
   page,
   request,
 }) => {
@@ -429,11 +429,11 @@ test("SEO discovery files and page-specific social metadata are present", async 
   });
   expect(structuredData.employee.sameAs).toBeUndefined();
   expect(structuredData.address).toMatchObject({
-    addressLocality: "Ridgefield Park",
+    streetAddress: "719 Grand Ave",
+    addressLocality: "Ridgefield",
     addressRegion: "NJ",
+    postalCode: "07657",
   });
-  expect(structuredData.address.streetAddress).toBeUndefined();
-  expect(structuredData.address.postalCode).toBeUndefined();
 
   const brandAssets = await page.evaluate(async () => {
     const load = (src: string) =>

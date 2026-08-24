@@ -12,17 +12,19 @@ export const business = {
   descriptor: "Premium Barbering",
   barberName: "Casper",
   description:
-    "Premium barbering by Casper in Ridgefield Park, New Jersey, informed by 30 years in the industry and a commitment to professionalism and client-first service.",
+    "Premium barbering by Casper in Ridgefield, New Jersey, informed by 30 years in the industry and a commitment to professionalism and client-first service.",
   bio:
     "With 30 years in the industry, Casper brings an old-school belief that the client comes first. His approach is grounded in faith, professionalism, genuine relationships, and a deep passion for helping people feel better about themselves.",
   address: {
-    city: "Ridgefield Park",
+    street: "719 Grand Ave",
+    city: "Ridgefield",
     region: "NJ",
+    postalCode: "07657",
     country: "US",
   },
 } as const;
 
-export const locationDisplay = `${business.address.city}, ${business.address.region}`;
+export const locationDisplay = `${business.address.street}, ${business.address.city}, ${business.address.region} ${business.address.postalCode}`;
 
 export const serviceCategories = [
   {
