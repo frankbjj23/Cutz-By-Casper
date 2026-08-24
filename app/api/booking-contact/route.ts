@@ -5,6 +5,10 @@ import {
   getRequestNetworkAddress,
 } from "@/lib/server/booking-contact-rate";
 import { SITE_URL } from "@/lib/site";
+import {
+  CURRENT_BOOKING_SUPABASE_PUBLISHABLE_KEY,
+  CURRENT_BOOKING_SUPABASE_URL,
+} from "@/lib/supabase/config";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,10 +19,6 @@ const RESPONSE_HEADERS = {
   "X-Content-Type-Options": "nosniff",
   "X-Robots-Tag": "noindex, nofollow, noarchive",
 };
-const DEFAULT_BOOKING_CONTACT_SUPABASE_URL =
-  "https://wtbcvhcwmbjthcrywuwd.supabase.co";
-const DEFAULT_BOOKING_CONTACT_PUBLISHABLE_KEY =
-  "sb_publishable_6oRcDDxTYi7slj9ZEoQNxA_-TdmPv55";
 
 function jsonError(status: number, code: string, message: string, retryAfter?: number) {
   const headers: Record<string, string> = { ...RESPONSE_HEADERS };
@@ -84,10 +84,10 @@ export async function POST(request: Request) {
 
   const receiverUrl =
     process.env.BOOKING_CONTACT_SUPABASE_URL?.trim() ||
-    DEFAULT_BOOKING_CONTACT_SUPABASE_URL;
+    CURRENT_BOOKING_SUPABASE_URL;
   const receiverKey =
     process.env.BOOKING_CONTACT_SUPABASE_PUBLISHABLE_KEY?.trim() ||
-    DEFAULT_BOOKING_CONTACT_PUBLISHABLE_KEY;
+    CURRENT_BOOKING_SUPABASE_PUBLISHABLE_KEY;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10_000);
