@@ -130,6 +130,22 @@ test("a saved website contact opens Casper's official Booksy widget without leav
         button.addEventListener("click", () => {
           const count = Number(document.body.dataset.booksyOpened || "0") + 1;
           document.body.dataset.booksyOpened = String(count);
+          if (!document.querySelector(".booksy-widget-dialog")) {
+            const overlay = document.createElement("div");
+            overlay.className = "booksy-widget-overlay";
+            overlay.style.position = "fixed";
+            overlay.style.inset = "0";
+
+            const dialog = document.createElement("div");
+            dialog.className = "booksy-widget-dialog";
+            dialog.style.position = "absolute";
+            dialog.style.top = "0";
+            dialog.style.height = "660px";
+            dialog.style.width = "100%";
+
+            document.body.append(overlay, dialog);
+            window.scrollTo(0, document.documentElement.scrollHeight);
+          }
         });
         container.appendChild(button);
         currentScript?.parentNode?.insertBefore(container, currentScript);
@@ -151,6 +167,13 @@ test("a saved website contact opens Casper's official Booksy widget without leav
   expect(widgetUrl.searchParams.get("lang")).toBe("en-US");
   expect(new URL(page.url()).pathname).toBe("/book");
 
+  const widgetDialog = page.locator(".booksy-widget-dialog");
+  await expect(widgetDialog).toHaveCSS("position", "fixed");
+  await expect.poll(async () => (await widgetDialog.boundingBox())?.y).toBe(0);
+
+  await page.locator(".booksy-widget-overlay, .booksy-widget-dialog").evaluateAll((elements) => {
+    elements.forEach((element) => element.remove());
+  });
   await page.getByRole("button", { name: "Open Live Booking Calendar" }).click();
   await expect.poll(() => page.locator("body").getAttribute("data-booksy-opened")).toBe("2");
   await expect(page.getByRole("link", { name: "Open Booksy in a new tab" })).toHaveAttribute(
