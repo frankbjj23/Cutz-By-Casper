@@ -39,6 +39,9 @@ export default function SiteFooter() {
           <Link href="/book" className="hover:text-gold">
             Booking details
           </Link>
+          <Link href="/reviews" className="hover:text-gold">
+            Reviews
+          </Link>
           <a
             href={BOOKSY_URL}
             target="_blank"

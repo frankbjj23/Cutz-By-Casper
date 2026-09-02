@@ -171,6 +171,7 @@ function RadioCard(props: {
   description: string;
   disabled?: boolean;
   groupName: string;
+  hideText?: boolean;
   imageSrc?: string;
   label: string;
   onChange: () => void;
@@ -182,11 +183,13 @@ function RadioCard(props: {
 
   return (
     <label
-      className={`block cursor-pointer border p-4 transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-gold ${
+      className={`relative block cursor-pointer border transition focus-within:outline focus-within:outline-2 focus-within:outline-offset-4 focus-within:outline-gold ${
         props.checked
           ? "border-gold bg-gold/10"
           : "border-white/15 bg-black/15 hover:border-white/35"
-      } ${props.disabled ? "cursor-not-allowed opacity-55" : ""}`}
+      } ${props.hideText ? "p-0" : "p-4"} ${
+        props.disabled ? "cursor-not-allowed opacity-55" : ""
+      }`}
     >
       <input
         type="radio"
@@ -195,6 +198,7 @@ function RadioCard(props: {
         checked={props.checked}
         onChange={props.onChange}
         disabled={props.disabled}
+        aria-label={`${props.label} ${props.description}`}
         className="sr-only"
       />
       {props.imageSrc ? (
@@ -206,7 +210,7 @@ function RadioCard(props: {
             sizes="(max-width: 639px) calc(100vw - 5.5rem), 260px"
             className="object-cover"
           />
-          {props.visualLabel ? (
+          {props.visualLabel && !props.hideText ? (
             <span className="absolute bottom-0 left-0 bg-ink/90 px-3 py-2 text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-pearl/75">
               {props.visualLabel}
             </span>
@@ -226,18 +230,36 @@ function RadioCard(props: {
           ) : null}
         </span>
       ) : null}
-      <span className={`flex items-start gap-3 ${hasVisual ? "mt-4" : ""}`}>
+      {props.hideText && props.checked ? (
         <span
           aria-hidden="true"
-          className={`mt-1 size-3 shrink-0 rounded-full border ${
-            props.checked ? "border-gold bg-gold" : "border-pearl/45"
-          }`}
-        />
-        <span>
-          <span className="block text-sm font-semibold text-pearl">{props.label}</span>
-          <span className="mt-1 block text-xs leading-5 text-pearl/60">{props.description}</span>
+          className="absolute right-2 top-2 z-10 grid size-8 place-items-center rounded-full bg-gold text-ink shadow-[0_2px_12px_rgba(0,0,0,0.65)]"
+        >
+          <svg viewBox="0 0 20 20" className="size-4" fill="none">
+            <path
+              d="m4.5 10.5 3.25 3.25L15.5 6"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </span>
-      </span>
+      ) : null}
+      {props.hideText ? null : (
+        <span className={`flex items-start gap-3 ${hasVisual ? "mt-4" : ""}`}>
+          <span
+            aria-hidden="true"
+            className={`mt-1 size-3 shrink-0 rounded-full border ${
+              props.checked ? "border-gold bg-gold" : "border-pearl/45"
+            }`}
+          />
+          <span>
+            <span className="block text-sm font-semibold text-pearl">{props.label}</span>
+            <span className="mt-1 block text-xs leading-5 text-pearl/60">{props.description}</span>
+          </span>
+        </span>
+      )}
     </label>
   );
 }
@@ -654,7 +676,11 @@ export default function StylePreviewStudio() {
         context.fillText(category.toUpperCase(), 110, 1325);
         context.fillStyle = "#F4EFE6";
         context.font = "42px Georgia, serif";
-        context.fillText(selectedLabel, 110, 1380);
+        context.fillText(
+          category === "hair" ? "Selected haircut direction" : selectedLabel,
+          110,
+          1380,
+        );
         context.fillStyle = "#A9A39A";
         context.font = "22px Arial, sans-serif";
         context.fillText("AI-generated concept — not a guaranteed service or result.", 110, 1445);
@@ -938,12 +964,15 @@ export default function StylePreviewStudio() {
                       disabled={phase === "generating" || phase === "preparing"}
                       label={option.name}
                       description={option.note}
+                      hideText={category === "hair"}
                       imageSrc={visual.imageSrc}
                       swatch={visual.swatch}
                       visualLabel={
-                        category === "color"
-                          ? "Color direction"
-                          : "Reference from Casper's portfolio"
+                        category === "hair"
+                          ? undefined
+                          : category === "color"
+                            ? "Color direction"
+                            : "Reference from Casper's portfolio"
                       }
                     />
                   );
@@ -1009,9 +1038,16 @@ export default function StylePreviewStudio() {
               phase === "preparing" ||
               providerConfigured === false
             }
+            aria-label={
+              phase === "generating" ? "Creating preview" : `Preview ${selectedLabel}`
+            }
             className="primary-button w-full disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {phase === "generating" ? "Creating preview…" : `Preview ${selectedLabel}`}
+            {phase === "generating"
+              ? "Creating preview…"
+              : category === "hair"
+                ? "Create preview"
+                : `Preview ${selectedLabel}`}
           </button>
           <p className="text-xs leading-6 text-pearl/55">
             Creates one visual concept. Keep this page open while it is prepared.

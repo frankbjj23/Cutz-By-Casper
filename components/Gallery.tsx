@@ -85,14 +85,6 @@ export default function Gallery({ items, title, showFilter = true }: GalleryProp
                   className="object-cover transition duration-700 group-hover:scale-[1.03]"
                 />
               </div>
-              <div className="space-y-1 border-t border-white/10 px-4 py-4">
-                <p className="font-display text-base leading-snug text-pearl">{item.name}</p>
-                {item.tags?.length ? (
-                  <p className="text-[0.7rem] uppercase tracking-[0.22em] text-gold/80">
-                    {item.tags.slice(0, 2).join(" · ")}
-                  </p>
-                ) : null}
-              </div>
             </div>
           </button>
         ))}

@@ -37,10 +37,10 @@ export default function PrivacyPage() {
     <main id="main-content" tabIndex={-1} className="mx-auto max-w-4xl px-5 pb-24 pt-16 sm:px-8 sm:pt-24">
       <article className="lux-card space-y-10 p-7 sm:p-12">
         <header className="space-y-5 border-b border-white/10 pb-10">
-          <p className="eyebrow">Effective August 24, 2026</p>
+          <p className="eyebrow">Effective September 1, 2026</p>
           <h1 className="font-display text-5xl text-pearl sm:text-7xl">Privacy</h1>
           <p className="max-w-2xl text-sm leading-7 text-pearl/60">
-            This page explains how the website, its booking-contact handoff,
+            This page explains how the website, its booking-contact handoff, reviews,
             invitation-only style preview, and Casper&apos;s third-party booking system
             handle information.
           </p>
@@ -94,8 +94,49 @@ export default function PrivacyPage() {
             Supabase hosts the protected booking-contact database and its secure receiving
             function. Table access is blocked for anonymous visitors. Approved staff can
             view the master contact sheet or delete contacts through the private dashboard.
-            Short-lived abuse-control events contain only the one-way network hash and are
-            removed after 24 hours.
+            Short-lived abuse-control events contain only the one-way network hash. They
+            become eligible for automatic deletion after 24 hours and are cleared by a
+            regular cleanup job.
+          </p>
+        </section>
+
+        <section id="website-reviews" className="scroll-mt-28 space-y-5">
+          <div>
+            <p className="eyebrow">Moderated testimonials</p>
+            <h2 className="mt-4 font-display text-3xl text-pearl">Website reviews</h2>
+          </div>
+          <p className="text-sm leading-7 text-pearl/60">
+            If you send a review through this website, the private moderation inbox stores
+            your chosen display name, email address, rating, review text, consent time and
+            version, and source page. Your email is used only to administer the submission
+            and is never included in the public review table.
+          </p>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="border border-white/10 p-5">
+              <h3 className="font-display text-xl text-pearl">Before approval</h3>
+              <p className="mt-3 text-sm leading-7 text-pearl/60">
+                A new review is visible only to approved staff. Frank or Casper may approve
+                or reject it. Sending a review does not guarantee publication and does not
+                post anything to Booksy.
+              </p>
+            </div>
+            <div className="border border-white/10 p-5">
+              <h3 className="font-display text-xl text-pearl">If published</h3>
+              <p className="mt-3 text-sm leading-7 text-pearl/60">
+                Only the display name, star rating, review text, and optional service or
+                review date can appear publicly. Website submissions are labeled Redeemed
+                website reviews, not confirmed Booksy reviews. Staff can hide them later.
+              </p>
+            </div>
+          </div>
+          <p className="text-sm leading-7 text-pearl/60">
+            A one-way keyed network hash is kept in a separate abuse-control event only for
+            rate limiting. It becomes eligible for automatic deletion after 24 hours and is
+            cleared by a regular cleanup job; the raw network address is not stored in the
+            review tables.
+            Private submissions remain until approved staff deletes them or the reviewer
+            requests deletion. Public review highlights sourced from Booksy link back to
+            Casper&apos;s Booksy profile and do not expose a website submitter email.
           </p>
         </section>
 
@@ -190,8 +231,8 @@ export default function PrivacyPage() {
           <p className="text-sm leading-7 text-pearl/60">
             For information submitted through Booksy, contact Booksy through its published
             support and privacy channels. To ask about or request deletion of a website
-            booking contact, contact Casper through the contact option on his Booksy
-            profile. For a question about the private preview, do not upload a photo.
+            booking contact or website review, contact Casper through the contact option on
+            his Booksy profile. For a question about the private preview, do not upload a photo.
           </p>
         </section>
       </article>

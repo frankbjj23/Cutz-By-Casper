@@ -27,6 +27,7 @@ export default defineConfig({
       BOOKING_CONTACT_ALLOWED_ORIGIN: "http://127.0.0.1:3100",
       BOOKING_CONTACT_SUPABASE_URL: "http://127.0.0.1:3100",
       BOOKING_CONTACT_SUPABASE_PUBLISHABLE_KEY: "test-only-publishable-key",
+      REVIEW_ALLOWED_ORIGIN: "http://127.0.0.1:3100",
     },
     reuseExistingServer: false,
     timeout: 120_000,

@@ -125,11 +125,7 @@ export default function Lightbox({
           />
         </div>
         <div className="flex flex-col gap-3 border-t border-white/10 px-6 py-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="font-display text-xl text-pearl">{item.name}</p>
-              <p className="text-sm text-pearl/60">{item.alt}</p>
-            </div>
+          <div className="flex justify-end">
             <button
               ref={closeRef}
               type="button"

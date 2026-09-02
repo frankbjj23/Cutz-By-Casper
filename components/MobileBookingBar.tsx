@@ -5,7 +5,11 @@ import Link from "next/link";
 
 export default function MobileBookingBar() {
   const pathname = usePathname();
-  if (pathname === "/preview" || pathname.startsWith("/admin")) {
+  if (
+    pathname === "/preview" ||
+    pathname === "/reviews" ||
+    pathname.startsWith("/admin")
+  ) {
     return null;
   }
 

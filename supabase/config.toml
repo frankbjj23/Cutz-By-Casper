@@ -1,0 +1,7 @@
+project_id = "wtbcvhcwmbjthcrywuwd"
+
+[functions.capture-booking-contact]
+verify_jwt = false
+
+[functions.capture-review]
+verify_jwt = false

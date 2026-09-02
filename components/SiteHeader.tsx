@@ -30,6 +30,12 @@ export default function SiteHeader() {
         </Link>
         <nav className="flex shrink-0 items-center gap-4 sm:gap-5" aria-label="Primary navigation">
           <Link
+            href="/#reviews"
+            className="hidden text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-pearl/65 transition hover:text-gold md:inline"
+          >
+            Reviews
+          </Link>
+          <Link
             href="/styles"
             className="hidden text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-pearl/65 transition hover:text-gold sm:inline"
           >

@@ -47,6 +47,115 @@ test("new brand identity and Booksy transition are clear", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("Booksy reviews are highlighted with honest source labels", async ({ page }) => {
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: /a reputation built in the chair/i }),
+  ).toBeVisible();
+  await expect(page.getByText("Super sharp cut today.")).toBeVisible();
+  await expect(page.getByText("A man of his craft, never disappoints!")).toBeVisible();
+  await expect(page.getByText("BEST BARBER IN JERSEY")).toBeVisible();
+  await expect(page.getByText("HAIRCUT NO BEARD", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Confirmed Booksy client")).toHaveCount(3);
+  await expect(page.getByRole("link", { name: "Leave a Review Here" })).toHaveAttribute(
+    "href",
+    "/reviews",
+  );
+  await expect(page.getByRole("link", { name: "View All on Booksy" })).toHaveAttribute(
+    "href",
+    /booksy\.com\/en-us\/697614_casper/,
+  );
+});
+
+test("haircut galleries and preview choices show images without visible style names", async ({
+  page,
+}) => {
+  const galleryName = "Low Skin Fade + Textured Top (Crop) + Sharp Line-Up";
+  await page.goto("/styles");
+  await expect(page.getByText(galleryName, { exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: `Open ${galleryName}` }).click();
+  await expect(page.getByRole("dialog", { name: `${galleryName} expanded` })).toBeVisible();
+  await expect(page.getByText(galleryName, { exact: true })).toHaveCount(0);
+
+  await page.goto("/preview");
+  await page.getByLabel("Invitation code").fill("test-preview-code");
+  await page.getByRole("button", { name: "Enter private preview" }).click();
+  const selectedHaircut = page.getByRole("radio", {
+    name: /Low taper \+ natural curls/i,
+  });
+  await expect(selectedHaircut).toBeVisible();
+  await expect(selectedHaircut).toBeChecked();
+  await expect(selectedHaircut.locator("xpath=..").locator("svg")).toBeVisible();
+  await expect(page.getByText("Low taper + natural curls", { exact: true })).toHaveCount(0);
+  const createPreview = page.getByRole("button", {
+    name: /Preview Low taper \+ natural curls/i,
+  });
+  await expect(createPreview).toHaveText("Create preview");
+});
+
+test("visitor can send a private website review for staff approval", async ({ page }) => {
+  await page.route("**/api/reviews", async (route) => {
+    await route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({ ok: true }),
+    });
+  });
+
+  await page.goto("/reviews");
+  await expect(page.getByRole("heading", { name: /leave a review, right here/i })).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /view live availability and start booking/i }),
+  ).toHaveCount(0);
+  await page.getByLabel("Display name", { exact: true }).fill("Review Guest");
+  await page.getByLabel("Private email", { exact: true }).fill("review@example.com");
+  await page.getByRole("combobox", { name: "Your rating" }).selectOption("5");
+  await page
+    .getByLabel("Your experience")
+    .fill("Casper delivered a thoughtful and professional grooming experience.");
+  await page.getByLabel(/I agree that Redeemed Precision Grooming may privately store/i).check();
+  await page.getByRole("button", { name: "Send Review for Approval" }).click();
+
+  await expect(
+    page.getByText(/private until Frank or Casper approves it/i),
+  ).toBeVisible();
+  await expect(page.getByText(/does not post to Booksy/i)).toBeVisible();
+});
+
+test("review API rejects cross-site and malformed submissions", async ({ request }) => {
+  const wrongOrigin = await request.post("/api/reviews", {
+    headers: { Origin: "https://example.com", "Content-Type": "application/json" },
+    data: {},
+  });
+  expect(wrongOrigin.status()).toBe(403);
+
+  const wrongContentType = await request.post("/api/reviews", {
+    headers: { Origin: "http://127.0.0.1:3100", "Content-Type": "text/plain" },
+    data: "not json",
+  });
+  expect(wrongContentType.status()).toBe(415);
+
+  const invalidReview = await request.post("/api/reviews", {
+    headers: {
+      Origin: "http://127.0.0.1:3100",
+      "Content-Type": "application/json",
+    },
+    data: {
+      displayName: "A",
+      email: "not-an-email",
+      rating: 6,
+      reviewText: "Too short",
+      consent: true,
+      consentVersion: "2026-09-01-v1",
+    },
+  });
+  expect(invalidReview.status()).toBe(400);
+  expect(invalidReview.headers()["cache-control"]).toContain("no-store");
+
+  const getResponse = await request.get("/api/reviews");
+  expect(getResponse.status()).toBe(405);
+});
+
 test("primary booking links use the website handoff and direct Booksy links stay canonical", async ({ page }) => {
   for (const path of ["/", "/styles"]) {
     await page.goto(path);
@@ -513,7 +622,7 @@ test("SEO discovery files and page-specific social metadata are present", async 
   request,
 }) => {
   const siteUrl = "https://redeemedbycasper.com";
-  for (const path of ["/", "/styles", "/book", "/privacy", "/preview"]) {
+  for (const path of ["/", "/styles", "/book", "/reviews", "/privacy", "/preview"]) {
     const pageUrl = path === "/" ? siteUrl : siteUrl + path;
     await page.goto(path);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", pageUrl);
@@ -550,7 +659,9 @@ test("SEO discovery files and page-specific social metadata are present", async 
 
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBeTruthy();
-  expect(await sitemap.text()).toContain("/book");
+  const sitemapText = await sitemap.text();
+  expect(sitemapText).toContain("/book");
+  expect(sitemapText).toContain("/reviews");
 
   const favicon = await request.get("/icon.jpg");
   expect(favicon.ok()).toBeTruthy();

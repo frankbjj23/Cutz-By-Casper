@@ -67,6 +67,7 @@ const nextConfig = {
       { source: "/preview", headers: privatePreviewHeaders },
       { source: "/api/style-preview", headers: privatePreviewHeaders },
       { source: "/api/booking-contact", headers: privatePreviewHeaders },
+      { source: "/api/reviews", headers: privatePreviewHeaders },
       { source: "/admin/:path*", headers: privatePreviewHeaders },
       { source: "/auth/:path*", headers: privatePreviewHeaders },
     ];

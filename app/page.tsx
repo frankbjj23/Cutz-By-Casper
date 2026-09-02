@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import Gallery from "@/components/Gallery";
+import ReviewSection from "@/components/ReviewSection";
 import { casperProfile, haircutStyles } from "@/lib/gallery";
 import {
-  BOOKSY_URL,
   BRAND_LOGO_PATH,
   BRAND_MARK_PATH,
   business,
@@ -241,17 +241,14 @@ export default function HomePage() {
             <Link href="/styles" className="secondary-button">
               View the Work
             </Link>
-            <a
-              href={BOOKSY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="primary-button"
-            >
-              Read Current Reviews
-            </a>
+            <Link href="/#reviews" className="primary-button">
+              Read Client Reviews
+            </Link>
           </div>
         </div>
       </section>
+
+      <ReviewSection />
 
       <section className="border-y border-white/10 bg-black/20">
         <div className="mx-auto max-w-7xl space-y-10 px-5 py-24 sm:px-8 lg:py-28">

@@ -1,6 +1,15 @@
 begin;
 
 do $$
+begin
+  if not has_schema_privilege('authenticated', 'booking_private', 'usage')
+    or has_schema_privilege('anon', 'booking_private', 'usage') then
+    raise exception 'Private helper schema usage is not limited to signed-in staff callers';
+  end if;
+end;
+$$;
+
+do $$
 declare
   missing_rls text[];
 begin
@@ -24,7 +33,10 @@ begin
       'staff_notification_settings',
       'booking_contacts',
       'booking_contact_methods',
-      'booking_contact_capture_events'
+      'booking_contact_capture_events',
+      'published_reviews',
+      'review_submissions',
+      'review_capture_events'
     ])
     and rowsecurity = false;
 
@@ -58,7 +70,9 @@ begin
       'staff_notification_settings',
       'booking_contacts',
       'booking_contact_methods',
-      'booking_contact_capture_events'
+      'booking_contact_capture_events',
+      'review_submissions',
+      'review_capture_events'
     ])
     and (
       has_table_privilege('anon', format('%I.%I', table_schema, table_name), 'select') or
@@ -186,6 +200,62 @@ begin
   ) then
     raise exception 'Service role cannot execute master contact capture';
   end if;
+
+  if has_function_privilege(
+    'anon',
+    'public.capture_review_submission_v2(text,text,smallint,text,text,timestamptz,text,text,uuid)',
+    'execute'
+  ) or has_function_privilege(
+    'authenticated',
+    'public.capture_review_submission_v2(text,text,smallint,text,text,timestamptz,text,text,uuid)',
+    'execute'
+  ) or not has_function_privilege(
+    'service_role',
+    'public.capture_review_submission_v2(text,text,smallint,text,text,timestamptz,text,text,uuid)',
+    'execute'
+  ) then
+    raise exception 'Signed review receiver function privileges are incorrect';
+  end if;
+
+  if has_function_privilege(
+    'anon',
+    'public.publish_review_submission(uuid)',
+    'execute'
+  ) or not has_function_privilege(
+    'authenticated',
+    'public.publish_review_submission(uuid)',
+    'execute'
+  ) then
+    raise exception 'Review publication function privileges are incorrect';
+  end if;
+
+  if has_function_privilege(
+    'anon',
+    'booking_private.purge_stale_review_capture_events()',
+    'execute'
+  ) or has_function_privilege(
+    'authenticated',
+    'booking_private.purge_stale_review_capture_events()',
+    'execute'
+  ) then
+    raise exception 'Browser roles can execute review abuse-event cleanup';
+  end if;
+
+  if has_function_privilege(
+    'anon',
+    'public.delete_review_submission(uuid)',
+    'execute'
+  ) or not has_function_privilege(
+    'authenticated',
+    'public.delete_review_submission(uuid)',
+    'execute'
+  ) or has_function_privilege(
+    'authenticated',
+    'booking_private.delete_linked_website_review()',
+    'execute'
+  ) then
+    raise exception 'Review deletion function privileges are incorrect';
+  end if;
 end;
 $$;
 
@@ -225,6 +295,42 @@ begin
     raise exception 'Legacy booking-contact retention job is missing';
   end if;
 
+  if not has_table_privilege('anon', 'public.published_reviews', 'select')
+    or has_table_privilege('anon', 'public.published_reviews', 'insert')
+    or has_table_privilege('anon', 'public.published_reviews', 'update')
+    or has_table_privilege('anon', 'public.published_reviews', 'delete') then
+    raise exception 'Published review privileges do not match the public read-only boundary';
+  end if;
+
+  if has_table_privilege('anon', 'public.review_submissions', 'select')
+    or has_table_privilege('anon', 'public.review_submissions', 'insert')
+    or has_table_privilege('authenticated', 'public.review_submissions', 'insert')
+    or not has_table_privilege('authenticated', 'public.review_submissions', 'select')
+    or not has_table_privilege('authenticated', 'public.review_submissions', 'update')
+    or not has_table_privilege('authenticated', 'public.review_submissions', 'delete')
+    or has_table_privilege('anon', 'public.review_capture_events', 'select')
+    or has_table_privilege('authenticated', 'public.review_capture_events', 'select') then
+    raise exception 'Private review inbox or abuse events are exposed incorrectly';
+  end if;
+
+  if not exists (
+    select 1
+    from pg_trigger
+    where tgrelid = 'public.review_submissions'::regclass
+      and tgname = 'review_submissions_delete_linked_public'
+      and not tgisinternal
+  ) then
+    raise exception 'Approved website review deletion trigger is missing';
+  end if;
+
+  if not exists (
+    select 1 from cron.job
+    where jobname = 'purge-stale-redeemed-review-capture-events'
+      and schedule = '53 * * * *'
+  ) then
+    raise exception 'Hourly review abuse-event cleanup job is missing';
+  end if;
+
   if exists (
     select 1
     from cron.job
@@ -232,6 +338,204 @@ begin
   ) then
     raise exception 'The former all-contact deletion job still exists';
   end if;
+end;
+$$;
+
+do $$
+declare
+  staff_id uuid;
+  pending_id uuid := gen_random_uuid();
+  approved_id uuid := gen_random_uuid();
+  public_id uuid := gen_random_uuid();
+begin
+  select user_id into staff_id
+  from public.staff_members
+  where active
+  order by created_at
+  limit 1;
+
+  if staff_id is null then
+    perform set_config('redeemed.test.skip_review_delete', 'true', true);
+    return;
+  end if;
+
+  insert into public.review_submissions (
+    id, display_name, email, rating, review_text, consent_version, consented_at,
+    source_path, status
+  ) values (
+    pending_id, 'Pending Delete Test', 'pending-delete-test@example.com', 5,
+    'This private review exists only inside a rolled back security test.',
+    '2026-09-01-v1', now(), '/reviews', 'pending'
+  );
+
+  insert into public.published_reviews (
+    id, source, source_key, display_name, rating, review_text, reviewed_at,
+    confirmed_client, source_url, active
+  ) values (
+    public_id, 'website', 'website:' || approved_id::text,
+    'Approved Delete Test', 5,
+    'This public review exists only inside a rolled back security test.',
+    current_date, false, null, true
+  );
+
+  insert into public.review_submissions (
+    id, display_name, email, rating, review_text, consent_version, consented_at,
+    source_path, status, moderated_at, moderated_by, published_review_id
+  ) values (
+    approved_id, 'Approved Delete Test', 'approved-delete-test@example.com', 5,
+    'This private review exists only inside a rolled back security test.',
+    '2026-09-01-v1', now(), '/reviews', 'approved', now(), staff_id, public_id
+  );
+
+  perform set_config('request.jwt.claim.sub', staff_id::text, true);
+  perform set_config('request.jwt.claim.role', 'authenticated', true);
+  perform set_config('redeemed.test.skip_review_delete', 'false', true);
+  perform set_config('redeemed.test.pending_review_id', pending_id::text, true);
+  perform set_config('redeemed.test.approved_review_id', approved_id::text, true);
+  perform set_config('redeemed.test.public_review_id', public_id::text, true);
+end;
+$$;
+
+set local role authenticated;
+
+select case
+  when current_setting('redeemed.test.skip_review_delete') = 'true' then true
+  else public.delete_review_submission(
+    current_setting('redeemed.test.pending_review_id')::uuid
+  )
+end;
+
+select case
+  when current_setting('redeemed.test.skip_review_delete') = 'true' then true
+  else public.delete_review_submission(
+    current_setting('redeemed.test.approved_review_id')::uuid
+  )
+end;
+
+reset role;
+
+select set_config(
+  'request.jwt.claim.sub',
+  'ffffffff-ffff-4fff-8fff-ffffffffffff',
+  true
+);
+set local role authenticated;
+
+do $$
+begin
+  begin
+    perform public.delete_review_submission(gen_random_uuid());
+    raise exception 'Nonstaff user could execute staff review deletion';
+  exception
+    when insufficient_privilege then null;
+  end;
+end;
+$$;
+
+reset role;
+
+do $$
+begin
+  if current_setting('redeemed.test.skip_review_delete') = 'true' then
+    return;
+  end if;
+
+  if exists (
+    select 1 from public.review_submissions
+    where id in (
+      current_setting('redeemed.test.pending_review_id')::uuid,
+      current_setting('redeemed.test.approved_review_id')::uuid
+    )
+  ) or exists (
+    select 1 from public.published_reviews
+    where id = current_setting('redeemed.test.public_review_id')::uuid
+  ) then
+    raise exception 'Staff review deletion did not remove the exact linked rows';
+  end if;
+
+  if (select count(*) from public.published_reviews where source = 'booksy') <> 3 then
+    raise exception 'Staff website-review deletion changed a Booksy highlight';
+  end if;
+end;
+$$;
+
+do $$
+declare
+  seeded_booksy_reviews integer;
+  iteration integer;
+begin
+  select count(*) into seeded_booksy_reviews
+  from public.published_reviews
+  where source = 'booksy'
+    and confirmed_client = true
+    and active = true;
+
+  if seeded_booksy_reviews <> 3 then
+    raise exception 'Expected three confirmed Booksy review highlights';
+  end if;
+
+  for iteration in 1..4 loop
+    perform public.capture_review_submission_v2(
+      'Review Capture Test',
+      format('review-capture-%s@example.com', iteration),
+      5::smallint,
+      'A complete review submission used only by the database test.',
+      '2026-09-01-v1',
+      now(),
+      '/reviews',
+      repeat('d', 64),
+      ('00000000-0000-4000-8000-' || lpad(iteration::text, 12, '0'))::uuid
+    );
+  end loop;
+
+  begin
+    perform public.capture_review_submission_v2(
+      'Review Capture Test',
+      'review-capture-rate-limit@example.com',
+      5::smallint,
+      'This fifth review should be stopped by the durable rate limit.',
+      '2026-09-01-v1',
+      now(),
+      '/reviews',
+      repeat('d', 64),
+      '00000000-0000-4000-8000-000000000005'::uuid
+    );
+    raise exception 'Fifth review submission was not rate limited';
+  exception
+    when raise_exception then
+      if sqlerrm <> 'review_rate_limited' then
+        raise;
+      end if;
+  end;
+
+  perform public.capture_review_submission_v2(
+    'Replay Protection Test',
+    'review-replay-one@example.com',
+    5::smallint,
+    'A complete review submission used to verify replay protection.',
+    '2026-09-01-v1',
+    now(),
+    '/reviews',
+    repeat('e', 64),
+    '10000000-0000-4000-8000-000000000001'::uuid
+  );
+
+  begin
+    perform public.capture_review_submission_v2(
+      'Replay Protection Test',
+      'review-replay-two@example.com',
+      5::smallint,
+      'This replay must roll back instead of creating a second review.',
+      '2026-09-01-v1',
+      now(),
+      '/reviews',
+      repeat('e', 64),
+      '10000000-0000-4000-8000-000000000001'::uuid
+    );
+    raise exception 'Duplicate signed request id was accepted';
+  exception
+    when unique_violation then null;
+  end;
 end;
 $$;
 

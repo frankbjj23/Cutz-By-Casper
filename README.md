@@ -94,10 +94,12 @@ routes, SEO discovery files, and mobile overflow.
 - / — services overview, booking path, gallery preview, and location
 - /styles — filterable haircut portfolio
 - /book — optional website contact capture followed by Casper's canonical Booksy profile
+- /reviews — on-site review submission with private staff moderation and clear source labels
 - /privacy — site storage, style-preview, and third-party booking privacy boundaries
 - /preview — linked from the homepage, noindex, invitation-only style-preview beta
 - /api/style-preview — same-origin, invite-protected image-edit route
 - /api/booking-contact — same-origin, validated server handoff to the protected Supabase receiver
+- /api/reviews — same-origin, validated handoff to the moderated review inbox
 - /admin/login — noindex private booking-owner sign-in for the dormant custom-booking
   foundation
 - /robots.txt and /sitemap.xml — search discovery files

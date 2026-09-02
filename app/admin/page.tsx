@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
-import { signOutBookingStaff } from "@/app/admin/actions";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import {
+  approveReviewSubmission,
+  rejectReviewSubmission,
+  setPublishedReviewVisibility,
+  signOutBookingStaff,
+} from "@/app/admin/actions";
+import AdminReviewDeleteForm from "@/components/AdminReviewDeleteForm";
 import { requireBookingStaff } from "@/lib/server/booking-auth";
 import { createBookingServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
-  title: "Private Booking Calendar",
+  title: "Private Business Dashboard",
   robots: { index: false, follow: false, nocache: true },
 };
 
@@ -30,6 +38,27 @@ type BookingContactRow = {
     kind: "email" | "phone";
     value: string;
   }>;
+};
+
+type ReviewSubmissionRow = {
+  id: string;
+  display_name: string;
+  email: string;
+  rating: number;
+  review_text: string;
+  status: "pending" | "approved" | "rejected";
+  created_at: string;
+  moderated_at: string | null;
+  published_review_id: string | null;
+};
+
+type PublishedReviewRow = {
+  id: string;
+  source: "booksy" | "website";
+  display_name: string;
+  rating: number;
+  review_text: string;
+  active: boolean;
 };
 
 function formatMoney(cents: number) {
@@ -59,7 +88,35 @@ function formatContactDate(value: string) {
   }).format(new Date(value));
 }
 
-export default async function AdminPage() {
+type AdminPageProps = {
+  searchParams: Promise<{ review?: string; reviewPage?: string }>;
+};
+
+const REVIEW_HISTORY_PAGE_SIZE = 50;
+
+function readPositivePage(value: string | undefined) {
+  if (!value || !/^\d+$/.test(value)) return 1;
+  const page = Number(value);
+  return Number.isSafeInteger(page) && page > 0 ? page : 1;
+}
+
+const reviewNotices: Record<string, string> = {
+  approved: "The review is now approved and public.",
+  rejected: "The review was rejected and remains private.",
+  deleted: "The private review record and any linked website review were deleted.",
+  "visibility-updated": "The public review visibility was updated.",
+  invalid: "That review request was invalid.",
+  "approve-error": "The review could not be approved.",
+  "reject-error": "The review could not be rejected.",
+  "delete-error": "The review could not be deleted.",
+  "visibility-error": "The review visibility could not be updated.",
+};
+
+export default async function AdminPage({ searchParams }: AdminPageProps) {
+  const query = await searchParams;
+  const reviewHistoryPage = readPositivePage(query.reviewPage);
+  const reviewHistoryFrom = (reviewHistoryPage - 1) * REVIEW_HISTORY_PAGE_SIZE;
+  const reviewHistoryTo = reviewHistoryFrom + REVIEW_HISTORY_PAGE_SIZE - 1;
   const staff = await requireBookingStaff();
   const supabase = await createBookingServerClient();
 
@@ -68,6 +125,17 @@ export default async function AdminPage() {
     { data: appointments, error: appointmentError, count: appointmentCount },
     { count: serviceCount, error: serviceError },
     { data: bookingContacts, error: bookingContactError, count: bookingContactCount },
+    {
+      data: pendingReviewSubmissions,
+      error: reviewSubmissionError,
+      count: pendingReviewCount,
+    },
+    {
+      data: resolvedReviewSubmissions,
+      error: reviewHistoryError,
+      count: reviewHistoryCount,
+    },
+    { data: publishedReviews, error: publishedReviewError },
   ] =
     await Promise.all([
       supabase!
@@ -92,10 +160,48 @@ export default async function AdminPage() {
         )
         .order("last_seen_at", { ascending: false })
         .limit(500),
+      supabase!
+        .from("review_submissions")
+        .select(
+          "id, display_name, email, rating, review_text, status, created_at, moderated_at, published_review_id",
+          { count: "exact" },
+        )
+        .eq("status", "pending")
+        .order("created_at", { ascending: true })
+        .limit(250),
+      supabase!
+        .from("review_submissions")
+        .select(
+          "id, display_name, email, rating, review_text, status, created_at, moderated_at, published_review_id",
+          { count: "exact" },
+        )
+        .neq("status", "pending")
+        .order("created_at", { ascending: false })
+        .range(reviewHistoryFrom, reviewHistoryTo),
+      supabase!
+        .from("published_reviews")
+        .select("id, source, display_name, rating, review_text, active")
+        .order("display_order", { ascending: true })
+        .limit(100),
     ]);
 
   const rows = (appointments ?? []) as unknown as AppointmentRow[];
   const contactRows = (bookingContacts ?? []) as BookingContactRow[];
+  const pendingReviewRows = (pendingReviewSubmissions ?? []) as ReviewSubmissionRow[];
+  const resolvedReviewRows = (resolvedReviewSubmissions ?? []) as ReviewSubmissionRow[];
+  const reviewHistoryTotalPages = Math.max(
+    1,
+    Math.ceil((reviewHistoryCount ?? resolvedReviewRows.length) / REVIEW_HISTORY_PAGE_SIZE),
+  );
+  if (!reviewHistoryError && reviewHistoryPage > reviewHistoryTotalPages) {
+    const redirectParams = new URLSearchParams({
+      reviewPage: String(reviewHistoryTotalPages),
+    });
+    if (query.review) redirectParams.set("review", query.review);
+    redirect(`/admin?${redirectParams.toString()}#review-history`);
+  }
+  const publicReviewRows = (publishedReviews ?? []) as PublishedReviewRow[];
+  const reviewNotice = query.review ? reviewNotices[query.review] : null;
 
   return (
     <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl px-5 pb-24 pt-12 sm:px-8 sm:pt-16">
@@ -103,7 +209,7 @@ export default async function AdminPage() {
         <div>
           <p className="eyebrow">Private booking room</p>
           <h1 className="mt-4 font-display text-4xl text-pearl sm:text-6xl">
-            Appointment ledger
+            Business dashboard
           </h1>
           <p className="mt-4 text-sm text-pearl/60">
             Signed in as {staff.email ?? "approved staff"} · {staff.role}
@@ -119,7 +225,7 @@ export default async function AdminPage() {
         </form>
       </div>
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-4" aria-label="Booking summary">
+      <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5" aria-label="Business summary">
         <div className="lux-card p-6">
           <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Upcoming</p>
           <p className="mt-3 font-display text-4xl text-gold">
@@ -139,10 +245,230 @@ export default async function AdminPage() {
           </p>
         </div>
         <div className="lux-card p-6">
+          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Reviews waiting</p>
+          <p className="mt-3 font-display text-4xl text-gold">
+            {reviewSubmissionError
+              ? "—"
+              : (pendingReviewCount ?? pendingReviewRows.length)}
+          </p>
+        </div>
+        <div className="lux-card p-6">
           <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Booking status</p>
           <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-pearl">
             Private test only
           </p>
+        </div>
+      </section>
+
+      <section
+        id="review-moderation"
+        className="mt-8 scroll-mt-24 border border-gold/25 bg-[#111113] p-5 sm:p-8"
+        aria-labelledby="review-moderation-heading"
+      >
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow">Review manager</p>
+            <h2 id="review-moderation-heading" className="mt-4 font-display text-3xl text-pearl">
+              Approve before it appears
+            </h2>
+          </div>
+          <p className="max-w-md text-xs leading-5 text-pearl/50">
+            Visitor email stays private. Approval publishes only the display name, rating,
+            and review text with a Redeemed website review label.
+          </p>
+        </div>
+
+        {reviewNotice ? (
+          <p
+            role="status"
+            className={`mt-6 border p-4 text-sm ${
+              query.review?.includes("error") || query.review === "invalid"
+                ? "border-red-300/40 bg-red-950/30 text-red-100"
+                : "border-gold/30 bg-gold/5 text-pearl/75"
+            }`}
+          >
+            {reviewNotice}
+          </p>
+        ) : null}
+
+        {reviewSubmissionError ? (
+          <p role="alert" className="mt-6 border border-red-300/40 bg-red-950/30 p-4 text-sm text-red-100">
+            The private review inbox could not be loaded.
+          </p>
+        ) : pendingReviewRows.length === 0 ? (
+          <p className="mt-8 text-sm leading-7 text-pearl/60">
+            No reviews are waiting for approval.
+          </p>
+        ) : (
+          <div className="mt-7 grid gap-4 lg:grid-cols-2">
+            {pendingReviewRows.map((review) => (
+              <article key={review.id} className="border border-white/10 bg-black/20 p-6">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-pearl">{review.display_name}</p>
+                    <p className="mt-1 break-all text-xs text-pearl/55">{review.email}</p>
+                  </div>
+                  <p aria-label={`${review.rating} out of 5 stars`} className="tracking-[0.2em] text-gold">
+                    {"★".repeat(review.rating)}
+                  </p>
+                </div>
+                <blockquote className="mt-5 text-sm leading-7 text-pearl/75">
+                  “{review.review_text}”
+                </blockquote>
+                <p className="mt-4 text-xs text-pearl/55">
+                  Sent {formatContactDate(review.created_at)}
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <form action={approveReviewSubmission}>
+                    <input type="hidden" name="reviewId" value={review.id} />
+                    <button
+                      type="submit"
+                      aria-label={`Approve and publish review by ${review.display_name}`}
+                      className="primary-button"
+                    >
+                      Approve &amp; Publish
+                    </button>
+                  </form>
+                  <form action={rejectReviewSubmission}>
+                    <input type="hidden" name="reviewId" value={review.id} />
+                    <button
+                      type="submit"
+                      aria-label={`Reject review by ${review.display_name}`}
+                      className="secondary-button"
+                    >
+                      Reject
+                    </button>
+                  </form>
+                  <AdminReviewDeleteForm
+                    displayName={review.display_name}
+                    reviewId={review.id}
+                    hasPublishedReview={Boolean(review.published_review_id)}
+                  />
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+
+        <div id="review-history" className="mt-10 scroll-mt-24 border-t border-white/10 pt-8">
+          <h3 className="font-display text-2xl text-pearl">Submission history</h3>
+          <p className="mt-2 max-w-2xl text-xs leading-5 text-pearl/50">
+            Approved and rejected submissions stay private here until an administrator
+            permanently deletes them. Deleting an approved submission also removes its
+            linked website review, but can never remove a Booksy highlight.
+          </p>
+          {reviewHistoryError ? (
+            <p role="alert" className="mt-5 text-sm text-red-100">
+              The review history could not be loaded.
+            </p>
+          ) : resolvedReviewRows.length === 0 ? (
+            <p className="mt-5 text-sm text-pearl/55">No moderated website reviews yet.</p>
+          ) : (
+            <div className="mt-5 divide-y divide-white/10 border-y border-white/10">
+              {resolvedReviewRows.map((review) => (
+                <article
+                  key={review.id}
+                  className="grid gap-4 py-5 lg:grid-cols-[1fr_auto] lg:items-center"
+                >
+                  <div>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <p className="font-semibold text-pearl">{review.display_name}</p>
+                      <span className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-gold">
+                        {review.status}
+                      </span>
+                      <span aria-label={`${review.rating} out of 5 stars`} className="text-gold">
+                        {"★".repeat(review.rating)}
+                      </span>
+                    </div>
+                    <p className="mt-1 break-all text-xs text-pearl/55">{review.email}</p>
+                    <p className="mt-3 text-sm leading-6 text-pearl/65">
+                      “{review.review_text}”
+                    </p>
+                    <p className="mt-2 text-xs text-pearl/55">
+                      Sent {formatContactDate(review.created_at)}
+                      {review.moderated_at
+                        ? ` · Moderated ${formatContactDate(review.moderated_at)}`
+                        : ""}
+                    </p>
+                  </div>
+                  <AdminReviewDeleteForm
+                    displayName={review.display_name}
+                    reviewId={review.id}
+                    hasPublishedReview={Boolean(review.published_review_id)}
+                  />
+                </article>
+              ))}
+            </div>
+          )}
+          {!reviewHistoryError && reviewHistoryTotalPages > 1 ? (
+            <nav
+              className="mt-6 flex items-center justify-between gap-4"
+              aria-label="Review history pages"
+            >
+              {reviewHistoryPage > 1 ? (
+                <Link
+                  href={`/admin?reviewPage=${reviewHistoryPage - 1}#review-history`}
+                  className="secondary-button"
+                >
+                  Newer reviews
+                </Link>
+              ) : (
+                <span />
+              )}
+              <p className="text-xs uppercase tracking-[0.16em] text-pearl/50">
+                Page {Math.min(reviewHistoryPage, reviewHistoryTotalPages)} of{" "}
+                {reviewHistoryTotalPages}
+              </p>
+              {reviewHistoryPage < reviewHistoryTotalPages ? (
+                <Link
+                  href={`/admin?reviewPage=${reviewHistoryPage + 1}#review-history`}
+                  className="secondary-button"
+                >
+                  Older reviews
+                </Link>
+              ) : (
+                <span />
+              )}
+            </nav>
+          ) : null}
+        </div>
+
+        <div className="mt-10 border-t border-white/10 pt-8">
+          <h3 className="font-display text-2xl text-pearl">Published highlights</h3>
+          {publishedReviewError ? (
+            <p role="alert" className="mt-5 text-sm text-red-100">
+              Published reviews could not be loaded.
+            </p>
+          ) : publicReviewRows.length === 0 ? (
+            <p className="mt-5 text-sm text-pearl/55">No reviews are published yet.</p>
+          ) : (
+            <div className="mt-5 divide-y divide-white/10 border-y border-white/10">
+              {publicReviewRows.map((review) => (
+                <article key={review.id} className="grid gap-4 py-5 sm:grid-cols-[1fr_auto] sm:items-center">
+                  <div>
+                    <p className="font-semibold text-pearl">
+                      {review.display_name}
+                      <span className="ml-3 text-[0.62rem] uppercase tracking-[0.16em] text-gold">
+                        {review.source === "booksy" ? "Booksy" : "Website"}
+                      </span>
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-pearl/60">“{review.review_text}”</p>
+                  </div>
+                  <form action={setPublishedReviewVisibility}>
+                    <input type="hidden" name="reviewId" value={review.id} />
+                    <input type="hidden" name="active" value={review.active ? "false" : "true"} />
+                    <button
+                      type="submit"
+                      aria-label={`${review.active ? "Hide" : "Show"} review by ${review.display_name}`}
+                      className="secondary-button min-w-28"
+                    >
+                      {review.active ? "Hide" : "Show"}
+                    </button>
+                  </form>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
