@@ -667,7 +667,15 @@ test("SEO discovery files and page-specific social metadata are present", async 
   expect(favicon.ok()).toBeTruthy();
   expect(favicon.headers()["content-type"]).toContain("image/jpeg");
 
+  const shortcutIcon = await request.get("/apple-icon.png");
+  expect(shortcutIcon.ok()).toBeTruthy();
+  expect(shortcutIcon.headers()["content-type"]).toContain("image/png");
+
   await page.goto("/");
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
+    "href",
+    /\/apple-icon\.png/,
+  );
   const structuredData = JSON.parse(
     (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
   );
@@ -699,10 +707,12 @@ test("SEO discovery files and page-specific social metadata are present", async 
       });
     return {
       mark: await load("/images/brand/redeemed-mark.jpg"),
+      shortcut: await load("/apple-icon.png"),
       social: await load("/redeemed-casper-og-v2.jpg"),
     };
   });
   expect(brandAssets.mark).toEqual({ height: 512, width: 512 });
+  expect(brandAssets.shortcut).toEqual({ height: 180, width: 180 });
   expect(brandAssets.social).toEqual({ height: 630, width: 1200 });
 });
 

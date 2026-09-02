@@ -15,6 +15,7 @@
     "pretest": "npm run build",
     "test": "playwright test",
     "check": "npm run lint && npm run typecheck && npm test && npm run scan-encoding",
+    "generate:apple-icon": "node tools/generate-apple-icon.mjs",
     "scan-encoding": "node tools/scan-encoding.mjs",
     "fix-encoding": "node tools/fix-encoding.mjs"
   },
