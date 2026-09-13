@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ReviewSubmissionForm from "@/components/ReviewSubmissionForm";
+import GoogleReviewInvitation from "@/components/GoogleReviewInvitation";
 import {
   BOOKSY_REVIEWS_URL,
   BRAND_OG_PATH,
@@ -75,6 +76,7 @@ export default function ReviewsPage() {
             To add a confirmed review to Booksy itself, Booksy requires a completed
             Booksy appointment and handles that review inside its own service.
           </p>
+          <GoogleReviewInvitation />
         </aside>
 
         <ReviewSubmissionForm />

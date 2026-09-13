@@ -109,6 +109,36 @@ invitation gate, enable indexing, or promote open access until durable rate limi
 a reviewed provider agreement, production cost controls, and a larger authorized-photo
 quality evaluation are complete.
 
+## Google reviews setup (not activated)
+
+The homepage and `/reviews` have a conditional Google review invitation. It is
+hidden unless `GOOGLE_REVIEW_URL` contains Casper's confirmed, direct Google
+review link. No placeholder listing, Google stars/counts, Google API calls,
+third-party widget, or Google charges are enabled by this preparation.
+
+Before activation:
+
+1. Confirm Casper's real-world business/practitioner name, eligibility at the
+   shared shop, direct business phone, address, and customer-facing hours.
+2. Create/verify the appropriate Google Business Profile under Casper's control.
+   Google chooses the verification method; do not share passwords or codes.
+3. In the verified profile, choose **Read reviews > Get more reviews** and copy
+   its direct link. Confirm it opens the correct business's review composer.
+4. Set `GOOGLE_REVIEW_URL` in the deployment environment, rebuild/redeploy, and
+   verify both buttons on desktop and mobile. Accepted formats are Google's
+   `https://g.page/r/<id>/review` (or legacy `g.page/<name>/review`) and
+   `https://search.google.com/local/writereview?placeid=<id>`. A general Maps
+   share/search link is intentionally not accepted as a review-composer link.
+
+Displaying Google review text on-site is a separate, pending step after the
+profile is live and has reviews. Select a supported provider/integration and
+approve any billing first; follow Google attribution, content retention, and
+privacy/terms requirements. Do not insert Google data into the existing
+Booksy/website review tables or relabel existing reviews as Google reviews.
+
+Official setup guidance: https://support.google.com/business/answer/2911778
+Review link guidance: https://support.google.com/business/answer/16816815
+
 ## Booking source of truth
 
 Do not hard-code Booksy review totals, availability, holiday closures, prices, or

@@ -121,7 +121,7 @@ export default function Lightbox({
             alt={item.alt}
             fill
             sizes="100vw"
-            className="object-cover"
+            className="object-contain"
           />
         </div>
         <div className="flex flex-col gap-3 border-t border-white/10 px-6 py-5">

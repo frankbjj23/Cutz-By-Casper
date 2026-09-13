@@ -58,13 +58,13 @@ export const hairStyles = [
 ] as const satisfies readonly PreviewOption[];
 
 export const hairStyleReferenceImages: Partial<Record<HairStyleId, string>> = {
-  "low-taper-curls": "/images/styles/02-taper-beard.jpg",
-  "low-fade-crop": "/images/styles/01-low-fade.jpg",
-  "classic-side-part": "/images/styles/12-natural-curl.jpg",
-  "buzz-lineup": "/images/styles/19-precision-lineup.jpg",
-  "mid-fade-texture": "/images/styles/06-clean-taper.jpg",
-  "high-fade-crop": "/images/styles/09-tight-fade.jpg",
-  "curly-burst-fade": "/images/styles/17-side-part.jpg",
+  "low-taper-curls": "/images/styles-studio-v1/02-taper-beard.png",
+  "low-fade-crop": "/images/styles-studio-v1/01-low-fade.png",
+  "classic-side-part": "/images/styles-studio-v1/12-natural-curl.png",
+  "buzz-lineup": "/images/styles-studio-v1/19-precision-lineup.png",
+  "mid-fade-texture": "/images/styles-studio-v1/06-clean-taper.png",
+  "high-fade-crop": "/images/styles-studio-v1/09-tight-fade.png",
+  "curly-burst-fade": "/images/styles-studio-v1/17-side-part.png",
 };
 
 export const hairColors = [
@@ -149,10 +149,10 @@ export const beardStyles = [
 ] as const satisfies readonly PreviewOption[];
 
 export const beardStyleReferenceImages: Partial<Record<BeardStyleId, string>> = {
-  "clean-shaven": "/images/styles/10-silver-beard.jpg",
-  "designer-stubble": "/images/styles/11-curly-mullet.jpg",
-  "short-boxed": "/images/styles/04-skin-fade.jpg",
-  "sculpted-full": "/images/styles/15-textured-quiff.jpg",
+  "clean-shaven": "/images/styles-studio-v1/10-silver-beard.png",
+  "designer-stubble": "/images/styles-studio-v1/11-curly-mullet.png",
+  "short-boxed": "/images/styles-studio-v1/04-skin-fade.png",
+  "sculpted-full": "/images/styles-studio-v1/15-textured-quiff.png",
 };
 
 export type HairStyleId = (typeof hairStyles)[number]["id"];

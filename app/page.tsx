@@ -154,7 +154,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 gap-3" aria-label="Haircut and beard reference directions">
             <figure className="relative aspect-[4/5] overflow-hidden border border-gold/25 bg-black">
               <Image
-                src="/images/styles/02-taper-beard.jpg"
+                src="/images/styles-studio-v1/02-taper-beard.png"
                 alt="Low taper with natural curls from Casper's portfolio"
                 fill
                 sizes="(max-width: 1023px) 46vw, 21vw"
@@ -166,7 +166,7 @@ export default function HomePage() {
             </figure>
             <figure className="relative aspect-[4/5] translate-y-6 overflow-hidden border border-gold/25 bg-black">
               <Image
-                src="/images/styles/15-textured-quiff.jpg"
+                src="/images/styles-studio-v1/15-textured-quiff.png"
                 alt="Sculpted full beard from Casper's portfolio"
                 fill
                 sizes="(max-width: 1023px) 46vw, 21vw"

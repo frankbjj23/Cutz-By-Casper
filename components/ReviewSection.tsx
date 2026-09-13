@@ -1,4 +1,5 @@
 import Link from "next/link";
+import GoogleReviewInvitation from "@/components/GoogleReviewInvitation";
 import { getPublishedReviews } from "@/lib/server/public-reviews";
 import { BOOKSY_REVIEWS_URL } from "@/lib/site";
 
@@ -88,6 +89,7 @@ export default async function ReviewSection() {
             </a>
           </div>
         </div>
+        <GoogleReviewInvitation />
       </div>
     </section>
   );

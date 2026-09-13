@@ -90,6 +90,10 @@ export default function Gallery({ items, title, showFilter = true }: GalleryProp
         ))}
       </div>
 
+      <p className="text-xs leading-6 text-pearl/60">
+        Backgrounds and lighting digitally edited.
+      </p>
+
       <Lightbox
         items={filteredItems}
         index={Math.min(lightboxIndex, Math.max(filteredItems.length - 1, 0))}
