@@ -13,6 +13,34 @@ export const casperProfile = {
 
 export const haircutStyles: GalleryItem[] = [
   {
+    id: "style-21",
+    name: "Swept-Back Haircut and Beard",
+    src: "/images/styles-studio-v1/21-swept-back-fade.png",
+    alt: "Left profile of a client with swept-back brown hair, faded sides, and a short beard, wearing a red barber cape.",
+    tags: ["Fade", "Classic", "Beard"],
+  },
+  {
+    id: "style-22",
+    name: "Textured Taper and Short Beard",
+    src: "/images/styles-studio-v1/22-textured-taper.png",
+    alt: "Right profile of a client with swept-back dark hair, tapered sides, a longer back, and a short beard, wearing a blue striped cape.",
+    tags: ["Taper", "Textured", "Beard"],
+  },
+  {
+    id: "style-23",
+    name: "Short Textured Cut and Edge-Up",
+    src: "/images/styles-studio-v1/23-short-wave-taper.png",
+    alt: "Right profile of a client with short textured hair, a tapered neckline, an edge-up, and stud earrings, wearing a light gray barber cape.",
+    tags: ["Taper", "Line-Up", "Textured"],
+  },
+  {
+    id: "style-24",
+    name: "Natural Curls and Tapered Sides",
+    src: "/images/styles-studio-v1/24-curly-taper.png",
+    alt: "Left side and rear view of a client with voluminous natural curls and tapered sides, wearing a dark barber cape.",
+    tags: ["Curly", "Taper"],
+  },
+  {
     id: "style-01",
     name: "Low Skin Fade + Textured Top (Crop) + Sharp Line-Up",
     src: "/images/styles-studio-v1/01-low-fade.png",

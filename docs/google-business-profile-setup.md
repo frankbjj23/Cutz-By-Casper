@@ -20,6 +20,19 @@ Ridgefield, NJ 07657. That exact address was entered, with no invented suite.
 
 ## Remaining before review activation
 
+### Status checked September 17, 2026
+
+The authenticated management panel under Frank's account still displays
+**Google is processing your verification**, **Your business is not visible to
+customers**, and **NOT PUBLICLY VISIBLE** for Erick Muniz at 719 Grand Ave.
+No rejection or additional-proof request was shown on that panel. This was a
+read-only check; no profile details or ownership were changed. Google's help
+page says verification reviews can take up to five business days, occasionally
+longer. The September 13 submission is still within that ordinary window.
+The Google review button remains unconfigured pending verification and an
+official review-sharing link. The four new September 17 portfolio photos are
+website-only; they were not uploaded to Google as part of this status check.
+
 - Wait for Google's final processing; do not treat the profile as public yet.
 - Frank explicitly approved the Business Profile terms/data-sharing step and
   use of his account. No additional owner/manager was added and no ownership

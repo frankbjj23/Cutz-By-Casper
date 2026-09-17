@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "created": "2026-09-17",
+  "mode": "built-in image_gen edit",
+  "scope": "Four user-supplied client photographs added first to the website homepage gallery and full portfolio, in attachment order. No Google photo uploads.",
+  "preservation": "Original JPGs copied without alteration and verified with SHA-256. Generated studio derivatives were visually compared with the originals for identity, pose, haircut silhouette and beard/clothing details. Generative editing may reinterpret fine details; the website retains its digital-editing disclosure.",
+  "assets": [
+    {
+      "id": "style-21",
+      "sourceAttachment": "1-Photo-1.jpg",
+      "original": "public/images/styles/21-swept-back-fade.jpg",
+      "originalSha256": "7e6ae01ff61e3754a8d7b70ec2af142adde4ad590fff8eb7b6daf17575629eb5",
+      "edited": "public/images/styles-studio-v1/21-swept-back-fade.png",
+      "prompt": "Use case: identity-preserve. Asset type: edited real-client haircut portfolio photograph for Redeemed Precision Grooming's website. Image 1 is the sole edit target, not a model reference. Replace only the barbershop background with a seamless deep-black studio backdrop. Adjust exposure and lighting to tasteful professional softbox lighting with neutral realistic skin tones and restrained separation of dark hair from black, no glowing halo. Keep the exact same person, facial proportions, expression, age, skin texture, ears, head/body pose and camera angle. Preserve the actual haircut silhouette, hair texture, color, fade height and transition, hairline, flyaways, beard shape/density, and all clothing/cape. Do not redesign or improve the haircut, fill thin areas, sharpen the hairline, add facial hair, smooth skin or beautify the face. These are photographs of the barber's actual work. Remove screenshot black letterbox borders and background people/room only. Photorealistic 4:5 vertical studio portrait framing the complete head and upper shoulders with modest breathing room around hair; no clipped hair. No new text, watermark, logos, props, clothing or room. Preserve the swept-back brown hairstyle, left-facing profile, reddish-brown short beard with gray flecks, and red barber cape.",
+      "generationFile": "exec-f9a882c8-5ee6-4180-9985-0b7f7d238229.png"
+    },
+    {
+      "id": "style-22",
+      "sourceAttachment": "2-Photo-2.jpg",
+      "original": "public/images/styles/22-textured-taper.jpg",
+      "originalSha256": "22635b6e2b61984b66d4764ae45cd49341b52d36a1fbf60532c52eed64f5386c",
+      "edited": "public/images/styles-studio-v1/22-textured-taper.png",
+      "prompt": "Use case: identity-preserve. Asset type: edited real-client haircut portfolio photograph for Redeemed Precision Grooming's website. Image 1 is the sole edit target, not a model reference. Replace only the barbershop background with a seamless deep-black studio backdrop. Adjust exposure and lighting to tasteful professional softbox lighting with neutral realistic skin tones and restrained separation of dark hair from black, no glowing halo. Keep the exact same person, facial proportions, expression, age, skin texture, ears, head/body pose and camera angle. Preserve the actual haircut silhouette, hair texture, color, fade height and transition, hairline, flyaways, beard shape/density, and all clothing/cape. Do not redesign or improve the haircut, fill thin areas, sharpen the hairline, add facial hair, smooth skin or beautify the face. These are photographs of the barber's actual work. Remove screenshot black letterbox borders and background people/room only. Photorealistic 4:5 vertical studio portrait framing the complete head and upper shoulders with modest breathing room around hair; no clipped hair. No new text, watermark, logos, props, clothing or room. Preserve the right-facing profile, dark swept-back textured top, longer back, short dark beard and mustache, patterned collar and blue pinstriped barber cape.",
+      "generationFile": "exec-7d7b2658-35cf-45b3-b461-3618f2001aaa.png"
+    },
+    {
+      "id": "style-23",
+      "sourceAttachment": "3-Photo-3.jpg",
+      "original": "public/images/styles/23-short-wave-taper.jpg",
+      "originalSha256": "db381e8a8d22bf7104ec99a6f4f7f91465dcd37bf1d9dd74e5c4e9543433cf37",
+      "edited": "public/images/styles-studio-v1/23-short-wave-taper.png",
+      "prompt": "Use case: identity-preserve. Asset type: edited real-client haircut portfolio photograph for Redeemed Precision Grooming's website. Image 1 is the sole edit target, not a model reference. Replace only the barbershop background with a seamless deep-black studio backdrop. Adjust exposure and lighting to tasteful professional softbox lighting with neutral realistic skin tones and restrained separation of dark hair from black, no glowing halo. Keep the exact same person, facial proportions, expression, age, skin texture, ears, head/body pose and camera angle. Preserve the actual haircut silhouette, hair texture, color, fade height and transition, hairline, flyaways, beard shape/density, and all clothing/cape. Do not redesign or improve the haircut, fill thin areas, sharpen the hairline, add facial hair, smooth skin or beautify the face. These are photographs of the barber's actual work. Remove screenshot black letterbox borders and background people/room only. Photorealistic 4:5 vertical studio portrait framing the complete head and upper shoulders with modest breathing room around hair; no clipped hair. No new text, watermark, logos, props, clothing or room. Preserve the right-facing profile, very short tightly textured hair and exact edge-up, small chin beard, two stud earrings and light gray barber cape. Do not add a side beard or change skin tone. Critical refinement: the original has a very close short cropped top with tiny dense natural texture, not tall hair or large separated coils/ringlets. Preserve the original fine, low-profile texture and subtle original wave pattern as a photographic cutout. Do not create enlarged curly clumps or holes between curls, do not increase height/volume, do not enhance wave ridges. Keep softer original photographic detail instead of inventing strands. Treat the entire hair as a protected subject region; lighting correction should mainly affect background and skin exposure. Keep the precise original side/rear head viewing angle rather than rotating toward the camera.",
+      "generationFile": "exec-9a2142c1-25ee-4293-8663-138c9e5c0573.png",
+      "refinement": "Regenerated from the original to keep the short hair texture less pronounced and closer to the source."
+    },
+    {
+      "id": "style-24",
+      "sourceAttachment": "4-Photo-4.jpg",
+      "original": "public/images/styles/24-curly-taper.jpg",
+      "originalSha256": "73d8867c2f97715f3c12b83fa83cc34014fb55b00f99eae825480e5d4469b3c4",
+      "edited": "public/images/styles-studio-v1/24-curly-taper.png",
+      "prompt": "Use case: identity-preserve. Asset type: edited real-client haircut portfolio photograph for Redeemed Precision Grooming's website. Image 1 is the sole edit target, not a model reference. Replace only the barbershop background with a seamless deep-black studio backdrop. Adjust exposure and lighting to tasteful professional softbox lighting with neutral realistic skin tones and restrained separation of dark hair from black, no glowing halo. Keep the exact same person, facial proportions, expression, age, skin texture, ears, head/body pose and camera angle. Preserve the actual haircut silhouette, hair texture, color, fade height and transition, hairline, flyaways, beard shape/density, and all clothing/cape. Do not redesign or improve the haircut, fill thin areas, sharpen the hairline, add facial hair, smooth skin or beautify the face. These are photographs of the barber's actual work. Remove screenshot black letterbox borders and background people/room only. Photorealistic 4:5 vertical studio portrait framing the complete head and upper shoulders with modest breathing room around hair; no clipped hair. No new text, watermark, logos, props, clothing or room. Preserve the left-facing side/rear angle, voluminous natural textured curls, exact tapered side and back hairline, small visible chin beard and dark barber cape. Do not shorten the back, add curls or change the hair silhouette.",
+      "generationFile": "exec-51f96936-7724-45cc-b3c4-3a83a458cf93.png"
+    }
+  ]
+}
