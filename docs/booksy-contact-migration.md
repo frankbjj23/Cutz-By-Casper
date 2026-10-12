@@ -30,8 +30,9 @@ or send customer announcements as part of the contact import.
   handoffs, and no capture events. Source agreement flags do not grant new website
   marketing permission. No invitations or customer notifications were sent.
 - New import tables retain active-staff RLS; the importer is a private,
-  service-role/postgres-only function. The same atomic import supports a rollback
-  dry run and recognizes repeated file imports without adding records.
+  restricted function run through the administrative database connection. The
+  same atomic import supports a rollback dry run and recognizes repeated file
+  imports without adding records.
 - Local verification: real export import and repeat import inside rollback;
   separate tests for shared phones, future website handoffs, source-history
   preservation, failed-import rollback, anonymous/nonstaff denial, staff reads;
@@ -45,6 +46,10 @@ or send customer announcements as part of the contact import.
   up to two business days, with updates by email. No customer file has been sent.
   We requested a case number, confirmation of Casper's email, and an explicit
   hold on actual import until the upload/privacy/notification questions are answered.
+- SQUIRE confirmed case **0037902**. Keylin V said the migration team would
+  address further questions by email; the visibility, notification, and upload
+  requirements have not yet been answered. No import is confirmed or authorized
+  to begin until those requirements are resolved.
 - Post-import verification confirmed all three original website rows unchanged,
   nonstaff access denied, and Casper's existing active-staff identity able to read
   all 216 master entries and 239 source records. Security advisors reported no new
@@ -52,6 +57,11 @@ or send customer announcements as part of the contact import.
   notice remains intentional. Existing Auth warning: [leaked-password protection
   is disabled](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection);
   no account-security settings were changed in this contact-import task.
+- A live service-role regression check caught the capture RPC's new private-helper
+  dependency. The follow-up migration inlines name normalization in that RPC, so
+  no schema-access grants are needed. Service-role capture and repeat capture
+  passed in a rolled-back production transaction afterward; test contacts were
+  not retained. All existing access permissions remain unchanged.
 
 The original three destination rows and methods were backed up locally before
 the import. The production import was preceded by a live rollback dry run with

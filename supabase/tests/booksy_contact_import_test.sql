@@ -1,5 +1,12 @@
 begin;
 -- Test data only. The whole file rolls back, including generated IDs.
+set local role service_role;
+do $$ declare first_id uuid; second_id uuid; begin
+  first_id := public.capture_or_merge_booking_contact('Service Contact Test','service-contact@example.com','+12015550198','2026-08-24-v2',now(),'/book',repeat('d',64));
+  second_id := public.capture_or_merge_booking_contact('Service Contact Test','service-contact@example.com','+12015550198','2026-08-24-v2',now(),'/book',repeat('d',64));
+  if first_id <> second_id then raise exception 'Service role capture failed to match existing contact'; end if;
+end; $$;
+reset role;
 do $$
 declare
   test_payload jsonb;
