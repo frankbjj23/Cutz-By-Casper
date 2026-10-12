@@ -11,7 +11,47 @@ policies, and the new booking flow have been reconciled. Contact migration alone
 does not make the appointment calendar ready for cutover. Do not cancel Booksy
 or send customer announcements as part of the contact import.
 
-## Contact import completed — October 12, 2026
+## Owner-approved shared-detail merge — October 12, 2026
+
+The owner subsequently requested: "If any contact has the same email or number
+merge them." This explicitly replaces the stricter rule for this cleanup.
+
+- Completed live: **216 -> 184 master entries**, consolidating 32 extra rows in
+  31 groups. A shared normalized email OR phone is sufficient, including linked
+  chains. Blank fields and names alone are not matches.
+- All 379 distinct contact methods and all 239 original Booksy source records
+  were verified unchanged. All three pre-import website IDs remain. Thirty-two
+  alternate names are displayed under "Also listed as"; a shared entry can
+  represent family members, not necessarily one person.
+- Eight name-only/conflicting-detail flags remain separate. No other entries
+  now share a stored email or phone. No appointments, notifications, or marketing
+  permissions were changed.
+- Recovery audit: `e3603bd4-5dde-4f16-99aa-ea000899fc7c` in the non-exposed,
+  administrator-only `booking_private.contact_merge_runs`. It preserves the
+  entire pre-merge contacts/methods/source links/events and the merge mapping.
+  Separate before/after backups are under the gitignored `.private-migration/`.
+  Recovery must use those original records and the affected-ID map, reconcile
+  newer activity first, and run inside a tested transaction; never overwrite the
+  whole live list blindly. The source export is unchanged.
+- The merge function is private and invoker-only, with no execution permission
+  for anonymous users, signed-in users, or the website service role. It uses the
+  intake advisory lock and table locks, supports a rollback dry run, and is
+  idempotent. Public intake recognizes retained names but still cannot bulk-merge
+  existing contacts merely because an anonymous visitor supplies crossed details.
+- Verified synthetic transitive merges, name-only nonmatches, aliases, source
+  flags, capture history, dry-run rollback, repeat runs, and restricted privileges.
+  Tested the real dataset in a local rollback, then a live rollback before the
+  approved write. The live post-check verified exact method sets and source JSON,
+  not just counts. No new access grants were added.
+- SQUIRE staging now uses the **184-entry** shared-detail list, retained privately
+  as `squire-shared-detail-staging.json`. This is preparation data, not a verified
+  SQUIRE import template. It has not been uploaded. Case **0037902** still awaits
+  the required upload, visibility, and notification answers described below.
+- Security advisors flag the private recovery table's no-policy RLS as
+  informational: it is intentionally administrative-only, with no client or
+  service-role grants. The existing leaked-password warning remains unchanged.
+
+## Initial contact import completed — October 12, 2026
 
 - The official owner-forwarded Booksy Excel export contained 239 source records.
   Its encrypted original is retained locally outside Git in `.private-migration/`.

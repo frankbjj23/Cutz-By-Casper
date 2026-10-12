@@ -36,6 +36,7 @@ type BookingContactRow = {
   expires_at: string | null;
   origin: "website" | "booksy";
   needs_identity_review: boolean;
+  alternate_names: string[];
   booking_contact_methods: Array<{
     kind: "email" | "phone";
     value: string;
@@ -157,7 +158,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       supabase!
         .from("booking_contacts")
         .select(
-          "id, full_name, email, phone_e164, first_seen_at, last_seen_at, handoff_count, expires_at, origin, needs_identity_review, booking_contact_methods(kind, value)",
+          "id, full_name, alternate_names, email, phone_e164, first_seen_at, last_seen_at, handoff_count, expires_at, origin, needs_identity_review, booking_contact_methods(kind, value)",
           { count: "exact" },
         )
         .order("last_seen_at", { ascending: false })
@@ -479,11 +480,11 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           <div>
             <p className="eyebrow">Master contact sheet</p>
             <h2 id="contacts-heading" className="mt-4 font-display text-3xl text-pearl">
-              One person, one contact
+              Your combined contact list
             </h2>
           </div>
           <p className="max-w-sm text-xs leading-5 text-pearl/50">
-            Website contacts and imported Booksy clients. Exact name-and-contact matches are combined; shared numbers stay separate for review. These are not confirmed appointments.
+            Website contacts and imported Booksy clients. The approved cleanup combines entries sharing an email or phone number, keeping all names and contact details. A shared entry may include family members. These are not confirmed appointments.
           </p>
         </div>
 
@@ -529,9 +530,14 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     <tr key={contact.id} className="align-top text-pearl/70">
                       <th scope="row" className="px-4 py-5 font-semibold text-pearl">
                         {contact.full_name}
+                        {contact.alternate_names.length > 0 && (
+                          <p className="mt-2 max-w-56 text-xs font-normal leading-5 text-pearl/60">
+                            Also listed as: {contact.alternate_names.join("; ")}
+                          </p>
+                        )}
                         {contact.needs_identity_review && (
                           <p className="mt-2 max-w-48 text-xs font-normal leading-5 text-gold">
-                            Check shared details — kept separate
+                            Review remaining details — no confirmed email or phone match
                           </p>
                         )}
                       </th>
