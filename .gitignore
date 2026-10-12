@@ -11,6 +11,7 @@ playwright-report
 test-results
 .tmp-booking-postgres/
 supabase/.temp/
+.private-migration/
 *.tsbuildinfo
 
 # env

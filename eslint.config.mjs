@@ -8,6 +8,7 @@ export default defineConfig([
   globalIgnores([
     ".next/**",
     ".tmp-booking-postgres/**",
+    ".private-migration/**",
     "coverage/**",
     "out/**",
     "playwright-report/**",

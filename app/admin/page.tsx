@@ -34,6 +34,8 @@ type BookingContactRow = {
   last_seen_at: string;
   handoff_count: number;
   expires_at: string | null;
+  origin: "website" | "booksy";
+  needs_identity_review: boolean;
   booking_contact_methods: Array<{
     kind: "email" | "phone";
     value: string;
@@ -155,7 +157,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       supabase!
         .from("booking_contacts")
         .select(
-          "id, full_name, email, phone_e164, first_seen_at, last_seen_at, handoff_count, expires_at, booking_contact_methods(kind, value)",
+          "id, full_name, email, phone_e164, first_seen_at, last_seen_at, handoff_count, expires_at, origin, needs_identity_review, booking_contact_methods(kind, value)",
           { count: "exact" },
         )
         .order("last_seen_at", { ascending: false })
@@ -481,7 +483,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </h2>
           </div>
           <p className="max-w-sm text-xs leading-5 text-pearl/50">
-            Repeated handoffs merge by email or phone. These are not confirmed Booksy appointments.
+            Website contacts and imported Booksy clients. Exact name-and-contact matches are combined; shared numbers stay separate for review. These are not confirmed appointments.
           </p>
         </div>
 
@@ -491,17 +493,18 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </p>
         ) : contactRows.length === 0 ? (
           <p className="mt-8 text-sm leading-7 text-pearl/60">
-            No one has used the website contact handoff yet.
+            No contacts have been saved or imported yet.
           </p>
         ) : (
           <div className="mt-6 overflow-x-auto border border-pearl/10">
             <table className="w-full min-w-[980px] border-collapse text-left text-sm">
               <caption className="sr-only">
-                Deduplicated website-to-Booksy contact master sheet
+                Private master contact sheet with website contacts and imported Booksy clients
               </caption>
               <thead className="bg-black/35 text-[0.65rem] uppercase tracking-[0.16em] text-pearl/55">
                 <tr>
                   <th scope="col" className="px-4 py-4 font-semibold">Name</th>
+                  <th scope="col" className="px-4 py-4 font-semibold">Source</th>
                   <th scope="col" className="px-4 py-4 font-semibold">Phone</th>
                   <th scope="col" className="px-4 py-4 font-semibold">Email</th>
                   <th scope="col" className="px-4 py-4 font-semibold">First saved</th>
@@ -526,7 +529,15 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     <tr key={contact.id} className="align-top text-pearl/70">
                       <th scope="row" className="px-4 py-5 font-semibold text-pearl">
                         {contact.full_name}
+                        {contact.needs_identity_review && (
+                          <p className="mt-2 max-w-48 text-xs font-normal leading-5 text-gold">
+                            Check shared details — kept separate
+                          </p>
+                        )}
                       </th>
+                      <td className="whitespace-nowrap px-4 py-5 text-xs text-pearl/60">
+                        {contact.origin === "booksy" ? "Booksy import" : "Website"}
+                      </td>
                       <td className="space-y-1 px-4 py-5">
                         {phones.map((phone) => <p key={phone}>{phone}</p>)}
                       </td>
@@ -537,7 +548,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         {formatContactDate(contact.first_seen_at)}
                       </td>
                       <td className="whitespace-nowrap px-4 py-5">
-                        {formatContactDate(contact.last_seen_at)}
+                        {contact.handoff_count > 0 ? formatContactDate(contact.last_seen_at) : "No website handoff"}
                       </td>
                       <td className="px-4 py-5 text-center font-semibold text-gold">
                         {contact.handoff_count}

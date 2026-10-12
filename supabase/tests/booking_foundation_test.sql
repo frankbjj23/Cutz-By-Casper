@@ -560,7 +560,7 @@ begin
   );
 
   second_contact_id := public.capture_or_merge_booking_contact(
-    'Master Contact Test Updated',
+    'Master Contact Test',
     'master-contact-two@example.com',
     '+19995550199',
     '2026-08-24-v2',
@@ -570,7 +570,7 @@ begin
   );
 
   third_contact_id := public.capture_or_merge_booking_contact(
-    'Master Contact Test Final',
+    'Master Contact Test',
     'MASTER-CONTACT-ONE@EXAMPLE.COM',
     null,
     '2026-08-24-v2',
@@ -580,7 +580,7 @@ begin
   );
 
   if first_contact_id <> second_contact_id or first_contact_id <> third_contact_id then
-    raise exception 'Matching email or phone did not resolve to one master contact';
+    raise exception 'Matching full name plus email or phone did not resolve to one master contact';
   end if;
 
   select count(*), max(handoff_count)
