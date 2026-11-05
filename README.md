@@ -28,7 +28,7 @@ should confirm the final appointment time and location on SQUIRE before travelin
 ## Live links
 
 - Website: https://redeemedbycasper.com
-- Booking: https://getsqr.co/erik-munoz
+- Booking: https://getsquire.com/booking/book/the-hairhub-ridgefield/barber/casper-master-barber/services
 
 ## Stack
 
@@ -144,7 +144,8 @@ Do not hard-code SQUIRE availability, holiday closures, prices, or booking polic
 into this site. Those details can change and should be confirmed on Casper's individual
 SQUIRE page.
 
-Use `https://getsqr.co/erik-munoz` as the canonical customer handoff. It is Casper's
-individual SQUIRE short link and currently redirects to his services at The HairHub.
+Use `https://getsquire.com/booking/book/the-hairhub-ridgefield/barber/casper-master-barber/services`
+as the canonical customer handoff. It is Casper's verified individual SQUIRE services
+page at The HairHub.
 Booksy remains only as source attribution for imported contacts and displayed Booksy
 reviews; it is not a new-booking destination.

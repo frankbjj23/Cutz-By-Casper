@@ -2,7 +2,8 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { isValidOwnerCode, normalizeOwnerCode } from "../lib/owner-access";
 
-const SQUIRE_BOOKING_URL = "https://getsqr.co/erik-munoz";
+const SQUIRE_BOOKING_URL =
+  "https://getsquire.com/booking/book/the-hairhub-ridgefield/barber/casper-master-barber/services";
 const BRAND_NAME = "Redeemed Precision Grooming";
 
 test("owner access accepts Supabase email code lengths", () => {

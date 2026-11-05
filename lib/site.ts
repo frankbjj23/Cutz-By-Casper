@@ -2,7 +2,8 @@ export const SITE_URL = "https://redeemedbycasper.com";
 export const BRAND_LOGO_PATH = "/images/brand/redeemed-precision-logo.jpg";
 export const BRAND_MARK_PATH = "/images/brand/redeemed-mark.jpg";
 export const BRAND_OG_PATH = "/redeemed-casper-og-v2.jpg";
-export const SQUIRE_BOOKING_URL = "https://getsqr.co/erik-munoz";
+export const SQUIRE_BOOKING_URL =
+  "https://getsquire.com/booking/book/the-hairhub-ridgefield/barber/casper-master-barber/services";
 export const BOOKSY_REVIEWS_URL =
   "https://booksy.com/en-us/697614_casper_barber-shop_28387_ridgefield#reviews";
 export const SQUIRE_PRIVACY_URL = "https://getsquire.com/legal/privacy";
