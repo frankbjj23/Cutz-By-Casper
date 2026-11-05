@@ -8,6 +8,8 @@ import {
   signOutBookingStaff,
 } from "@/app/admin/actions";
 import AdminReviewDeleteForm from "@/components/AdminReviewDeleteForm";
+import AdminSiteActivity from "@/components/AdminSiteActivity";
+import { activityRange, type SiteActivity } from "@/lib/site-activity";
 import { requireBookingStaff } from "@/lib/server/booking-auth";
 import { createBookingServerClient } from "@/lib/supabase/server";
 
@@ -92,7 +94,7 @@ function formatContactDate(value: string) {
 }
 
 type AdminPageProps = {
-  searchParams: Promise<{ review?: string; reviewPage?: string }>;
+  searchParams: Promise<{ review?: string; reviewPage?: string; activityDays?: string }>;
 };
 
 const REVIEW_HISTORY_PAGE_SIZE = 50;
@@ -117,6 +119,7 @@ const reviewNotices: Record<string, string> = {
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
   const query = await searchParams;
+  const activityDays = activityRange(query.activityDays);
   const reviewHistoryPage = readPositivePage(query.reviewPage);
   const reviewHistoryFrom = (reviewHistoryPage - 1) * REVIEW_HISTORY_PAGE_SIZE;
   const reviewHistoryTo = reviewHistoryFrom + REVIEW_HISTORY_PAGE_SIZE - 1;
@@ -139,6 +142,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       count: reviewHistoryCount,
     },
     { data: publishedReviews, error: publishedReviewError },
+    { data: activity, error: activityError },
   ] =
     await Promise.all([
       supabase!
@@ -186,7 +190,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         .select("id, source, display_name, rating, review_text, active")
         .order("display_order", { ascending: true })
         .limit(100),
+      supabase!.rpc("get_site_activity", { p_days: activityDays }),
     ]);
+
+  if (activityError) console.error("admin.activity_unavailable", { code: activityError.code });
 
   const rows = (appointments ?? []) as unknown as AppointmentRow[];
   const contactRows = (bookingContacts ?? []) as BookingContactRow[];
@@ -228,15 +235,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         </form>
       </div>
 
+      <AdminSiteActivity activity={activityError ? null : activity as SiteActivity | null} days={activityDays} updatedAt={now} />
+
       <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5" aria-label="Business summary">
         <div className="lux-card p-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Upcoming</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Website test appointments</p>
           <p className="mt-3 font-display text-4xl text-gold">
             {appointmentError ? "—" : (appointmentCount ?? rows.length)}
           </p>
         </div>
         <div className="lux-card p-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Active services</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Website test services</p>
           <p className="mt-3 font-display text-4xl text-gold">
             {serviceError ? "—" : (serviceCount ?? 0)}
           </p>
@@ -256,12 +265,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </p>
         </div>
         <div className="lux-card p-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Booking status</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Booking provider</p>
           <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-pearl">
-            Private test only
+            SQUIRE
           </p>
+          <Link href="/book" className="mt-3 inline-block text-xs text-gold underline underline-offset-4">Check the customer booking page</Link>
         </div>
       </section>
+
+      <p className="mt-3 text-xs leading-6 text-pearl/55">
+        Live appointments and availability are managed in SQUIRE. The website test counts above are from the separate, inactive booking prototype—not Casper&apos;s SQUIRE calendar.
+      </p>
 
       <section
         id="review-moderation"

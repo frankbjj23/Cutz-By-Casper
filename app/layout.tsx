@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import MobileBookingBar from "@/components/MobileBookingBar";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
+import SiteActivityTracker from "@/components/SiteActivityTracker";
 import {
   SQUIRE_BOOKING_URL,
   BRAND_LOGO_PATH,
@@ -86,6 +87,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {children}
         <SiteFooter />
         <MobileBookingBar />
+        <SiteActivityTracker enabled={process.env.VERCEL_ENV !== "preview"} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

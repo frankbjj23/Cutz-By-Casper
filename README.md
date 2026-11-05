@@ -149,3 +149,33 @@ as the canonical customer handoff. It is Casper's verified individual SQUIRE ser
 page at The HairHub.
 Booksy remains only as source attribution for imported contacts and displayed Booksy
 reviews; it is not a new-booking destination.
+
+## Private website activity
+
+Approved staff can view `/admin#site-activity` for Eastern-time daily visits,
+booking-page visits, and new website-only master contacts over 7, 30, or 90 days.
+These are not SQUIRE appointment counts or customer login registrations. Imported
+contacts are excluded from signup totals, and traffic before tracking began is
+displayed as unavailable rather than zero.
+
+The public tracker sends only an allowlisted page path and a short-lived random
+tab ID to `/api/site-activity`. The server hashes identifiers with daily,
+purpose-separated HMACs and forwards a signed request to `capture-site-activity`.
+That Edge Function uses the existing `REVIEW_RECEIVER_SECRET` and writes through
+the service-only `record_site_activity` RPC. The staff-only read RPC is
+`get_site_activity`. Both SQL functions use invoker privileges; public traffic
+cannot read the dashboard. Raw IP addresses and customer contact details are not
+stored in analytics. Temporary deduplication receipts expire after 48 hours via
+an hourly cleanup; aggregate totals and contacts are retained.
+
+Deployment order: apply `20261105193759_add_private_site_activity.sql`, deploy
+`supabase/functions/capture-site-activity` with its own HMAC authentication, then
+deploy the Next.js app to **cutz-by-casper-umri** (the project serving
+`redeemedbycasper.com`). Never deploy `.private-migration` or `deliverables`.
+Preview deployments do not send analytics. The optional activity origin/receiver
+overrides in `.env.example` are for isolated tests only.
+
+Verification: `npm run lint`, `npm run typecheck`, a production build, and
+`npx playwright test tests/site-activity.spec.ts tests/review-signature.spec.ts`.
+These two test files exercise pure functions and HTTP endpoints, not browser UI.
+Use transactional rollback for database counter tests to avoid fake traffic.

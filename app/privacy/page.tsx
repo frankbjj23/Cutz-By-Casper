@@ -56,6 +56,27 @@ export default function PrivacyPage() {
           </p>
         </section>
 
+        <section id="site-activity" className="scroll-mt-28 space-y-3">
+          <h2 className="font-display text-2xl text-pearl">Website activity counts</h2>
+          <p className="text-sm leading-7 text-pearl/60">
+            We count visits to public pages and the booking page to understand site activity.
+            A random identifier in your browser tab&apos;s session storage groups page loads for
+            up to 30 minutes of inactivity, resetting each Eastern day. It is not linked to
+            your name, email, contact record, photos, or booking. Each page counts once per visit.
+            We do not collect full URLs, query strings, referral URLs, or browsing history on other sites.
+          </p>
+          <p className="text-sm leading-7 text-pearl/60">
+            Our server converts the temporary identifier and network address into separate
+            keyed hashes that change daily. The raw address is not stored in the activity database.
+            Supabase holds these hashes briefly for duplicate and abuse prevention; an hourly
+            cleanup removes records older than 48 hours. Anonymous daily totals are retained
+            for approved staff, alongside separate counts of newly saved website contacts.
+            We skip activity collection when your browser sends Do Not Track or Global Privacy
+            Control, and skip private admin and style-preview pages. Blocking session storage
+            also disables this counting. Booking remains available either way.
+          </p>
+        </section>
+
         <section id="booking-contact" className="scroll-mt-28 space-y-5">
           <div>
             <p className="eyebrow">Before SQUIRE</p>

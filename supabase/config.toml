@@ -5,3 +5,7 @@ verify_jwt = false
 
 [functions.capture-review]
 verify_jwt = false
+
+# Authenticated by a timestamped, purpose-bound server HMAC, not a public JWT.
+[functions.capture-site-activity]
+verify_jwt = false
