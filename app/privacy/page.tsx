@@ -231,8 +231,8 @@ export default function PrivacyPage() {
           <p className="text-sm leading-7 text-pearl/60">
             For information submitted through SQUIRE or Booksy, contact that provider through
             its published support and privacy channels. To ask about or request deletion of a website
-            booking contact or website review, contact Casper through the contact option on
-            his SQUIRE profile. For a question about the private preview, do not upload a photo.
+            booking contact or website review, contact Casper directly. For a question about
+            the private preview, do not upload a photo.
           </p>
         </section>
       </article>
