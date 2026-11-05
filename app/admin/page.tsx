@@ -587,7 +587,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </p>
         ) : rows.length === 0 ? (
           <p className="mt-8 text-sm leading-7 text-pearl/60">
-            No custom-system appointments yet. That is expected while Booksy remains live.
+            Appointments are managed in SQUIRE. This website keeps the master contact sheet separately.
           </p>
         ) : (
           <div className="mt-6 divide-y divide-pearl/10">
@@ -612,4 +612,3 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     </main>
   );
 }
-

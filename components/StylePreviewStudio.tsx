@@ -419,7 +419,7 @@ export default function StylePreviewStudio() {
     } catch {
       if (controller.signal.aborted || requestId !== accessRequestRef.current) return;
       setAccessError(
-        "The private preview is unavailable right now. You can still browse Casper's work or reserve on Booksy.",
+        "The private preview is unavailable right now. You can still browse Casper's work or reserve on SQUIRE.",
       );
     } finally {
       if (requestId === accessRequestRef.current) {
@@ -858,7 +858,7 @@ export default function StylePreviewStudio() {
           role="status"
         >
           Your invitation is valid, but live image generation is not connected right now.
-          You can still browse Casper&apos;s work or reserve on Booksy; no photo will be uploaded.
+          You can still browse Casper&apos;s work or reserve on SQUIRE; no photo will be uploaded.
         </div>
       ) : null}
 
@@ -984,7 +984,7 @@ export default function StylePreviewStudio() {
               <p className="mt-6 border-l-2 border-gold pl-4 text-xs leading-6 text-pearl/65">
                 Color preview only. Lighting, current color, hair condition, and the real
                 process can change the result. Hair coloring is not currently listed in
-                Casper&apos;s Booksy service menu.
+                Casper&apos;s SQUIRE service menu.
               </p>
             ) : null}
           </section>
@@ -1169,7 +1169,7 @@ export default function StylePreviewStudio() {
                   </p>
                 )}
                 <p className="text-xs leading-6 text-pearl/55">
-                  Booksy opens separately. Your photo is not sent to Booksy. Check its
+                  SQUIRE opens separately. Your photo is not sent to SQUIRE. Check its
                   live menu, pricing, availability, and terms before confirming.
                 </p>
               </div>

@@ -1,78 +1,16 @@
 "use client";
 
-import Script from "next/script";
 import { type FormEvent, useState } from "react";
 import {
   BOOKING_CONTACT_CONSENT_VERSION,
 } from "@/lib/booking-contact";
-import { BOOKSY_URL, BOOKSY_WIDGET_URL } from "@/lib/site";
+import { SQUIRE_BOOKING_URL } from "@/lib/site";
 
 type SubmissionState = "idle" | "saving" | "saved" | "error";
-
-const BOOKSY_OPENING_POSITION_WINDOW_MS = 1800;
-
-function moveViewportToTopImmediately() {
-  const root = document.documentElement;
-  const previousScrollBehavior = root.style.scrollBehavior;
-  root.style.scrollBehavior = "auto";
-  window.scrollTo(0, 0);
-  root.style.scrollBehavior = previousScrollBehavior;
-}
-
-function launchBooksyWidgetAtTop(button: HTMLElement) {
-  // Booksy inserts and resizes a document-height dialog after the click. Watch
-  // that short setup window so its focus/resize work cannot leave the page at
-  // the bottom, then release the page so the customer can scroll every service.
-  const observer = new MutationObserver(moveViewportToTopImmediately);
-  observer.observe(document.body, {
-    attributes: true,
-    childList: true,
-    subtree: true,
-    attributeFilter: ["style"],
-  });
-
-  button.click();
-  moveViewportToTopImmediately();
-  window.setTimeout(() => {
-    observer.disconnect();
-    moveViewportToTopImmediately();
-  }, BOOKSY_OPENING_POSITION_WINDOW_MS);
-}
 
 export default function BookingContactForm() {
   const [state, setState] = useState<SubmissionState>("idle");
   const [message, setMessage] = useState("");
-  const [widgetReady, setWidgetReady] = useState(false);
-  const [widgetFailed, setWidgetFailed] = useState(false);
-
-  function openBooksyWidget() {
-    const button = document.querySelector<HTMLElement>(".booksy-widget-button");
-    if (!button) {
-      setWidgetFailed(true);
-      setMessage(
-        "Your details are saved, but the embedded calendar could not open. Use the Booksy link below.",
-      );
-      return;
-    }
-    launchBooksyWidgetAtTop(button);
-  }
-
-  function handleWidgetReady() {
-    const button = document.querySelector<HTMLElement>(".booksy-widget-button");
-    const container = button?.closest<HTMLElement>(".booksy-widget-container");
-    if (!button) {
-      setWidgetFailed(true);
-      setMessage(
-        "Your details are saved, but the embedded calendar could not open. Use the Booksy link below.",
-      );
-      return;
-    }
-
-    if (container) container.style.display = "none";
-    setWidgetReady(true);
-    setMessage("Saved. Opening Casper’s live Booksy calendar on this page…");
-    window.setTimeout(() => launchBooksyWidgetAtTop(button), 0);
-  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -103,20 +41,23 @@ export default function BookingContactForm() {
       if (!response.ok) {
         throw new Error(
           result?.error?.message ??
-            "Your details could not be saved. You can still continue to Booksy.",
+            "Your details could not be saved. You can still continue to SQUIRE.",
         );
       }
-
-      setState("saved");
-      setMessage("Saved. Loading Casper’s live Booksy calendar…");
     } catch (error) {
       setState("error");
       setMessage(
         error instanceof Error
           ? error.message
-          : "Your details could not be saved. You can still continue to Booksy.",
+          : "Your details could not be saved. You can still continue to SQUIRE.",
       );
+      return;
     }
+
+    setState("saved");
+    setMessage("Saved. Continuing to Casper’s SQUIRE booking page…");
+    // Keep contact details on this site; do not place personal data in the URL.
+    window.location.assign(SQUIRE_BOOKING_URL);
   }
 
   return (
@@ -128,7 +69,7 @@ export default function BookingContactForm() {
         </h2>
         <p className="mt-4 text-sm leading-7 text-pearl/60">
           Save your name and at least one contact method here. You&apos;ll continue to
-          Booksy next to choose and confirm the actual appointment.
+          Casper&apos;s SQUIRE page next to choose and confirm the actual appointment.
         </p>
       </div>
 
@@ -210,26 +151,24 @@ export default function BookingContactForm() {
         </label>
 
         <p className="text-xs leading-6 text-pearl/45">
-          Enter a mobile number, an email address, or both. Booksy will separately ask
+          Enter a mobile number, an email address, or both. SQUIRE will separately ask
           for the information it needs to complete your appointment.
         </p>
 
         {state === "saved" ? (
-          <button
-            type="button"
-            onClick={openBooksyWidget}
-            disabled={!widgetReady}
-            className="primary-button w-full disabled:cursor-wait disabled:opacity-60"
+          <a
+            href={SQUIRE_BOOKING_URL}
+            className="primary-button w-full"
           >
-            {widgetReady ? "Open Live Booking Calendar" : "Loading Live Calendar…"}
-          </button>
+            Continue to Casper on SQUIRE
+          </a>
         ) : (
           <button
             type="submit"
             disabled={state === "saving"}
             className="primary-button w-full disabled:cursor-wait disabled:opacity-60"
           >
-            {state === "saving" ? "Saving…" : "Save & Continue to Booksy"}
+            {state === "saving" ? "Saving…" : "Save & Continue to SQUIRE"}
           </button>
         )}
 
@@ -249,31 +188,14 @@ export default function BookingContactForm() {
 
         <div className="text-center">
           <a
-            href={BOOKSY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={SQUIRE_BOOKING_URL}
             className="text-xs font-semibold uppercase tracking-[0.14em] text-pearl/60 underline decoration-gold underline-offset-6 transition hover:text-pearl"
           >
-            {state === "saved" || widgetFailed
-              ? "Open Booksy in a new tab"
-              : "Continue directly to Booksy without saving"}
+            {state === "saved"
+              ? "Open Casper’s SQUIRE booking page"
+              : "Continue directly to SQUIRE without saving"}
           </a>
         </div>
-
-        {state === "saved" ? (
-          <Script
-            id="redeemed-booksy-widget"
-            src={BOOKSY_WIDGET_URL}
-            strategy="afterInteractive"
-            onLoad={handleWidgetReady}
-            onError={() => {
-              setWidgetFailed(true);
-              setMessage(
-                "Your details are saved, but the embedded calendar could not load. Use the Booksy link below.",
-              );
-            }}
-          />
-        ) : null}
       </form>
     </div>
   );

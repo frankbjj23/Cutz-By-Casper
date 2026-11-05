@@ -4,7 +4,7 @@ import MobileBookingBar from "@/components/MobileBookingBar";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import {
-  BOOKSY_URL,
+  SQUIRE_BOOKING_URL,
   BRAND_LOGO_PATH,
   BRAND_OG_PATH,
   business,
@@ -65,7 +65,7 @@ const structuredData = {
     postalCode: business.address.postalCode,
     addressCountry: business.address.country,
   },
-  sameAs: [BOOKSY_URL],
+  sameAs: [SQUIRE_BOOKING_URL],
   employee: {
     "@type": "Person",
     name: business.barberName,

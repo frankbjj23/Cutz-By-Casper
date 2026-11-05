@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     return jsonError(
       429,
       "RATE_LIMITED",
-      "Too many contact requests were sent from this network. Continue to Booksy or try again later.",
+      "Too many contact requests were sent from this network. Continue to SQUIRE or try again later.",
       retryAfterSeconds(rateLimit.resetAt),
     );
   }
@@ -114,7 +114,7 @@ export async function POST(request: Request) {
       return jsonError(
         429,
         "RATE_LIMITED",
-        "Too many contact requests were sent from this network. Continue to Booksy or try again later.",
+        "Too many contact requests were sent from this network. Continue to SQUIRE or try again later.",
         Number(upstream.headers.get("retry-after") ?? 3600),
       );
     }
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
     return jsonError(
       503,
       "STORAGE_UNAVAILABLE",
-      "Contact saving is temporarily unavailable. You can still continue to Booksy.",
+      "Contact saving is temporarily unavailable. You can still continue to SQUIRE.",
     );
   } catch (error) {
     console.error("booking_contact.upstream_failure", {
@@ -132,7 +132,7 @@ export async function POST(request: Request) {
     return jsonError(
       503,
       "STORAGE_UNAVAILABLE",
-      "Contact saving is temporarily unavailable. You can still continue to Booksy.",
+      "Contact saving is temporarily unavailable. You can still continue to SQUIRE.",
     );
   } finally {
     clearTimeout(timeout);

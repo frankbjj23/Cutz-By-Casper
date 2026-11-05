@@ -15,12 +15,12 @@ const bookingSteps = [
   {
     number: "01",
     title: "Select your service",
-    description: "See Casper's current menu, timing, and pricing on Booksy.",
+    description: "See Casper's current menu, timing, and pricing on SQUIRE.",
   },
   {
     number: "02",
     title: "Choose a live time",
-    description: "Reserve directly from Casper's live Booksy calendar.",
+    description: "Reserve directly from Casper's live SQUIRE calendar.",
   },
   {
     number: "03",
@@ -70,7 +70,7 @@ export default function HomePage() {
                 </Link>
               </div>
               <p className="text-xs leading-5 tracking-wide text-pearl/60">
-                Current pricing, policies, and live availability are shown on Booksy.
+                Current pricing, policies, and live availability are shown on SQUIRE.
               </p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function HomePage() {
           <h2 className="section-title">The standard is in the details.</h2>
           <p className="max-w-md text-sm leading-7 text-pearl/60">
             These service categories cover proportion, texture, grooming, and a clean
-            finish. Booksy carries the exact current menu and live pricing.
+            finish. SQUIRE carries the exact current menu and live pricing.
           </p>
         </div>
         <div className="grid border-t border-white/15 md:grid-cols-3">
@@ -139,7 +139,7 @@ export default function HomePage() {
             </p>
             <p className="border-l border-gold pl-4 text-xs leading-6 text-pearl/55">
               A visual concept is not a guaranteed cut, color result, or available service.
-              Current services and appointments remain on Booksy.
+              Current services and new appointments are on SQUIRE.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/preview" className="primary-button">
@@ -190,7 +190,7 @@ export default function HomePage() {
               Your next cut, without the guesswork.
             </h2>
             <p className="max-w-lg text-sm leading-7 text-ink/65">
-              Booksy is Casper&apos;s one live calendar. The service menu, open times,
+              SQUIRE is Casper&apos;s one live calendar. The service menu, open times,
               current pricing, and terms stay together in one place.
             </p>
             <Link
@@ -279,8 +279,8 @@ export default function HomePage() {
           </div>
           <div className="flex flex-col justify-center gap-6 p-8 sm:p-12">
             <p className="max-w-xl text-sm leading-7 text-pearl/60">
-              Casper&apos;s current Booksy profile lists {locationDisplay}. Confirm the
-              appointment time and location on Booksy before traveling.
+              Find Casper inside The HairHub at {locationDisplay}. Confirm the
+              appointment time and location on SQUIRE before traveling.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
@@ -290,7 +290,7 @@ export default function HomePage() {
                 Check Availability
               </Link>
               <span className="inline-flex min-h-12 items-center border border-white/15 px-5 py-3 text-xs leading-5 text-pearl/60">
-                Current Booksy listing
+                Inside The HairHub
               </span>
             </div>
           </div>
@@ -303,7 +303,7 @@ export default function HomePage() {
           <div className="space-y-4 leading-7 text-pearl/55">
             <p>
               Current cancellation, payment, and service-specific terms appear during
-              the Booksy booking process. Review them there before confirming.
+              the SQUIRE booking process. Review them there before confirming.
             </p>
             <Link
               href="/book"

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  BOOKSY_URL,
+  SQUIRE_BOOKING_URL,
   BRAND_MARK_PATH,
   business,
   locationDisplay,
@@ -30,7 +30,7 @@ export default function SiteFooter() {
               </p>
             </div>
           </div>
-          <p>{locationDisplay} · Confirm appointment details on Booksy</p>
+          <p>{locationDisplay} · Confirm appointment details on SQUIRE</p>
         </div>
         <div className="flex flex-wrap gap-x-6 gap-y-3 text-xs uppercase tracking-[0.16em] sm:justify-end">
           <Link href="/styles" className="hover:text-gold">
@@ -43,12 +43,12 @@ export default function SiteFooter() {
             Reviews
           </Link>
           <a
-            href={BOOKSY_URL}
+            href={SQUIRE_BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-gold"
           >
-            Booksy
+            SQUIRE
           </a>
           <Link href="/privacy" className="hover:text-gold">
             Privacy
