@@ -2,6 +2,8 @@ export const SITE_URL = "https://redeemedbycasper.com";
 export const BRAND_LOGO_PATH = "/images/brand/redeemed-precision-logo.jpg";
 export const BRAND_MARK_PATH = "/images/brand/redeemed-mark.jpg";
 export const BRAND_OG_PATH = "/redeemed-casper-og-v2.jpg";
+export const INSTAGRAM_HANDLE = "@redeemedbycasper";
+export const INSTAGRAM_URL = "https://www.instagram.com/redeemedbycasper/";
 export const SQUIRE_BOOKING_URL =
   "https://getsquire.com/booking/book/the-hairhub-ridgefield/barber/casper-master-barber/services";
 export const BOOKSY_REVIEWS_URL =

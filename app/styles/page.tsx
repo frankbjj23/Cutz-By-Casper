@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Gallery from "@/components/Gallery";
+import InstagramCallout from "@/components/InstagramCallout";
 import { haircutStyles } from "@/lib/gallery";
 import { BRAND_OG_PATH, business, SITE_URL } from "@/lib/site";
 
@@ -51,6 +52,7 @@ export default function StylesPage() {
       </section>
 
       <section aria-labelledby="portfolio-heading" className="space-y-8">
+        <InstagramCallout />
         <div className="flex items-center gap-4">
           <span className="editorial-rule" aria-hidden="true" />
           <h2 id="portfolio-heading" className="eyebrow">

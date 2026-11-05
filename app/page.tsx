@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Gallery from "@/components/Gallery";
+import InstagramCallout from "@/components/InstagramCallout";
 import ReviewSection from "@/components/ReviewSection";
 import { casperProfile, haircutStyles } from "@/lib/gallery";
 import {
@@ -264,6 +265,7 @@ export default function HomePage() {
             </Link>
           </div>
           <Gallery items={haircutStyles.slice(0, 12)} showFilter={false} />
+          <InstagramCallout />
         </div>
       </section>
 
