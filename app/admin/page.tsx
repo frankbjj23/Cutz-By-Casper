@@ -18,15 +18,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false, nocache: true },
 };
 
-type AppointmentRow = {
-  id: string;
-  start_time_utc: string;
-  status: string;
-  service_name_snapshot: string;
-  balance_due_cents: number;
-  customers: { full_name: string } | null;
-};
-
 type BookingContactRow = {
   id: string;
   full_name: string;
@@ -65,24 +56,6 @@ type PublishedReviewRow = {
   review_text: string;
   active: boolean;
 };
-
-function formatMoney(cents: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
-}
-
-function formatAppointmentTime(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/New_York",
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date(value));
-}
 
 function formatContactDate(value: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -128,8 +101,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   const now = new Date().toISOString();
   const [
-    { data: appointments, error: appointmentError, count: appointmentCount },
-    { count: serviceCount, error: serviceError },
     { data: bookingContacts, error: bookingContactError, count: bookingContactCount },
     {
       data: pendingReviewSubmissions,
@@ -145,20 +116,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     { data: activity, error: activityError },
   ] =
     await Promise.all([
-      supabase!
-        .from("appointments")
-        .select(
-          "id, start_time_utc, status, service_name_snapshot, balance_due_cents, customers(full_name)",
-          { count: "exact" },
-        )
-        .gte("start_time_utc", now)
-        .in("status", ["pending_payment", "confirmed"])
-        .order("start_time_utc", { ascending: true })
-        .limit(20),
-      supabase!
-        .from("services")
-        .select("id", { count: "exact", head: true })
-        .eq("active", true),
       supabase!
         .from("booking_contacts")
         .select(
@@ -195,7 +152,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
   if (activityError) console.error("admin.activity_unavailable", { code: activityError.code });
 
-  const rows = (appointments ?? []) as unknown as AppointmentRow[];
   const contactRows = (bookingContacts ?? []) as BookingContactRow[];
   const pendingReviewRows = (pendingReviewSubmissions ?? []) as ReviewSubmissionRow[];
   const resolvedReviewRows = (resolvedReviewSubmissions ?? []) as ReviewSubmissionRow[];
@@ -217,7 +173,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     <main id="main-content" tabIndex={-1} className="mx-auto max-w-6xl px-5 pb-24 pt-12 sm:px-8 sm:pt-16">
       <div className="flex flex-col gap-6 border-b border-gold/25 pb-8 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="eyebrow">Private booking room</p>
+          <p className="eyebrow">Private administration</p>
           <h1 className="mt-4 font-display text-4xl text-pearl sm:text-6xl">
             Business dashboard
           </h1>
@@ -237,19 +193,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
       <AdminSiteActivity activity={activityError ? null : activity as SiteActivity | null} days={activityDays} updatedAt={now} />
 
-      <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5" aria-label="Business summary">
-        <div className="lux-card p-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Website test appointments</p>
-          <p className="mt-3 font-display text-4xl text-gold">
-            {appointmentError ? "—" : (appointmentCount ?? rows.length)}
-          </p>
-        </div>
-        <div className="lux-card p-6">
-          <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Website test services</p>
-          <p className="mt-3 font-display text-4xl text-gold">
-            {serviceError ? "—" : (serviceCount ?? 0)}
-          </p>
-        </div>
+      <section className="mt-8 grid gap-4 sm:grid-cols-3" aria-label="Business summary">
         <div className="lux-card p-6">
           <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Master contacts</p>
           <p className="mt-3 font-display text-4xl text-gold">
@@ -274,7 +218,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       </section>
 
       <p className="mt-3 text-xs leading-6 text-pearl/55">
-        Live appointments and availability are managed in SQUIRE. The website test counts above are from the separate, inactive booking prototype—not Casper&apos;s SQUIRE calendar.
+        Appointments and availability are managed in SQUIRE. This dashboard manages website visits, contacts, and reviews.
       </p>
 
       <section
@@ -587,43 +531,6 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         )}
       </section>
 
-      <section className="mt-8 border border-pearl/15 bg-[#111113] p-5 sm:p-8" aria-labelledby="upcoming-heading">
-        <div className="flex items-center justify-between gap-4">
-          <h2 id="upcoming-heading" className="font-display text-3xl text-pearl">
-            Upcoming appointments
-          </h2>
-          <span className="text-xs uppercase tracking-[0.18em] text-pearl/50">Eastern time</span>
-        </div>
-
-        {appointmentError ? (
-          <p role="alert" className="mt-6 border border-red-300/40 bg-red-950/30 p-4 text-sm text-red-100">
-            The private appointment ledger could not be loaded.
-          </p>
-        ) : rows.length === 0 ? (
-          <p className="mt-8 text-sm leading-7 text-pearl/60">
-            Appointments are managed in SQUIRE. This website keeps the master contact sheet separately.
-          </p>
-        ) : (
-          <div className="mt-6 divide-y divide-pearl/10">
-            {rows.map((appointment) => (
-              <article key={appointment.id} className="grid gap-3 py-5 sm:grid-cols-[1.2fr_1fr_auto] sm:items-center">
-                <div>
-                  <p className="font-semibold text-pearl">
-                    {appointment.customers?.full_name ?? "Customer"}
-                  </p>
-                  <p className="mt-1 text-sm text-pearl/55">{appointment.service_name_snapshot}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-pearl/80">{formatAppointmentTime(appointment.start_time_utc)}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.14em] text-gold">{appointment.status.replace("_", " ")}</p>
-                </div>
-                <p className="text-sm text-pearl/70">{formatMoney(appointment.balance_due_cents)} due</p>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
     </main>
   );
 }
-
