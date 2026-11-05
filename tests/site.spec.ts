@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { isValidOwnerCode, normalizeOwnerCode } from "../lib/owner-access";
 
-const BOOKSY_URL = "https://booksy.com/en-us/dl/show-business/697614";
+const SQUIRE_BOOKING_URL = "https://getsqr.co/erik-munoz";
 const BRAND_NAME = "Redeemed Precision Grooming";
 
 test("owner access accepts Supabase email code lengths", () => {
@@ -23,7 +23,7 @@ test("general customer routes render without unrelated forms", async ({ page }) 
   }
 });
 
-test("new brand identity and Booksy transition are clear", async ({ page }) => {
+test("new brand identity and SQUIRE transition are clear", async ({ page }) => {
   await page.goto("/");
   await expect(
     page.getByRole("link", { name: `${BRAND_NAME} home` }),
@@ -156,28 +156,38 @@ test("review API rejects cross-site and malformed submissions", async ({ request
   expect(getResponse.status()).toBe(405);
 });
 
-test("primary booking links use the website handoff and direct Booksy links stay canonical", async ({ page }) => {
+test("primary booking links use the website handoff and direct SQUIRE links stay canonical", async ({ page }) => {
   for (const path of ["/", "/styles"]) {
     await page.goto(path);
     expect(await page.locator('a[href="/book"]').count()).toBeGreaterThan(0);
+    await expect(page.getByRole("link", { name: "Start booking", exact: true })).toHaveAttribute(
+      "href",
+      "/book",
+    );
+    await expect(page.getByRole("link", { name: "SQUIRE booking", exact: true })).toHaveAttribute(
+      "href",
+      "/book",
+    );
+    await expect(page.locator("body")).not.toContainText(/after[- ]hours/i);
+    await expect(page.locator("body")).not.toContainText(/synch(?:roniz|ed|ing)/i);
   }
 
   await page.goto("/book");
   await expect(
-    page.getByRole("link", { name: /continue directly to Booksy without saving/i }),
-  ).toHaveAttribute("href", BOOKSY_URL);
-  await expect(page.getByRole("link", { name: "Booksy privacy notice" })).toHaveAttribute(
+    page.getByRole("link", { name: /continue directly to SQUIRE without saving/i }),
+  ).toHaveAttribute("href", SQUIRE_BOOKING_URL);
+  await expect(page.getByRole("link", { name: "SQUIRE privacy notice" })).toHaveAttribute(
     "href",
-    "https://booksy.com/en-us/p/privacy",
+    "https://getsquire.com/legal/privacy",
   );
 });
 
-test("booking contact form validates consent and fails open to Booksy when storage is unavailable", async ({
+test("booking contact form validates consent and fails open to SQUIRE when storage is unavailable", async ({
   page,
   request,
 }) => {
   await page.goto("/book");
-  const form = page.getByRole("button", { name: "Save & Continue to Booksy" });
+  const form = page.getByRole("button", { name: "Save & Continue to SQUIRE" });
   await expect(form).toBeVisible();
   await page.getByLabel("Full name").fill("Website Test Guest");
   await page.getByLabel(/Mobile number/).fill("201-555-0123");
@@ -185,8 +195,8 @@ test("booking contact form validates consent and fails open to Booksy when stora
   await form.click();
   await expect(page.locator('p[role="alert"]')).toContainText(/temporarily unavailable/i);
   await expect(
-    page.getByRole("link", { name: /continue directly to Booksy without saving/i }),
-  ).toHaveAttribute("href", BOOKSY_URL);
+    page.getByRole("link", { name: /continue directly to SQUIRE without saving/i }),
+  ).toHaveAttribute("href", SQUIRE_BOOKING_URL);
 
   const wrongOrigin = await request.post("/api/booking-contact", {
     headers: { Origin: "https://example.com", "Content-Type": "application/json" },
@@ -214,91 +224,39 @@ test("booking contact form validates consent and fails open to Booksy when stora
   expect(getResponse.status()).toBe(405);
 });
 
-test("a saved website contact opens Casper's official Booksy widget without leaving the site", async ({
-  page,
-}) => {
-  let widgetRequestUrl = "";
+test("a saved website contact continues to Casper on SQUIRE without passing personal data", async ({ page }) => {
+  let savedContact: Record<string, unknown> | undefined;
   await page.route("**/api/booking-contact", async (route) => {
-    await route.fulfill({
-      status: 201,
-      contentType: "application/json",
-      body: JSON.stringify({ ok: true }),
-    });
+    savedContact = route.request().postDataJSON();
+    await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ ok: true }) });
   });
-  await page.route("https://booksy.com/widget/code.js?**", async (route) => {
-    widgetRequestUrl = route.request().url();
-    await route.fulfill({
-      status: 200,
-      contentType: "application/javascript",
-      body: `(() => {
-        const currentScript = [...document.scripts].find((script) => script.src.includes("/widget/code.js"));
-        const container = document.createElement("div");
-        container.className = "booksy-widget-container";
-        const button = document.createElement("div");
-        button.className = "booksy-widget-button";
-        button.addEventListener("click", () => {
-          const count = Number(document.body.dataset.booksyOpened || "0") + 1;
-          document.body.dataset.booksyOpened = String(count);
-          if (!document.querySelector(".booksy-widget-dialog")) {
-            const overlay = document.createElement("div");
-            overlay.className = "booksy-widget-overlay";
-            overlay.style.position = "fixed";
-            overlay.style.inset = "0";
-
-            const dialog = document.createElement("div");
-            dialog.className = "booksy-widget-dialog";
-            dialog.style.position = "absolute";
-            dialog.style.top = "0";
-            dialog.style.height = "2000px";
-            dialog.style.width = "100%";
-
-            document.body.append(overlay, dialog);
-            window.setTimeout(() => {
-              dialog.style.height = "2034px";
-              window.scrollTo({
-                top: document.documentElement.scrollHeight,
-                behavior: "smooth",
-              });
-            }, 50);
-          }
-        });
-        container.appendChild(button);
-        currentScript?.parentNode?.insertBefore(container, currentScript);
-      })();`,
-    });
+  await page.route(SQUIRE_BOOKING_URL, async (route) => {
+    await route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Casper SQUIRE booking</h1>" });
   });
-
   await page.goto("/book");
-  await page.getByLabel("Full name").fill("Widget Test Guest");
-  await page.getByLabel(/Email/).fill("widget-test@example.com");
+  await expect(page.locator('script[src*="booksy.com"]')).toHaveCount(0);
+  await page.getByLabel("Full name").fill("Booking Test Guest");
+  await page.getByLabel(/Email/).fill("booking-test@example.com");
   await page.getByLabel(/I agree that Redeemed Precision Grooming/i).check();
-  await page.getByRole("button", { name: "Save & Continue to Booksy" }).click();
+  await page.getByRole("button", { name: "Save & Continue to SQUIRE" }).click();
+  await expect(page).toHaveURL(SQUIRE_BOOKING_URL);
+  expect(savedContact).toMatchObject({ fullName: "Booking Test Guest", email: "booking-test@example.com", consent: true });
+  expect(new URL(page.url()).search).toBe("");
+});
 
-  await expect(page.getByRole("button", { name: "Open Live Booking Calendar" })).toBeEnabled();
-  await expect.poll(() => page.locator("body").getAttribute("data-booksy-opened")).toBe("1");
-  const widgetUrl = new URL(widgetRequestUrl);
-  expect(widgetUrl.searchParams.get("id")).toBe("697614");
-  expect(widgetUrl.searchParams.get("country")).toBe("us");
-  expect(widgetUrl.searchParams.get("lang")).toBe("en-US");
-  expect(new URL(page.url()).pathname).toBe("/book");
-
-  const widgetDialog = page.locator(".booksy-widget-dialog");
-  await expect(widgetDialog).toHaveCSS("position", "absolute");
-  await expect.poll(async () => (await widgetDialog.boundingBox())?.y).toBe(0);
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-
-  await page.evaluate(() => window.scrollTo(0, 500));
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
-
-  await page.locator(".booksy-widget-overlay, .booksy-widget-dialog").evaluateAll((elements) => {
-    elements.forEach((element) => element.remove());
+test("direct SQUIRE booking does not submit website contact details", async ({ page }) => {
+  let contactSubmissions = 0;
+  await page.route("**/api/booking-contact", async (route) => {
+    contactSubmissions += 1;
+    await route.fulfill({ status: 500, body: "{}" });
   });
-  await page.getByRole("button", { name: "Open Live Booking Calendar" }).click();
-  await expect.poll(() => page.locator("body").getAttribute("data-booksy-opened")).toBe("2");
-  await expect(page.getByRole("link", { name: "Open Booksy in a new tab" })).toHaveAttribute(
-    "href",
-    BOOKSY_URL,
-  );
+  await page.route(SQUIRE_BOOKING_URL, async (route) => {
+    await route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Casper SQUIRE booking</h1>" });
+  });
+  await page.goto("/book");
+  await page.getByRole("link", { name: /continue directly to SQUIRE without saving/i }).click();
+  await expect(page).toHaveURL(SQUIRE_BOOKING_URL);
+  expect(contactSubmissions).toBe(0);
 });
 
 test("retired API routes return not found", async ({ request }) => {
@@ -368,10 +326,10 @@ test("public routes send browser security headers", async ({ request }) => {
 
   expect(headers["content-security-policy"]).toContain("default-src 'self'");
   expect(headers["content-security-policy"]).toContain(
-    "script-src 'self' 'unsafe-inline' https://booksy.com",
+    "script-src 'self' 'unsafe-inline'",
   );
   expect(headers["content-security-policy"]).toContain(
-    "frame-src 'self' https://booksy.com",
+    "frame-src 'self'",
   );
   expect(headers["permissions-policy"]).toContain("camera=()");
   expect(headers["referrer-policy"]).toBe("strict-origin-when-cross-origin");

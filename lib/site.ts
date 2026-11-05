@@ -2,12 +2,10 @@ export const SITE_URL = "https://redeemedbycasper.com";
 export const BRAND_LOGO_PATH = "/images/brand/redeemed-precision-logo.jpg";
 export const BRAND_MARK_PATH = "/images/brand/redeemed-mark.jpg";
 export const BRAND_OG_PATH = "/redeemed-casper-og-v2.jpg";
-export const BOOKSY_URL = "https://booksy.com/en-us/dl/show-business/697614";
+export const SQUIRE_BOOKING_URL = "https://getsqr.co/erik-munoz";
 export const BOOKSY_REVIEWS_URL =
   "https://booksy.com/en-us/697614_casper_barber-shop_28387_ridgefield#reviews";
-export const BOOKSY_WIDGET_URL =
-  "https://booksy.com/widget/code.js?id=697614&country=us&lang=en-US";
-export const BOOKSY_PRIVACY_URL = "https://booksy.com/en-us/p/privacy";
+export const SQUIRE_PRIVACY_URL = "https://getsquire.com/legal/privacy";
 export const OPENAI_DATA_CONTROLS_URL =
   "https://developers.openai.com/api/docs/guides/your-data#default-usage-policies-by-endpoint";
 

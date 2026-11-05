@@ -45,7 +45,7 @@ export default async function AdminLoginPage({
         </h1>
         <p className="mt-5 text-sm leading-7 text-pearl/65">
           This area is for approved Redeemed booking staff only. Customer booking
-          remains on Booksy while the new system is tested privately.
+          is managed in SQUIRE. Sign in here to manage website contacts and reviews.
         </p>
 
         {!configured ? (

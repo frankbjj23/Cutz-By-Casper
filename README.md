@@ -6,11 +6,10 @@ New Jersey. The public brand story is grounded in 30 years
 in the industry, faith, professionalism, relationships, and client-first service.
 
 Customers can browse Casper's work on the site, optionally save a consent-based name
-and phone number and/or email in the protected website database, then use his existing
-official Booksy widget for the current service menu, prices, policies, and live
-appointment availability without first leaving the website.
-Booksy remains the sole live booking calendar while a private custom-booking
-foundation is developed and tested. The public site has not been switched.
+and phone number and/or email in the protected website database, then continue to
+Casper's individual SQUIRE page for the current service menu, prices, policies, and
+live appointment availability. SQUIRE handles new appointments. The website contact
+record is separate and does not synchronize an appointment status back from SQUIRE.
 
 The saved website record is a booking handoff contact, not a confirmed appointment
 and not marketing consent. It is available only to approved staff in the private
@@ -21,15 +20,15 @@ are consolidated into one master contact with all unique methods and a handoff c
 
 An invitation-only, noindex `/preview` beta lets an adult submit one self-photo and
 create one temporary AI hair, beard, or color concept. The site does not persist the
-input or result, and no photo is transferred to Booksy.
+input or result, and no photo is transferred to SQUIRE.
 
-The site reflects the current Booksy listing at 719 Grand Ave, Ridgefield, NJ 07657.
-Booksy remains the authority for appointment and location details before travel.
+Casper works inside The HairHub at 719 Grand Ave, Ridgefield, NJ 07657. Customers
+should confirm the final appointment time and location on SQUIRE before traveling.
 
 ## Live links
 
 - Website: https://redeemedbycasper.com
-- Booking: https://booksy.com/en-us/dl/show-business/697614
+- Booking: https://getsqr.co/erik-munoz
 
 ## Stack
 
@@ -38,13 +37,13 @@ Booksy remains the authority for appointment and location details before travel.
 - TypeScript
 - Tailwind CSS
 - Vercel
-- Casper's official Booksy widget for third-party booking
+- Casper's individual SQUIRE page for third-party booking
 - Supabase for protected booking-contact storage and the private staff dashboard
 - OpenAI Image API for the private style-preview beta
 - Sharp for full server-side image decoding, metadata removal, and normalization
 
-The production website does not yet accept custom bookings or payments. It does offer
-an optional website-owned contact handoff before Booksy. The codebase also contains a
+The production website does not accept custom bookings or payments. It offers
+an optional website-owned contact handoff before SQUIRE. The codebase also contains a
 locked-down Supabase schema and private owner dashboard foundation.
 Owner access uses a 6–10 digit email code typed into the site so automated
 email link checks cannot consume access. Stripe checkout, notifications, Google
@@ -86,14 +85,14 @@ Open http://localhost:3000.
     npm run scan-encoding
 
 The Playwright tests build the production application and verify the customer routes,
-booking-contact validation and graceful fallback, canonical Booksy links, retired API
+booking-contact validation and graceful fallback, canonical SQUIRE links, retired API
 routes, SEO discovery files, and mobile overflow.
 
 ## Routes
 
 - / — services overview, booking path, gallery preview, and location
 - /styles — filterable haircut portfolio
-- /book — optional website contact capture followed by Casper's canonical Booksy profile
+- /book — optional website contact capture followed by Casper's individual SQUIRE page
 - /reviews — on-site review submission with private staff moderation and clear source labels
 - /privacy — site storage, style-preview, and third-party booking privacy boundaries
 - /preview — linked from the homepage, noindex, invitation-only style-preview beta
@@ -141,11 +140,11 @@ Review link guidance: https://support.google.com/business/answer/16816815
 
 ## Booking source of truth
 
-Do not hard-code Booksy review totals, availability, holiday closures, prices, or
-policies into this site. Those details can change and should be read from Casper's
-live Booksy profile.
+Do not hard-code SQUIRE availability, holiday closures, prices, or booking policies
+into this site. Those details can change and should be confirmed on Casper's individual
+SQUIRE page.
 
-The official Booksy widget uses business ID `697614`, country `us`, and language
-`en-US`, exactly as supplied from Casper's Booksy Biz account. Do not replace it with
-an arbitrary iframe or a different business ID. The canonical direct Booksy profile
-remains the fallback when the widget is blocked or unavailable.
+Use `https://getsqr.co/erik-munoz` as the canonical customer handoff. It is Casper's
+individual SQUIRE short link and currently redirects to his services at The HairHub.
+Booksy remains only as source attribution for imported contacts and displayed Booksy
+reviews; it is not a new-booking destination.

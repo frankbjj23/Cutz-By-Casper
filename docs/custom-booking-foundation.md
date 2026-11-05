@@ -1,8 +1,8 @@
 # Custom booking foundation
 
 This codebase contains the private foundation for moving Redeemed by Casper away
-from Booksy. It does **not** switch the public booking buttons or accept live customer
-payments yet.
+from a third-party calendar. It does **not** accept live customer appointments or
+payments. New customer appointments are handled on Casper's individual SQUIRE page.
 
 ## Current activation status
 
@@ -16,7 +16,8 @@ payments yet.
   appointment, payment, webhook, notification, or calendar-sync records as of the
   August 24, 2026 audit.
 - The Vercel environment is connected and owner access uses a typed 6–10 digit email
-  code. The dashboard remains a private test surface; Booksy is still the public system.
+  code. The dashboard remains a private contact-and-review surface; SQUIRE is the
+  public appointment system.
 - Supabase's security advisor currently recommends enabling leaked-password protection.
   That hosted Auth setting should be reviewed before a customer-booking pilot. Its
   performance advisor also reports unused indexes, which is expected while the booking
@@ -56,9 +57,10 @@ payments yet.
 
 ## Initial data
 
-The migration seeds six services from Casper's Booksy profile. The five fixed-price
-services are online-bookable. The before/after-hours service is stored but remains
-offline because it starts at $100 and requires direct confirmation.
+The migration seeds six historical services from Casper's former Booksy profile. The
+custom appointment system is dormant, so none of these services are publicly bookable
+through the website. The before/after-hours seed must remain offline unless Casper
+separately approves a future activation.
 
 The weekly hours seed is:
 
@@ -69,19 +71,21 @@ The weekly hours seed is:
 - Saturday, 10:00 AM–5:00 PM
 - Tuesday and Sunday closed
 
-These values are editable and must be reviewed by Casper before cutover.
+These values are editable historical seeds, not SQUIRE configuration.
 
-## Remaining activation order
+## Guardrails for any future custom-booking project
 
-1. Reconfirm Casper's approved owner email, service menu, working hours, policies, and
+1. Treat SQUIRE as the operational appointment calendar unless Casper separately
+   approves another migration.
+2. Reconfirm Casper's approved owner email, service menu, working hours, policies, and
    location details before using the private dashboard operationally.
-2. Enable leaked-password protection and complete an owner sign-in/RLS smoke test.
-3. Build the public availability endpoint and Stripe test checkout.
-4. Add signed customer management links, notification delivery, and Google Calendar
+3. Enable leaked-password protection and complete an owner sign-in/RLS smoke test.
+4. Build the public availability endpoint and Stripe test checkout.
+5. Add signed customer management links, notification delivery, and Google Calendar
    OAuth/sync.
-5. Run a closed pilot while Booksy remains the operational calendar.
-6. Reconcile future Booksy appointments and choose a cutover date before changing
-   public booking buttons.
+6. Run a closed pilot without changing the public SQUIRE handoff.
+7. Reconcile future SQUIRE appointments and choose a separate approved cutover date
+   before changing public booking buttons again.
 
 The Stripe checkout session and database hold will both use 30 minutes because
 Stripe currently allows custom Checkout expiration from 30 minutes to 24 hours.
