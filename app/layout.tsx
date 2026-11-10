@@ -5,7 +5,7 @@ import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import SiteActivityTracker from "@/components/SiteActivityTracker";
 import {
-  SQUIRE_BOOKING_URL,
+  BOOKSY_BOOKING_URL,
   INSTAGRAM_URL,
   BRAND_LOGO_PATH,
   BRAND_OG_PATH,
@@ -67,7 +67,7 @@ const structuredData = {
     postalCode: business.address.postalCode,
     addressCountry: business.address.country,
   },
-  sameAs: [SQUIRE_BOOKING_URL, INSTAGRAM_URL],
+  sameAs: [BOOKSY_BOOKING_URL, INSTAGRAM_URL],
   employee: {
     "@type": "Person",
     name: business.barberName,

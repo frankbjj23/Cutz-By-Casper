@@ -4,7 +4,7 @@ import { type FormEvent, useState } from "react";
 import {
   BOOKING_CONTACT_CONSENT_VERSION,
 } from "@/lib/booking-contact";
-import { SQUIRE_BOOKING_URL } from "@/lib/site";
+import { BOOKSY_BOOKING_URL } from "@/lib/site";
 
 type SubmissionState = "idle" | "saving" | "saved" | "error";
 
@@ -41,7 +41,7 @@ export default function BookingContactForm() {
       if (!response.ok) {
         throw new Error(
           result?.error?.message ??
-            "Your details could not be saved. You can still continue to SQUIRE.",
+            "Your details could not be saved. You can still continue to Booksy.",
         );
       }
     } catch (error) {
@@ -49,15 +49,15 @@ export default function BookingContactForm() {
       setMessage(
         error instanceof Error
           ? error.message
-          : "Your details could not be saved. You can still continue to SQUIRE.",
+          : "Your details could not be saved. You can still continue to Booksy.",
       );
       return;
     }
 
     setState("saved");
-    setMessage("Saved. Continuing to Casper’s SQUIRE booking page…");
+    setMessage("Saved. Continuing to Casper’s Booksy booking page…");
     // Keep contact details on this site; do not place personal data in the URL.
-    window.location.assign(SQUIRE_BOOKING_URL);
+    window.location.assign(BOOKSY_BOOKING_URL);
   }
 
   return (
@@ -69,7 +69,7 @@ export default function BookingContactForm() {
         </h2>
         <p className="mt-4 text-sm leading-7 text-pearl/60">
           Save your name and at least one contact method here. You&apos;ll continue to
-          Casper&apos;s SQUIRE page next to choose and confirm the actual appointment.
+          Casper&apos;s Booksy page next to choose and confirm the actual appointment.
         </p>
       </div>
 
@@ -151,16 +151,16 @@ export default function BookingContactForm() {
         </label>
 
         <p className="text-xs leading-6 text-pearl/45">
-          Enter a mobile number, an email address, or both. SQUIRE will separately ask
+          Enter a mobile number, an email address, or both. Booksy will separately ask
           for the information it needs to complete your appointment.
         </p>
 
         {state === "saved" ? (
           <a
-            href={SQUIRE_BOOKING_URL}
+            href={BOOKSY_BOOKING_URL}
             className="primary-button w-full"
           >
-            Continue to Casper on SQUIRE
+            Continue to Casper on Booksy
           </a>
         ) : (
           <button
@@ -168,7 +168,7 @@ export default function BookingContactForm() {
             disabled={state === "saving"}
             className="primary-button w-full disabled:cursor-wait disabled:opacity-60"
           >
-            {state === "saving" ? "Saving…" : "Save & Continue to SQUIRE"}
+            {state === "saving" ? "Saving…" : "Save & Continue to Booksy"}
           </button>
         )}
 
@@ -188,12 +188,12 @@ export default function BookingContactForm() {
 
         <div className="text-center">
           <a
-            href={SQUIRE_BOOKING_URL}
+            href={BOOKSY_BOOKING_URL}
             className="text-xs font-semibold uppercase tracking-[0.14em] text-pearl/60 underline decoration-gold underline-offset-6 transition hover:text-pearl"
           >
             {state === "saved"
-              ? "Open Casper’s SQUIRE booking page"
-              : "Continue directly to SQUIRE without saving"}
+              ? "Open Casper’s Booksy booking page"
+              : "Continue directly to Booksy without saving"}
           </a>
         </div>
       </form>

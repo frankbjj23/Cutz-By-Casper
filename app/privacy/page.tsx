@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import {
-  SQUIRE_PRIVACY_URL,
-  SQUIRE_BOOKING_URL,
+  BOOKSY_PRIVACY_URL,
+  BOOKSY_BOOKING_URL,
   BRAND_OG_PATH,
   business,
   OPENAI_DATA_CONTROLS_URL,
@@ -9,7 +9,7 @@ import {
 } from "@/lib/site";
 
 const description =
-  `Privacy information for the ${business.name} website, private style preview, and SQUIRE booking link.`;
+  `Privacy information for the ${business.name} website, private style preview, and Booksy booking link.`;
 
 export const metadata: Metadata = {
   title: "Privacy",
@@ -79,11 +79,11 @@ export default function PrivacyPage() {
 
         <section id="booking-contact" className="scroll-mt-28 space-y-5">
           <div>
-            <p className="eyebrow">Before SQUIRE</p>
+            <p className="eyebrow">Before Booksy</p>
             <h2 className="mt-4 font-display text-3xl text-pearl">Website booking contact</h2>
           </div>
           <p className="text-sm leading-7 text-pearl/60">
-            If you choose Save &amp; Continue to SQUIRE, this site stores your name and the
+            If you choose Save &amp; Continue to Booksy, this site stores your name and the
             mobile number, email address, or both that you submit. It also stores the time
             and version of your consent, the source page, and a one-way keyed network hash
             used for abuse protection. The raw network address is not placed in the booking
@@ -97,7 +97,7 @@ export default function PrivacyPage() {
               <p className="mt-3 text-sm leading-7 text-pearl/60">
                 Casper and approved staff may use these details to recognize and follow up
                 with people who started the booking handoff. A saved contact is not proof
-                that an appointment was completed or confirmed on SQUIRE.
+                that an appointment was completed or confirmed on Booksy.
               </p>
             </div>
             <div className="border border-white/10 p-5">
@@ -107,7 +107,7 @@ export default function PrivacyPage() {
                 customer requests deletion. Earlier contacts submitted under a fixed
                 12-month notice remain governed by that earlier promise. The consent is for
                 booking follow-up only; it does not add you to a marketing list. You may
-                instead use the direct SQUIRE link without saving information on this site.
+                instead use the direct Booksy link without saving information on this site.
               </p>
             </div>
           </div>
@@ -220,28 +220,28 @@ export default function PrivacyPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-display text-2xl text-pearl">SQUIRE bookings</h2>
+          <h2 className="font-display text-2xl text-pearl">Booksy bookings</h2>
           <p className="text-sm leading-7 text-pearl/60">
             After the optional website contact step, you leave this site for Casper&apos;s
-            official SQUIRE booking page. Contact details and preview photos are not
-            added to the booking link. SQUIRE separately processes the information you enter there
+            official Booksy booking page. Contact details and preview photos are not
+            added to the booking link. Booksy separately processes the information you enter there
             under its own terms and privacy practices. Review the{" "}
             <a
-              href={SQUIRE_PRIVACY_URL}
+              href={BOOKSY_PRIVACY_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-pearl underline decoration-gold underline-offset-8"
             >
-              SQUIRE Privacy Notice
+              Booksy Privacy Notice
             </a>{" "}
             before submitting information, or go directly to the{" "}
             <a
-              href={SQUIRE_BOOKING_URL}
+              href={BOOKSY_BOOKING_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-pearl underline decoration-gold underline-offset-8"
             >
-              SQUIRE booking profile
+              Booksy booking profile
             </a>
             .
           </p>
@@ -250,7 +250,7 @@ export default function PrivacyPage() {
         <section className="space-y-3">
           <h2 className="font-display text-2xl text-pearl">Questions</h2>
           <p className="text-sm leading-7 text-pearl/60">
-            For information submitted through SQUIRE or Booksy, contact that provider through
+            For information submitted through a third-party booking provider, contact that provider through
             its published support and privacy channels. To ask about or request deletion of a website
             booking contact or website review, contact Casper directly. For a question about
             the private preview, do not upload a photo.

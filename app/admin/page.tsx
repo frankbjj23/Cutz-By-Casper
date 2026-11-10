@@ -211,14 +211,14 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         <div className="lux-card p-6">
           <p className="text-xs uppercase tracking-[0.2em] text-pearl/55">Booking provider</p>
           <p className="mt-4 text-sm font-semibold uppercase tracking-[0.14em] text-pearl">
-            SQUIRE
+            Booksy
           </p>
           <Link href="/book" className="mt-3 inline-block text-xs text-gold underline underline-offset-4">Check the customer booking page</Link>
         </div>
       </section>
 
       <p className="mt-3 text-xs leading-6 text-pearl/55">
-        Appointments and availability are managed in SQUIRE. This dashboard manages website visits, contacts, and reviews.
+        New appointments and availability are managed in Booksy. This dashboard manages website visits, contacts, and reviews.
       </p>
 
       <section

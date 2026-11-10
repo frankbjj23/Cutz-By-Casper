@@ -7,9 +7,9 @@ in the industry, faith, professionalism, relationships, and client-first service
 
 Customers can browse Casper's work on the site, optionally save a consent-based name
 and phone number and/or email in the protected website database, then continue to
-Casper's individual SQUIRE page for the current service menu, prices, policies, and
-live appointment availability. SQUIRE handles new appointments. The website contact
-record is separate and does not synchronize an appointment status back from SQUIRE.
+Casper's individual Booksy page for the current service menu, prices, policies, and
+live appointment availability. Booksy handles new appointments. The website contact
+record is separate and does not synchronize an appointment status back from Booksy.
 
 The saved website record is a booking handoff contact, not a confirmed appointment
 and not marketing consent. It is available only to approved staff in the private
@@ -20,15 +20,15 @@ are consolidated into one master contact with all unique methods and a handoff c
 
 An invitation-only, noindex `/preview` beta lets an adult submit one self-photo and
 create one temporary AI hair, beard, or color concept. The site does not persist the
-input or result, and no photo is transferred to SQUIRE.
+input or result, and no photo is transferred to Booksy.
 
 Casper works inside The HairHub at 719 Grand Ave, Ridgefield, NJ 07657. Customers
-should confirm the final appointment time and location on SQUIRE before traveling.
+should confirm the final appointment time and location on Booksy before traveling.
 
 ## Live links
 
 - Website: https://redeemedbycasper.com
-- Booking: https://getsquire.com/booking/book/the-hairhub-ridgefield/barber/casper-master-barber/services
+- Booking: https://booksy.com/en-us/dl/show-business/697614
 
 ## Stack
 
@@ -37,13 +37,13 @@ should confirm the final appointment time and location on SQUIRE before travelin
 - TypeScript
 - Tailwind CSS
 - Vercel
-- Casper's individual SQUIRE page for third-party booking
+- Casper's individual Booksy page for third-party booking
 - Supabase for protected booking-contact storage and the private staff dashboard
 - OpenAI Image API for the private style-preview beta
 - Sharp for full server-side image decoding, metadata removal, and normalization
 
 The production website does not accept custom bookings or payments. It offers
-an optional website-owned contact handoff before SQUIRE. The codebase also contains a
+an optional website-owned contact handoff before Booksy. The codebase also contains a
 locked-down Supabase schema and private owner dashboard foundation.
 Owner access uses a 6–10 digit email code typed into the site so automated
 email link checks cannot consume access. Stripe checkout, notifications, Google
@@ -85,14 +85,14 @@ Open http://localhost:3000.
     npm run scan-encoding
 
 The Playwright tests build the production application and verify the customer routes,
-booking-contact validation and graceful fallback, canonical SQUIRE links, retired API
+booking-contact validation and graceful fallback, canonical Booksy links, retired API
 routes, SEO discovery files, and mobile overflow.
 
 ## Routes
 
 - / — services overview, booking path, gallery preview, and location
 - /styles — filterable haircut portfolio
-- /book — optional website contact capture followed by Casper's individual SQUIRE page
+- /book — optional website contact capture followed by Casper's individual Booksy page
 - /reviews — on-site review submission with private staff moderation and clear source labels
 - /privacy — site storage, style-preview, and third-party booking privacy boundaries
 - /preview — linked from the homepage, noindex, invitation-only style-preview beta
@@ -140,21 +140,23 @@ Review link guidance: https://support.google.com/business/answer/16816815
 
 ## Booking source of truth
 
-Do not hard-code SQUIRE availability, holiday closures, prices, or booking policies
+Do not hard-code Booksy availability, holiday closures, prices, or booking policies
 into this site. Those details can change and should be confirmed on Casper's individual
-SQUIRE page.
+Booksy page.
 
-Use `https://getsquire.com/booking/book/the-hairhub-ridgefield/barber/casper-master-barber/services`
-as the canonical customer handoff. It is Casper's verified individual SQUIRE services
+Use `https://booksy.com/en-us/dl/show-business/697614`
+as the canonical customer handoff. It is Casper's verified individual Booksy services
 page at The HairHub.
-Booksy remains only as source attribution for imported contacts and displayed Booksy
-reviews; it is not a new-booking destination.
+Booksy is the current new-booking destination as well as the source attribution for
+imported contacts and displayed Booksy reviews. The site does not copy, cancel, or
+synchronize appointments between providers. Existing provider records must be
+reconciled separately before treating availability as conflict-free.
 
 ## Private website activity
 
 Approved staff can view `/admin#site-activity` for Eastern-time daily visits,
 booking-page visits, and new website-only master contacts over 7, 30, or 90 days.
-These are not SQUIRE appointment counts or customer login registrations. Imported
+These are not Booksy appointment counts or customer login registrations. Imported
 contacts are excluded from signup totals, and traffic before tracking began is
 displayed as unavailable rather than zero.
 

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL, SQUIRE_BOOKING_URL } from "../lib/site";
+import { INSTAGRAM_HANDLE, INSTAGRAM_URL, BOOKSY_BOOKING_URL } from "../lib/site";
 
 for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 1000 }]) {
   for (const path of ["/", "/styles"]) {
@@ -30,12 +30,12 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 1000
   }
 }
 
-test("Instagram metadata preserves SQUIRE and does not add embedded tracking", async ({ page }) => {
+test("Instagram metadata preserves Booksy and does not add embedded tracking", async ({ page }) => {
   await page.goto("/");
   const structuredData = JSON.parse(
     (await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}",
   );
-  expect(structuredData.sameAs).toEqual([SQUIRE_BOOKING_URL, INSTAGRAM_URL]);
+  expect(structuredData.sameAs).toEqual([BOOKSY_BOOKING_URL, INSTAGRAM_URL]);
   expect(structuredData.employee.sameAs).toBeUndefined();
   await expect(page.locator('script[src*="instagram"], iframe[src*="instagram"]')).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Start booking an appointment", exact: true }))

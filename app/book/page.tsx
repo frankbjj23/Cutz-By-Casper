@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import BookingContactForm from "@/components/BookingContactForm";
 import {
-  SQUIRE_PRIVACY_URL,
+  BOOKSY_PRIVACY_URL,
   BRAND_OG_PATH,
   business,
   locationDisplay,
@@ -10,7 +10,7 @@ import {
 } from "@/lib/site";
 
 const description =
-  "View Casper's current services, prices, policies, and live appointment times on SQUIRE.";
+  "View Casper's current services, prices, policies, and live appointment times on Booksy.";
 
 export const metadata: Metadata = {
   title: "Book an Appointment",
@@ -43,13 +43,13 @@ export default function BookPage() {
           <span className="block italic text-gold">your time.</span>
         </h1>
         <p className="mx-auto max-w-2xl text-base leading-8 text-pearl/60">
-          Save your contact details on this site, then use Casper&apos;s official SQUIRE
-          booking page to choose the service and time. SQUIRE handles the live
+          Save your contact details on this site, then use Casper&apos;s official Booksy
+          booking page to choose the service and time. Booksy handles the live
           availability, pricing, and final confirmation.
         </p>
         <p className="mx-auto max-w-2xl border border-gold/30 bg-gold/5 px-5 py-4 text-sm leading-7 text-pearl/70">
           Visit Casper at The HairHub: {locationDisplay}. Confirm the appointment time and
-          location on SQUIRE before traveling.
+          location on Booksy before traveling.
         </p>
       </section>
 
@@ -83,11 +83,12 @@ export default function BookPage() {
 
       <section className="grid gap-5 sm:grid-cols-2">
         <div className="lux-card p-7 sm:p-8">
-          <p className="eyebrow">Live calendar</p>
-          <h2 className="mt-5 font-display text-2xl text-pearl">One source of truth</h2>
+          <p className="eyebrow">Book with Casper</p>
+          <h2 className="mt-5 font-display text-2xl text-pearl">New appointments</h2>
           <p className="mt-4 text-sm leading-7 text-pearl/60">
-            The website does not maintain a second calendar. SQUIRE handles new
-            appointment availability and booking details.
+            The website does not maintain a second calendar. Booksy handles new
+            appointment availability and booking details. If you already have an
+            appointment, confirm any changes with Casper before making a new booking.
           </p>
         </div>
         <div className="lux-card p-7 sm:p-8">
@@ -95,15 +96,15 @@ export default function BookPage() {
           <h2 className="mt-5 font-display text-2xl text-pearl">Two clear steps</h2>
           <p className="mt-4 text-sm leading-7 text-pearl/60">
             This site stores only the contact details you knowingly submit above. Booking
-            is completed on SQUIRE, which separately processes the information you provide
+            is completed on Booksy, which separately processes the information you provide
             there. Review the{" "}
             <a
-              href={SQUIRE_PRIVACY_URL}
+              href={BOOKSY_PRIVACY_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="font-semibold text-pearl underline decoration-gold underline-offset-8"
             >
-              SQUIRE privacy notice
+              Booksy privacy notice
             </a>
             .
           </p>

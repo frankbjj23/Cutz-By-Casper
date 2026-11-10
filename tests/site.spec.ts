@@ -2,8 +2,8 @@ import { expect, test } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { isValidOwnerCode, normalizeOwnerCode } from "../lib/owner-access";
 
-const SQUIRE_BOOKING_URL =
-  "https://getsquire.com/booking/book/the-hairhub-ridgefield/barber/casper-master-barber/services";
+const BOOKSY_BOOKING_URL =
+  "https://booksy.com/en-us/dl/show-business/697614";
 const BRAND_NAME = "Redeemed Precision Grooming";
 
 test("owner access accepts Supabase email code lengths", () => {
@@ -24,7 +24,7 @@ test("general customer routes render without unrelated forms", async ({ page }) 
   }
 });
 
-test("new brand identity and SQUIRE transition are clear", async ({ page }) => {
+test("brand identity and current Booksy booking are clear", async ({ page }) => {
   await page.goto("/");
   await expect(
     page.getByRole("link", { name: `${BRAND_NAME} home` }),
@@ -157,7 +157,7 @@ test("review API rejects cross-site and malformed submissions", async ({ request
   expect(getResponse.status()).toBe(405);
 });
 
-test("primary booking links use the website handoff and direct SQUIRE links stay canonical", async ({ page }) => {
+test("primary booking links use the website handoff and direct Booksy links stay canonical", async ({ page }) => {
   for (const path of ["/", "/styles"]) {
     await page.goto(path);
     expect(await page.locator('a[href="/book"]').count()).toBeGreaterThan(0);
@@ -165,7 +165,7 @@ test("primary booking links use the website handoff and direct SQUIRE links stay
       "href",
       "/book",
     );
-    await expect(page.getByRole("link", { name: "SQUIRE booking", exact: true })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Booksy booking", exact: true })).toHaveAttribute(
       "href",
       "/book",
     );
@@ -175,20 +175,29 @@ test("primary booking links use the website handoff and direct SQUIRE links stay
 
   await page.goto("/book");
   await expect(
-    page.getByRole("link", { name: /continue directly to SQUIRE without saving/i }),
-  ).toHaveAttribute("href", SQUIRE_BOOKING_URL);
-  await expect(page.getByRole("link", { name: "SQUIRE privacy notice" })).toHaveAttribute(
+    page.getByRole("link", { name: /continue directly to Booksy without saving/i }),
+  ).toHaveAttribute("href", BOOKSY_BOOKING_URL);
+  await expect(page.getByRole("link", { name: "Booksy privacy notice" })).toHaveAttribute(
     "href",
-    "https://getsquire.com/legal/privacy",
+    "https://booksy.com/en-us/p/privacy",
   );
 });
 
-test("booking contact form validates consent and fails open to SQUIRE when storage is unavailable", async ({
+test("public pages no longer link to or advertise the retired booking provider", async ({ page }) => {
+  for (const path of ["/", "/book", "/styles", "/reviews", "/privacy", "/preview", "/admin/login"]) {
+    await page.goto(path);
+    await expect(page.locator("body")).not.toContainText(/squire/i);
+    await expect(page.locator('a[href*="getsquire"], a[href*="getsqr"], script[src*="getsquire"], iframe[src*="getsquire"]')).toHaveCount(0);
+    await expect(page.locator("body")).not.toContainText("Ridgefield Park");
+  }
+});
+
+test("booking contact form validates consent and fails open to Booksy when storage is unavailable", async ({
   page,
   request,
 }) => {
   await page.goto("/book");
-  const form = page.getByRole("button", { name: "Save & Continue to SQUIRE" });
+  const form = page.getByRole("button", { name: "Save & Continue to Booksy" });
   await expect(form).toBeVisible();
   await page.getByLabel("Full name").fill("Website Test Guest");
   await page.getByLabel(/Mobile number/).fill("201-555-0123");
@@ -196,8 +205,8 @@ test("booking contact form validates consent and fails open to SQUIRE when stora
   await form.click();
   await expect(page.locator('p[role="alert"]')).toContainText(/temporarily unavailable/i);
   await expect(
-    page.getByRole("link", { name: /continue directly to SQUIRE without saving/i }),
-  ).toHaveAttribute("href", SQUIRE_BOOKING_URL);
+    page.getByRole("link", { name: /continue directly to Booksy without saving/i }),
+  ).toHaveAttribute("href", BOOKSY_BOOKING_URL);
 
   const wrongOrigin = await request.post("/api/booking-contact", {
     headers: { Origin: "https://example.com", "Content-Type": "application/json" },
@@ -225,38 +234,38 @@ test("booking contact form validates consent and fails open to SQUIRE when stora
   expect(getResponse.status()).toBe(405);
 });
 
-test("a saved website contact continues to Casper on SQUIRE without passing personal data", async ({ page }) => {
+test("a saved website contact continues to Casper on Booksy without passing personal data", async ({ page }) => {
   let savedContact: Record<string, unknown> | undefined;
   await page.route("**/api/booking-contact", async (route) => {
     savedContact = route.request().postDataJSON();
     await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ ok: true }) });
   });
-  await page.route(SQUIRE_BOOKING_URL, async (route) => {
-    await route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Casper SQUIRE booking</h1>" });
+  await page.route(BOOKSY_BOOKING_URL, async (route) => {
+    await route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Casper Booksy booking</h1>" });
   });
   await page.goto("/book");
   await expect(page.locator('script[src*="booksy.com"]')).toHaveCount(0);
   await page.getByLabel("Full name").fill("Booking Test Guest");
   await page.getByLabel(/Email/).fill("booking-test@example.com");
   await page.getByLabel(/I agree that Redeemed Precision Grooming/i).check();
-  await page.getByRole("button", { name: "Save & Continue to SQUIRE" }).click();
-  await expect(page).toHaveURL(SQUIRE_BOOKING_URL);
+  await page.getByRole("button", { name: "Save & Continue to Booksy" }).click();
+  await expect(page).toHaveURL(BOOKSY_BOOKING_URL);
   expect(savedContact).toMatchObject({ fullName: "Booking Test Guest", email: "booking-test@example.com", consent: true });
   expect(new URL(page.url()).search).toBe("");
 });
 
-test("direct SQUIRE booking does not submit website contact details", async ({ page }) => {
+test("direct Booksy booking does not submit website contact details", async ({ page }) => {
   let contactSubmissions = 0;
   await page.route("**/api/booking-contact", async (route) => {
     contactSubmissions += 1;
     await route.fulfill({ status: 500, body: "{}" });
   });
-  await page.route(SQUIRE_BOOKING_URL, async (route) => {
-    await route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Casper SQUIRE booking</h1>" });
+  await page.route(BOOKSY_BOOKING_URL, async (route) => {
+    await route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Casper Booksy booking</h1>" });
   });
   await page.goto("/book");
-  await page.getByRole("link", { name: /continue directly to SQUIRE without saving/i }).click();
-  await expect(page).toHaveURL(SQUIRE_BOOKING_URL);
+  await page.getByRole("link", { name: /continue directly to Booksy without saving/i }).click();
+  await expect(page).toHaveURL(BOOKSY_BOOKING_URL);
   expect(contactSubmissions).toBe(0);
 });
 

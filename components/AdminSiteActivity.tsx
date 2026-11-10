@@ -24,7 +24,7 @@ export default function AdminSiteActivity({ activity, days, updatedAt }: {
         <p className="eyebrow">Website activity</p>
         <h2 id="activity-heading" className="mt-4 font-display text-3xl text-pearl sm:text-4xl">Daily visits &amp; signups</h2>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-pearl/60">
-          See how visitors use the site—not who has completed a SQUIRE booking. All days use New Jersey time.
+          See how visitors use the site—not who has completed a Booksy booking. All days use New Jersey time.
         </p>
       </div>
       <AdminActivityRefresh />

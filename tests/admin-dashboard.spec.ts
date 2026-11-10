@@ -17,7 +17,7 @@ test("admin dashboard no longer renders or queries the dormant booking prototype
   }
 });
 
-test("admin dashboard preserves activity, contacts, reviews and the SQUIRE handoff", () => {
+test("admin dashboard preserves activity, contacts, reviews and the Booksy handoff", () => {
   for (const retained of [
     "<AdminSiteActivity",
     'rpc("get_site_activity", { p_days: activityDays })',
@@ -29,7 +29,7 @@ test("admin dashboard preserves activity, contacts, reviews and the SQUIRE hando
     "Reviews waiting",
     "Approve &amp; Publish",
     "<AdminReviewDeleteForm",
-    "SQUIRE",
+    "Booksy",
     '<Link href="/book"',
     "Check the customer booking page",
   ]) {

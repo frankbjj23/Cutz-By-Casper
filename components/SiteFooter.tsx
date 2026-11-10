@@ -31,7 +31,7 @@ export default function SiteFooter() {
               </p>
             </div>
           </div>
-          <p>{locationDisplay} · Confirm appointment details on SQUIRE</p>
+          <p>{locationDisplay} · Confirm appointment details on Booksy</p>
           <a
             href={INSTAGRAM_URL}
             target="_blank"
@@ -53,7 +53,7 @@ export default function SiteFooter() {
             Reviews
           </Link>
           <Link href="/book" className="hover:text-gold">
-            SQUIRE booking
+            Booksy booking
           </Link>
           <Link href="/privacy" className="hover:text-gold">
             Privacy

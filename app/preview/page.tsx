@@ -69,7 +69,7 @@ export default function PreviewPage() {
           </div>
           <div>
             <dt className="font-semibold text-ink">Booking</dt>
-            <dd>No photo or preview is transferred to SQUIRE.</dd>
+            <dd>No photo or preview is transferred to Booksy.</dd>
           </div>
           <div>
             <dt className="font-semibold text-ink">Identity</dt>

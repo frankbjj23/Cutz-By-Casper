@@ -4,11 +4,11 @@ export const BRAND_MARK_PATH = "/images/brand/redeemed-mark.jpg";
 export const BRAND_OG_PATH = "/redeemed-casper-og-v2.jpg";
 export const INSTAGRAM_HANDLE = "@redeemedbycasper";
 export const INSTAGRAM_URL = "https://www.instagram.com/redeemedbycasper/";
-export const SQUIRE_BOOKING_URL =
-  "https://getsquire.com/booking/book/the-hairhub-ridgefield/barber/casper-master-barber/services";
+export const BOOKSY_BOOKING_URL =
+  "https://booksy.com/en-us/dl/show-business/697614";
 export const BOOKSY_REVIEWS_URL =
   "https://booksy.com/en-us/697614_casper_barber-shop_28387_ridgefield#reviews";
-export const SQUIRE_PRIVACY_URL = "https://getsquire.com/legal/privacy";
+export const BOOKSY_PRIVACY_URL = "https://booksy.com/en-us/p/privacy";
 export const OPENAI_DATA_CONTROLS_URL =
   "https://developers.openai.com/api/docs/guides/your-data#default-usage-policies-by-endpoint";
 
